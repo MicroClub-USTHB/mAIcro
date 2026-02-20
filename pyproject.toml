@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "miacro"
+version = "0.1.0"
+description = "Community Intelligence Service"
+authors = ["MicroClub-USTHB"]
+
+[tool.poetry.dependencies]
+python = ">=3.9,<3.12"
+fastapi = "*"
+uvicorn = "*"
+pydantic = "*"
+psycopg2-binary = "*"
+sqlalchemy = "*"
+openai = "*"

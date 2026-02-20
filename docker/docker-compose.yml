@@ -1,0 +1,27 @@
+version: '3.8'
+services:
+  miacro:
+    build: .
+    env_file:
+      - ../.env.example
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - vectordb
+  db:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: miacro
+      POSTGRES_PASSWORD: miacro
+      POSTGRES_DB: miacro
+    ports:
+      - "5432:5432"
+  vectordb:
+    image: ankane/pgvector
+    environment:
+      POSTGRES_USER: vector
+      POSTGRES_PASSWORD: vector
+      POSTGRES_DB: vector
+    ports:
+      - "5433:5432"
