@@ -1,5 +1,5 @@
 from pydantic_settings import BaseSettings
-from typing import Optional
+from typing import List, Optional
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = "mAIcro"
@@ -9,11 +9,11 @@ class Settings(BaseSettings):
     # Organization Settings (Reusable for any club/org)
     ORG_NAME: str = "Community"
     ORG_DESCRIPTION: Optional[str] = "A generic organization using mAIcro"
-    
+    CORE_RULES: Optional[List[str]] = None
     # AI Settings
-    OPENAI_API_KEY: Optional[str] = None
-    MODEL_NAME: str = "gpt-4-turbo"
-    
+    GEMINI_KEY: Optional[str] = None
+    MODEL_NAME: str = ""
+
     # Database
     DATABASE_URL: Optional[str] = None
 
