@@ -14,6 +14,11 @@ class Settings(BaseSettings):
     OPENAI_API_KEY: Optional[str] = None
     MODEL_NAME: str = "gpt-4-turbo"
     
+    # Vector store
+    VECTORSTORE_PROVIDER: str = "chroma"
+    VECTORSTORE_PATH: str = "./data/chroma"
+    VECTORSTORE_COLLECTION: str = "documents"
+
     # Database
     DATABASE_URL: Optional[str] = None
 
