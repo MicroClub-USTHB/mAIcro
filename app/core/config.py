@@ -11,8 +11,9 @@ class Settings(BaseSettings):
     ORG_DESCRIPTION: Optional[str] = "A generic organization using mAIcro"
     
     # AI Settings
-    OPENAI_API_KEY: Optional[str] = None
-    MODEL_NAME: str = "gpt-4-turbo"
+    OPENAI_API_KEY: str
+    LLM_PROVIDER: str = "openai"
+    LLM_MODEL: str = "gpt-4o-mini"
     
     # Database
     DATABASE_URL: Optional[str] = None
