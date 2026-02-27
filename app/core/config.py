@@ -13,7 +13,9 @@ class Settings(BaseSettings):
     # AI Settings
     GEMINI_API_KEY: str
     LLM_PROVIDER: str = "gemini"
-    LLM_MODEL: str = "gemini-1"
+    # use a fully‑qualified model name that exists in the API (see genai.list_models())
+    # the old "gemini-1"/"gemini-1.5-flash" are not available in v1beta
+    LLM_MODEL: str = "models/gemini-2.5-flash"
     
     # Database
     DATABASE_URL: Optional[str] = None
