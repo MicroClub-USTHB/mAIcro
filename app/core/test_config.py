@@ -1,6 +1,6 @@
 from app.core.config import settings
 
-print("API Key:", settings.OPENAI_API_KEY)
+print("API Key:", settings.GEMINI_API_KEY)
 print("Model:", settings.LLM_MODEL)
 print("Organization:", settings.ORG_NAME)
 
