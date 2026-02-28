@@ -2,8 +2,7 @@ import google.generativeai as genai
 
 from app.core.llm_provider import LLMProvider
 from app.core.config import settings
-# Hypothetical Gemini SDK import
-
+from app.promts.promts import build_system_prompt
 
 class GeminiProvider(LLMProvider):
     def __init__(self):
@@ -12,10 +11,9 @@ class GeminiProvider(LLMProvider):
 
 
     def generate(self, prompt: str) -> str:
-        system_prompt = (
-            f"You are an AI assistant for {settings.ORG_NAME}. "
-            f"Organization description: {settings.ORG_DESCRIPTION}."
-        )
+        system_prompt = build_system_prompt()
+           
+        
         
         full_prompt = f"{system_prompt}\n\nUser: {prompt}"
 
