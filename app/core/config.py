@@ -1,5 +1,7 @@
+from pydantic import Field
 from pydantic_settings import BaseSettings
 from typing import Optional
+
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = "mAIcro"
@@ -11,11 +13,11 @@ class Settings(BaseSettings):
     ORG_DESCRIPTION: Optional[str] = "A generic organization using mAIcro"
     
     # AI Settings
-    GEMINI_API_KEY: str
+    GEMINI_API_KEY: str = Field(..., env="GEMINI_API_KEY")
     LLM_PROVIDER: str = "gemini"
     # use a fully‑qualified model name that exists in the API (see genai.list_models())
     # the old "gemini-1"/"gemini-1.5-flash" are not available in v1beta
-    LLM_MODEL: str = "models/gemini-2.5-flash"
+    LLM_MODEL: str = Field("gemini-1.5-flash", env="LLM_MODEL")
     
     # Database
     DATABASE_URL: Optional[str] = None
