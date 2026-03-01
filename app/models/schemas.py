@@ -9,8 +9,7 @@ class ChatMessage(BaseModel):
 
 class ChatRequest(BaseModel):
     query: str = Field(min_length=1, description="User question")
-    top_k: int = Field(default=5, ge=1, le=20)
-    min_score: float = Field(default=0.15, ge=0.0, le=1.0)
+    n_results: int = Field(default=5, ge=1, le=20)
     history: List[ChatMessage] = Field(default_factory=list)
 
 
