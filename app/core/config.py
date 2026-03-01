@@ -1,7 +1,10 @@
+import os
+
 from pydantic import Field
 from pydantic_settings import BaseSettings
 from typing import Optional
-
+from dotenv import load_dotenv
+load_dotenv()  # Load environment variables from .env file
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = "mAIcro"
@@ -13,7 +16,10 @@ class Settings(BaseSettings):
     ORG_DESCRIPTION: Optional[str] = "A generic organization using mAIcro"
     
     # AI Settings
-    GEMINI_API_KEY: str = Field(..., env="GEMINI_API_KEY")
+    GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "your-gemini-api-key")
+    
+    
+    
     LLM_PROVIDER: str = "gemini"
     # use a fully‑qualified model name that exists in the API (see genai.list_models())
     # the old "gemini-1"/"gemini-1.5-flash" are not available in v1beta

@@ -18,8 +18,8 @@ class QueryService:
                         top_k=payload.top_k,
                         min_score=payload.min_score,
                     )
-
-        answer = self.gemini_provider.generate(query=payload.query, retrieved=retrieved)
+        # still need to change the provider to return sources and fallback status and get the retrieved chunks in the params
+        answer = self.gemini_provider.generate(query=payload.query, retrieved=retrieved,history=payload.history)
 
         return ChatResponse(
             answer=answer,
