@@ -11,9 +11,11 @@ class Settings(BaseSettings):
     # Organization Settings (Reusable for any club/org)
     ORG_NAME: str = "Community"
     ORG_DESCRIPTION: Optional[str] = "A generic organization using mAIcro"
+    
 
     # AI Settings
-    GEMINI_API_KEY: str  # required, no default
+    GEMINI_API_KEY: Optional[str] = None
+    MODEL_NAME: Optional[str] = None
     EMBEDDING_MODEL_NAME: str = "gemini-embedding-001"
     
     # Embedding settings
@@ -29,7 +31,8 @@ class Settings(BaseSettings):
 
     model_config = {
         "case_sensitive": True,
-        "env_file": ".env"
+        "env_file": ".env",
+        "extra": "ignore"
     }
 
 settings = Settings()
