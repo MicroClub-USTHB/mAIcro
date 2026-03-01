@@ -25,16 +25,18 @@ class QdrantVectorStore:
 		self.collection_name = settings.VECTORSTORE_COLLECTION
 		self.doc_embedder = get_document_embedding_service()
 		self.query_embedder = get_query_embedding_service()
-		# Ensure collection exists
 		try:
-			if self.collection_name not in [c.name for c in self.client.get_collections().collections]:
-				self.client.create_collection(
-					collection_name=self.collection_name,
-					vectors_config=qdrant_models.VectorParams(
-						size=self.doc_embedder.output_dimensionality,
-						distance=qdrant_models.Distance.COSINE
-					)
+			# Always recreate to ensure vectors_config is present and correct
+			if self.collection_name in [c.name for c in self.client.get_collections().collections]:
+				self.client.delete_collection(collection_name=self.collection_name)
+				logging.info(f"Deleted existing Qdrant collection: {self.collection_name}")
+			self.client.create_collection(
+				collection_name=self.collection_name,
+				vectors_config=qdrant_models.VectorParams(
+					size=self.doc_embedder.output_dimensionality,
+					distance=qdrant_models.Distance.COSINE
 				)
+			)
 		except Exception as e:
 			logging.error(f"Failed to initialize Qdrant collection: {e}")
 			raise
@@ -80,6 +82,33 @@ class QdrantVectorStore:
 		)
 		return Document(id=str(point_id), text=payload.get("text") or payload.get("document", ""), metadata=meta)
 
+	@staticmethod
+	def _validate_and_prepare_documents(
+		documents: Sequence[str],
+		metadatas: Optional[Sequence[Dict[str, Any]]],
+		ids: Optional[Sequence[Union[str, int]]]
+	) -> tuple:
+		"""
+		Validate and prepare documents for addition to Qdrant.
+		Returns a tuple of (texts, payloads, ids).
+		"""
+		if not documents:
+			raise ValueError("'documents' must be a non-empty sequence of strings.")
+		if any(not isinstance(doc, str) or not doc for doc in documents):
+			raise ValueError("All documents must be non-empty strings.")
+		n = len(documents)
+		if ids is not None and len(ids) != n:
+			raise ValueError("'ids' must be the same length as 'documents'.")
+		if metadatas is not None and len(metadatas) != n:
+			raise ValueError("'metadatas' must be the same length as 'documents'.")
+		if ids is not None:
+			if any(id_ is None or id_ == "" for id_ in ids):
+				raise ValueError("All 'ids' must be non-empty when provided.")
+			if len(set(ids)) != len(ids):
+				raise ValueError("Duplicate IDs detected in 'ids'.")
+		payloads = metadatas if metadatas is not None else [{} for _ in documents]
+		return documents, payloads, ids
+
 	def add_documents(
 		self,
 		documents: Sequence[str],
@@ -88,30 +117,14 @@ class QdrantVectorStore:
 		schema_version: str = "1",
 	) -> None:
 		"""
-		Embed and add raw text documents to the Qdrant collection with validation.
-		Each document is embedded using the config-driven embedding service.
-		Optionally attaches metadata and custom IDs.
+		Embed and add raw text documents to the Qdrant collection.
+		Uses manual embeddings (doc_embedder) to match the collection vector size.
 		"""
 		try:
-			if not documents:
-				raise ValueError("'documents' must be a non-empty sequence of strings.")
-			if any(not isinstance(doc, str) or not doc for doc in documents):
-				raise ValueError("All documents must be non-empty strings.")
-			n = len(documents)
-			if ids is not None and len(ids) != n:
-				raise ValueError("'ids' must be the same length as 'documents'.")
-			if metadatas is not None and len(metadatas) != n:
-				raise ValueError("'metadatas' must be the same length as 'documents'.")
-			if ids is not None:
-				if any(id_ is None or id_ == "" for id_ in ids):
-					raise ValueError("All 'ids' must be non-empty when provided.")
-				if len(set(ids)) != len(ids):
-					raise ValueError("Duplicate IDs detected in 'ids'.")
-
-			vectors = self.doc_embedder.embed_texts(list(documents))
-			payloads = metadatas if metadatas is not None else [{} for _ in documents]
+			texts, payloads, ids = self._validate_and_prepare_documents(documents, metadatas, ids)
+			vectors = self.doc_embedder.embed_texts(list(texts))
 			points: List[qdrant_models.PointStruct] = []
-			for i, (vec, doc) in enumerate(zip(vectors, documents)):
+			for i, (vec, doc) in enumerate(zip(vectors, texts)):
 				point_id = ids[i] if ids is not None else i
 				payload = payloads[i].copy()
 				payload["text"] = doc
@@ -142,11 +155,8 @@ class QdrantVectorStore:
 
 	def similarity_search(self, query: str, n_results: int = 5, where: Optional[Dict[str, Any]] = None):
 		"""
-		Embed the query using the same embedding service as documents and search Qdrant using query_vector.
-		This ensures both document and query embeddings use the same model and configuration.
-		Optionally filter results by metadata fields using the 'where' parameter.
-		Returns Qdrant search results (raw, not Document objects).
-		Raises a RuntimeError if Qdrant is running in Fastembed mode (expects query_text).
+		Embed the query using the same embedding service as documents and search using query_vector.
+		Uses client.search to avoid Fastembed query_text requirements.
 		"""
 		try:
 			if not query or not isinstance(query, str):
@@ -160,22 +170,13 @@ class QdrantVectorStore:
 						match=qdrant_models.MatchValue(value=v)
 					) for k, v in where.items()
 				])
-			try:
-				search_result = self.client.query(
-					collection_name=self.collection_name,
-					query_vector=q_vec,
-					limit=n_results,
-					filter=filter_
-				)
-			except TypeError as e:
-				if "query_text" in str(e):
-					raise RuntimeError(
-						"Qdrant is running in Fastembed mode and expects 'query_text'. "
-						"To use your own embedding model for both documents and queries, disable Fastembed integration "
-						"and ensure your Qdrant instance is in vanilla mode."
-					) from e
-				raise
-			return search_result
+			search_result = self.client.query_points(
+				collection_name=self.collection_name,
+				query=q_vec,
+				limit=n_results,
+				query_filter=filter_
+			)
+			return search_result.points
 		except Exception as e:
 			logging.error(f"Similarity search failed: {e}")
 			raise
