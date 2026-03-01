@@ -1,8 +1,11 @@
-"""Utilities for turning text into Gemini embeddings.
+"""
+Embedding utilities for Gemini models.
 
-The main entry point is EmbeddingService, which hides the google-genai
-client behind a simple "text in, vector out" interface that the rest of
-the app can reuse in ingestion and query flows.
+This module provides the EmbeddingService class, which wraps Gemini's embedding API
+in a config-driven, flexible interface for both single and batch text embedding.
+All model, dimensionality, and task type parameters are sourced from config, allowing
+easy customization and extension. Use get_document_embedding_service() and
+get_query_embedding_service() to obtain ready-to-use embedding services for RAG pipelines.
 """
 
 from __future__ import annotations
@@ -16,106 +19,115 @@ from google.genai import types as genai_types
 from app.core.config import settings
 
 
-GeminiEmbeddingTask = Literal[
-	"RETRIEVAL_DOCUMENT",
-	"RETRIEVAL_QUERY",
-]
-
-
 class EmbeddingService:
-	"""Small helper around Gemini's embedding model.
+    """
+    Service for generating embeddings using Gemini models.
 
-	By default it is configured for RAG-style usage:
+    - Fully config-driven: model, output_dimensionality, and task_type are provided at instantiation.
+    - Supports both single (embed_text) and batch (embed_texts) embedding for efficient workflows.
+    - Use get_document_embedding_service() and get_query_embedding_service() for standard RAG usage.
+    """
 
-	- `RETRIEVAL_DOCUMENT` when embedding documents or chunks
-	- `RETRIEVAL_QUERY` when embedding user questions
-	"""
+    def __init__(
+        self,
+        model: str,
+        output_dimensionality: int,
+        task_type: str,
+    ) -> None:
+        self.model = model
+        self.output_dimensionality = output_dimensionality
+        self.task_type: str = task_type
 
-	def __init__(
-		self,
-		model: str = "gemini-embedding-001",
-		output_dimensionality: int = 768,
-		task_type: GeminiEmbeddingTask = "RETRIEVAL_DOCUMENT",
-	) -> None:
-		self.model = model
-		self.output_dimensionality = output_dimensionality
-		self.task_type: GeminiEmbeddingTask = task_type
+        # The client reads credentials (API key, project) from env/.config
+        self._client = genai.Client(api_key=settings.GEMINI_API_KEY)
 
-		# The client reads credentials (API key, project) from env/.config
-		self._client = genai.Client()
+    def _build_config(self) -> genai_types.EmbedContentConfig:
+        return genai_types.EmbedContentConfig(
+            task_type=self.task_type,
+            output_dimensionality=self.output_dimensionality,
+        )
 
-	def _build_config(self) -> genai_types.EmbedContentConfig:
-		return genai_types.EmbedContentConfig(
-			task_type=self.task_type,
-			output_dimensionality=self.output_dimensionality,
-		)
+    def _normalize(self, vector: Sequence[float]) -> List[float]:
+        arr = np.asarray(vector, dtype=float)
+        norm = float(np.linalg.norm(arr))
+        if norm == 0.0:
+            return arr.tolist()
+        return (arr / norm).tolist()
 
-	def _normalize(self, vector: Sequence[float]) -> List[float]:
-		arr = np.asarray(vector, dtype=float)
-		norm = float(np.linalg.norm(arr))
-		if norm == 0.0:
-			return arr.tolist()
-		return (arr / norm).tolist()
+    def embed_text(self, text: str) -> List[float]:
+        """
+        Converts a single string of text into a vector (embedding) that represents its meaning.
+        This is useful when you want to compare a user query or a document to other texts using vector similarity.
+        Returns a normalized vector (list of floats) for the input text.
+        Raises ValueError if the input text is empty.
+        Example use: Embedding a user question before searching for similar documents.
+        """
 
-	def embed_text(self, text: str) -> List[float]:
-		"""Embed a single piece of text and return a vector."""
+        if not text:
+            raise ValueError("Text to embed must be non-empty")
 
-		if not text:
-			raise ValueError("Text to embed must be non-empty")
+        result = self._client.models.embed_content(
+            model=self.model,
+            contents=text,
+            config=self._build_config(),
+        )
 
-		result = self._client.models.embed_content(
-			model=self.model,
-			contents=text,
-			config=self._build_config(),
-		)
+        [embedding_obj] = result.embeddings
+        return self._normalize(embedding_obj.values)
 
-		[embedding_obj] = result.embeddings
-		return self._normalize(embedding_obj.values)
+    def embed_texts(self, texts: Iterable[str]) -> List[List[float]]:
+        """
+        Converts a list of texts into a list of vectors (embeddings), one for each text.
+        This is much faster and more efficient than embedding each text one by one, especially for large datasets.
+        The output is a list of normalized vectors, in the same order as the input texts.
+        Raises ValueError if any input text is empty.
+        Example use: Embedding all documents in your database before storing them in a vector store.
+        """
 
-	def embed_texts(self, texts: Iterable[str]) -> List[List[float]]:
-		"""Embed many texts at once.
+        texts_list = [t for t in texts]
+        if not texts_list:
+            return []
+        if any(not t for t in texts_list):
+            raise ValueError("All texts must be non-empty when embedding a batch")
 
-		The order of vectors matches the order of the input texts.
-		"""
+        result = self._client.models.embed_content(
+            model=self.model,
+            contents=texts_list,
+            config=self._build_config(),
+        )
 
-		texts_list = [t for t in texts]
-		if not texts_list:
-			return []
-		if any(not t for t in texts_list):
-			raise ValueError("All texts must be non-empty when embedding a batch")
-
-		result = self._client.models.embed_content(
-			model=self.model,
-			contents=texts_list,
-			config=self._build_config(),
-		)
-
-		return [self._normalize(e.values) for e in result.embeddings]
+        return [self._normalize(e.values) for e in result.embeddings]
 
 
 def get_document_embedding_service() -> EmbeddingService:
-	"""Factory for embedding documents/chunks for retrieval."""
+    """Factory for embedding documents/chunks for retrieval."""
 
-	return EmbeddingService(
-		model="gemini-embedding-001",
-		output_dimensionality=768,
-		task_type="RETRIEVAL_DOCUMENT",
-	)
+    return EmbeddingService(
+        model=settings.EMBEDDING_MODEL_NAME,
+        output_dimensionality=settings.EMBEDDING_DIM,
+        task_type=settings.EMBEDDING_TASK_TYPES["document"],
+    )
 
 
 def get_query_embedding_service() -> EmbeddingService:
-	"""Factory for embedding user queries for retrieval."""
+    """Factory for embedding user queries for retrieval."""
 
-	return EmbeddingService(
-		model="gemini-embedding-001",
-		output_dimensionality=768,
-		task_type="RETRIEVAL_QUERY",
-	)
+    return EmbeddingService(
+        model=settings.EMBEDDING_MODEL_NAME,
+        output_dimensionality=settings.EMBEDDING_DIM,
+        task_type=settings.EMBEDDING_TASK_TYPES["query"],
+    )
 
 
 __all__ = [
-	"EmbeddingService",
-	"get_document_embedding_service",
-	"get_query_embedding_service",
+    "EmbeddingService",
+    "get_document_embedding_service",
+    "get_query_embedding_service",
 ]
 
+if __name__ == "__main__":
+    # Quick test to verify embedding service works
+    service = get_document_embedding_service()
+    test_text = "Depresso rah mkouli"
+    embedding = service.embed_text(test_text)
+    print(f"Embedding for '{test_text}': {embedding[:5]}... (length {len(embedding)})")

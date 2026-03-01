@@ -1,13 +1,13 @@
 """
 Knowledge retrieval service for community data.
-Wraps the Chroma vector store and exposes simple add/search methods.
+Wraps the Qdrant vector store and exposes simple add/search methods.
 """
 
-from app.core.vector_store import ChromaVectorStore
+from app.core.vector_store import QdrantVectorStore
 
 class KnowledgeRetrievalService:
     def __init__(self):
-        self.vector_store = ChromaVectorStore()
+        self.vector_store = QdrantVectorStore()
 
     def add_knowledge(self, chunks, metadatas=None, ids=None):
         """
@@ -24,6 +24,6 @@ class KnowledgeRetrievalService:
         query: string (user question)
         n_results: int (number of results to return)
         where: dict (optional metadata filter)
-        Returns: Chroma query results dict
+        Returns: Qdrant search results
         """
         return self.vector_store.similarity_search(query, n_results=n_results, where=where)

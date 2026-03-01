@@ -1,7 +1,9 @@
+
 from pydantic_settings import BaseSettings
-from typing import Optional
+from typing import Optional, ClassVar, Dict
 
 class Settings(BaseSettings):
+    
     PROJECT_NAME: str = "mAIcro"
     VERSION: str = "0.1.0"
     API_V1_STR: str = "/api/v1"
@@ -11,20 +13,23 @@ class Settings(BaseSettings):
     ORG_DESCRIPTION: Optional[str] = "A generic organization using mAIcro"
 
     # AI Settings
-    OPENAI_API_KEY: Optional[str] = None
-    GEMINI_API_KEY: Optional[str] = None
-    MODEL_NAME: str = "gpt-4-turbo"
+    GEMINI_API_KEY: str  # required, no default
+    EMBEDDING_MODEL_NAME: str = "gemini-embedding-001"
+    
+    # Embedding settings
+    EMBEDDING_DIM: int = 768
+    EMBEDDING_TASK_TYPES: ClassVar[Dict[str, str]] = {'document': 'RETRIEVAL_DOCUMENT', 'query': 'RETRIEVAL_QUERY'}
 
     # Vector store
-    VECTORSTORE_PROVIDER: str = "chroma"
-    VECTORSTORE_PATH: str = "./data/chroma"
-    VECTORSTORE_COLLECTION: str = "documents"
+    VECTORSTORE_PATH: str  # required, no default
+    VECTORSTORE_COLLECTION: str  # required, no default
 
     # Database
     DATABASE_URL: Optional[str] = None
 
-    class Config:
-        case_sensitive = True
-        env_file = ".env"
+    model_config = {
+        "case_sensitive": True,
+        "env_file": ".env"
+    }
 
 settings = Settings()
