@@ -1,4 +1,4 @@
-import google.generativeai as genai
+import google as genai
 
 from app.core.llm_provider import LLMProvider
 from app.core.config import settings
