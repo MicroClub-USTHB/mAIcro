@@ -1,7 +1,7 @@
 from pathlib import Path
 from app.core.config import settings
 
-PROMPTS_DIR = Path(__file__).resolve().parents[2] / "prompts"
+PROMPTS_DIR = Path(__file__).parents / "prompts"
 
 
 def build_prompt(prompt_name: str, **kwargs) -> str:
