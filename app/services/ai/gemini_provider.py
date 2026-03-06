@@ -2,7 +2,7 @@ import google.generativeai as genai
 
 from app.core.llm_provider import LLMProvider
 from app.core.config import settings
-from app.promts.promts import build_system_prompt
+from app.services.ai.promt import build_system_prompt
 
 class GeminiProvider(LLMProvider):
     def __init__(self):
