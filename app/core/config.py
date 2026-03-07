@@ -7,13 +7,14 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
     
     # Organization Settings (Reusable for any club/org)
-    ORG_NAME: str = "Community"
-    ORG_DESCRIPTION: Optional[str] = "A generic organization using mAIcro"
-    CORE_RULES: Optional[List[str]] = None
+    ORG_NAME: str 
+    ORG_DESCRIPTION: Optional[str] 
+    
     # AI Settings
-    GEMINI_KEY: Optional[str] = None
-    MODEL_NAME: str = ""
-
+    GEMINI_API_KEY: str
+    LLM_PROVIDER: str 
+    LLM_MODEL: str 
+    
     # Database
     DATABASE_URL: Optional[str] = None
 

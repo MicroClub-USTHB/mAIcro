@@ -2,8 +2,15 @@
 name = "miacro"
 version = "0.1.0"
 description = "Community Intelligence Service"
-authors = ["MicroClub-USTHB"]
+authors = [{ name = "MicroClub-USTHB" }]
 
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "fastapi>=0.133.1",
+    "google-genai>=1.66.0",
+    "google-generativeai>=0.8.6",
+    "openai>=2.24.0",
+    "pydantic-settings>=2.13.1",
+    "uvicorn>=0.41.0",
+]
