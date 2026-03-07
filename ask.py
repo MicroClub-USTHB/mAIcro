@@ -1,8 +1,9 @@
 import sys
 from app.core.vector_store import get_vector_store
 from app.core.llm_provider import get_llm
-from langchain.chains import RetrievalQA
-from langchain.prompts import PromptTemplate
+from langchain_core.prompts import PromptTemplate
+from langchain_core.runnables import RunnablePassthrough
+from langchain_core.output_parsers import StrOutputParser
 from app.core.config import settings
 
 def ask_question(question: str):
@@ -28,18 +29,17 @@ def ask_question(question: str):
         partial_variables={"org_name": settings.ORG_NAME}
     )
     
-    # Use as retriever
+    # Runnable solution
     retriever = vector_store.as_retriever(search_kwargs={"k": 3})
     
-    qa = RetrievalQA.from_chain_type(
-        llm=llm,
-        chain_type="stuff",
-        retriever=retriever,
-        chain_type_kwargs={"prompt": PROMPT}
+    chain = (
+        {"context": retriever, "question": RunnablePassthrough()}
+        | PROMPT
+        | llm
+        | StrOutputParser()
     )
     
-    response = qa.invoke(question)
-    return response["result"]
+    return chain.invoke(question)
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
