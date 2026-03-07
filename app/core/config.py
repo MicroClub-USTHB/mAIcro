@@ -9,9 +9,14 @@ class Settings(BaseSettings):
     ORG_NAME: str = "MicroClub"
     ORG_DESCRIPTION: Optional[str] = "A generic organization using mAIcro"
     CORE_RULES: Optional[List[str]] = None
+
     # AI Settings
+    LLM_PROVIDER: str = "google"
     GOOGLE_API_KEY: Optional[str] = None
-    MODEL_NAME: str = "gemini-2.0-flash-lite"
+    ANTHROPIC_API_KEY: Optional[str] = None
+    MODEL_NAME: Optional[str] = None
+    GOOGLE_MODEL_NAME: str = "gemini-2.0-flash-lite"
+    ANTHROPIC_MODEL_NAME: str = "claude-3-5-haiku-latest"
 
     # Vector Store
     QDRANT_URL: str = "http://localhost:6333"

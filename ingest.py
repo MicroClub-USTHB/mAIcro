@@ -33,6 +33,9 @@ def ingest_data(file_path: str):
 
 if __name__ == "__main__":
     if not settings.GOOGLE_API_KEY:
-        print("Error: GOOGLE_API_KEY not found in .env. Please set it to run.")
+        print(
+            "Error: GOOGLE_API_KEY not found in .env. "
+            "Ingestion embeddings currently use Google."
+        )
         os._exit(1)
     ingest_data("data/announcements.json")

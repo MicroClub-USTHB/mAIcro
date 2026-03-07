@@ -18,12 +18,15 @@ def _format_llm_error(exc: Exception) -> str:
 
     if "resource_exhausted" in lowered or "quota" in lowered or "429" in lowered:
         return (
-            "Gemini API quota/rate limit was exceeded. "
-            "Check billing/quota, wait a bit, then retry."
+            "LLM quota/rate limit was exceeded. "
+            "Check your provider billing/quota, wait a bit, then retry."
         )
 
     if "api key" in lowered or "permission denied" in lowered or "unauthorized" in lowered:
-        return "Invalid API credentials. Verify GOOGLE_API_KEY in your .env file."
+        return (
+            "Invalid API credentials. "
+            "Verify your provider key in .env (GOOGLE_API_KEY or ANTHROPIC_API_KEY)."
+        )
 
     return f"Request failed: {message}"
 
@@ -71,8 +74,24 @@ if __name__ == "__main__":
     else:
         question = input("Ask mAIcro: ")
         
-    if not settings.GOOGLE_API_KEY:
+    provider = settings.LLM_PROVIDER.lower().strip()
+    if provider == "anthropic" and not settings.ANTHROPIC_API_KEY:
+        print("Error: ANTHROPIC_API_KEY not found in .env. Please set it to run.")
+        sys.exit(1)
+
+    if provider == "google" and not settings.GOOGLE_API_KEY:
         print("Error: GOOGLE_API_KEY not found in .env. Please set it to run.")
+        sys.exit(1)
+
+    if provider not in {"google", "anthropic"}:
+        print("Error: LLM_PROVIDER must be either 'google' or 'anthropic'.")
+        sys.exit(1)
+
+    if not settings.GOOGLE_API_KEY:
+        print(
+            "Error: GOOGLE_API_KEY not found in .env. "
+            "Embeddings still use Google in the current setup."
+        )
         sys.exit(1)
         
     try:
