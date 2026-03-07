@@ -9,8 +9,8 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
 
     # Organization Settings (Reusable for any club/org)
-    ORG_NAME: str = "Community"
-    ORG_DESCRIPTION: Optional[str] = "A generic organization using mAIcro"
+    ORG_NAME: str 
+    ORG_DESCRIPTION: Optional[str] 
     
 
     # AI Settings
