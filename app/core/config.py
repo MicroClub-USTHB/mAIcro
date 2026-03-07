@@ -18,26 +18,16 @@ class Settings(BaseSettings):
     MODEL_NAME: Optional[str] = None
     GOOGLE_MODEL_NAME: str = "gemini-2.0-flash-lite"
     ANTHROPIC_MODEL_NAME: str = "claude-3-5-haiku-latest"
-    GROQ_MODEL_NAME: str = "llama-3.3-70b-versatile"
+    GROQ_MODEL_NAME: str = "llama-3.1-8b-instant"
 
     # Vector Store
     QDRANT_URL: str = "http://localhost:6333"
     QDRANT_API_KEY: Optional[str] = None
     COLLECTION_NAME: str = "microclub_knowledge"
 
-    # Discord
-    DISCORD_BOT_TOKEN: Optional[str] = None
-    DISCORD_CHANNEL_IDS: Optional[str] = None  # comma-separated
-
-    @property
-    def discord_channel_id_list(self) -> List[str]:
-        """Parse comma-separated channel IDs into a list."""
-        if not self.DISCORD_CHANNEL_IDS:
-            return []
-        return [cid.strip() for cid in self.DISCORD_CHANNEL_IDS.split(",") if cid.strip()]
-
     class Config:
         case_sensitive = True
         env_file = ".env"
+        extra = "ignore"
 
 settings = Settings()
