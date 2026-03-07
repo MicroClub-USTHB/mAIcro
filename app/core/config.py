@@ -11,11 +11,13 @@ class Settings(BaseSettings):
     ORG_DESCRIPTION: Optional[str] = "A generic organization using mAIcro"
     CORE_RULES: Optional[List[str]] = None
     # AI Settings
-    GEMINI_KEY: Optional[str] = None
-    MODEL_NAME: str = ""
+    GOOGLE_API_KEY: Optional[str] = None
+    MODEL_NAME: str = "gemini-1.5-flash"
 
-    # Database
-    DATABASE_URL: Optional[str] = None
+    # Vector Store
+    QDRANT_URL: str = "http://localhost:6333"
+    QDRANT_API_KEY: Optional[str] = None
+    COLLECTION_NAME: str = "maicro_knowledge"
 
     class Config:
         case_sensitive = True

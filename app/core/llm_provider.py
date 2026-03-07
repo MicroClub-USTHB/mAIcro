@@ -1,4 +1,16 @@
-# llm_provider.py
-# LLM provider abstraction (OpenAI, local, etc.)
+from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
+from app.core.config import settings
 
-# ...implementation placeholder...
+def get_llm():
+    return ChatGoogleGenerativeAI(
+        model=settings.MODEL_NAME,
+        google_api_key=settings.GOOGLE_API_KEY,
+        temperature=0
+    )
+
+def get_embeddings():
+    return GoogleGenerativeAIEmbeddings(
+        model="models/embedding-001",
+        google_api_key=settings.GOOGLE_API_KEY
+    )
+
