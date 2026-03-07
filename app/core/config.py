@@ -6,8 +6,7 @@ class Settings(BaseSettings):
     VERSION: str = "0.1.0"
     API_V1_STR: str = "/api/v1"
     
-    # Organization Settings (Reusable for any club/org)
-    ORG_NAME: str = "Community"
+    ORG_NAME: str = "MicroClub"
     ORG_DESCRIPTION: Optional[str] = "A generic organization using mAIcro"
     CORE_RULES: Optional[List[str]] = None
     # AI Settings
@@ -17,7 +16,7 @@ class Settings(BaseSettings):
     # Vector Store
     QDRANT_URL: str = "http://localhost:6333"
     QDRANT_API_KEY: Optional[str] = None
-    COLLECTION_NAME: str = "maicro_knowledge"
+    COLLECTION_NAME: str = "microclub_knowledge"
 
     class Config:
         case_sensitive = True
