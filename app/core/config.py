@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     CORE_RULES: Optional[List[str]] = None
     # AI Settings
     GOOGLE_API_KEY: Optional[str] = None
-    MODEL_NAME: str = "gemini-1.5-flash"
+    MODEL_NAME: str = "gemini-2.0-flash"
 
     # Vector Store
     QDRANT_URL: str = "http://localhost:6333"
