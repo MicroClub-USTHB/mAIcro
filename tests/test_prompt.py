@@ -1,4 +1,4 @@
-from app.services.ai.promt import build_prompt
+from mAIcro.app.services.ai.prompt import build_prompt
 
 prompt = build_prompt(
     "chat",
