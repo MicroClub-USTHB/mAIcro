@@ -1,19 +1,19 @@
-# mIAcro: Open Source AI Service
+# mAIcro: Open Source AI Service
 
 ## Overview
 
-**mIAcro** is an open-source AI service designed to help organizations centralize information and answer questions based on their internal data.
+**mAIcro** is an open-source AI service designed to help organizations centralize information and answer questions based on their internal data.
 
 It is not a simple chatbot or a Discord bot.
-Instead, **mIAcro acts as an AI-powered knowledge service** that understands structured information and uses it to provide accurate answers to users.
+Instead, **mAIcro acts as an AI-powered knowledge service** that understands structured information and uses it to provide accurate answers to users.
 
 The system can process organizational data such as announcements, documentation, and structured datasets, then make that information easily accessible through natural language queries.
 
-While the first deployment of mIAcro is within **Micro Club**, the system itself is designed as **reusable infrastructure** that can be adapted to any community or organization.
+While the first deployment of mAIcro is within **Micro Club**, the system itself is designed as **reusable infrastructure** that can be adapted to any community or organization.
 
 # Goals
 
-The main goals of **mIAcro** are:
+The main goals of **mAIcro** are:
 
 * Centralize important information in one accessible system
 * Allow members to query information using natural language
@@ -25,7 +25,7 @@ The main goals of **mIAcro** are:
 
 # Core Concept
 
-At its core, **mIAcro works as an AI service that understands provided data and answers questions based on it**.
+At its core, **mAIcro works as an AI service that understands provided data and answers questions based on it**.
 
 Instead of relying on generic internet knowledge, the system operates on **specific datasets provided by the organization**.
 
@@ -45,7 +45,7 @@ The AI processes this information and uses it to respond to user queries.
 
 ## Structured Data Understanding
 
-mIAcro is designed to ingest and understand structured sources of information.
+mAIcro is designed to ingest and understand structured sources of information.
 This allows it to reason about internal data rather than relying solely on general AI knowledge.
 
 ---
@@ -72,7 +72,7 @@ Organizations often have information scattered across multiple platforms:
 * Spreadsheets
 * Announcements
 
-mIAcro centralizes these sources into a **single AI-accessible knowledge system**.
+mAIcro centralizes these sources into a **single AI-accessible knowledge system**.
 
 ---
 
@@ -92,7 +92,7 @@ Possible use cases include:
 
 # Open Source Philosophy
 
-mIAcro is released as an **open-source project**.
+mAIcro is released as an **open-source project**.
 
 This means:
 
@@ -106,7 +106,7 @@ The goal is to build **shared AI infrastructure** that communities can deploy ea
 
 # First Deployment: Micro Club
 
-The first deployment of mIAcro is within **Micro Club**.
+The first deployment of mAIcro is within **Micro Club**.
 
 In this environment, the system will:
 
@@ -121,7 +121,7 @@ The architecture is designed to be reused by other communities.
 
 # Future Extensions
 
-mIAcro can evolve beyond a question-answering service.
+mAIcro can evolve beyond a question-answering service.
 
 Possible future features include:
 
