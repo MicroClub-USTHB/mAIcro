@@ -20,6 +20,10 @@ class Settings(BaseSettings):
     ANTHROPIC_MODEL_NAME: str = "claude-3-5-haiku-latest"
     GROQ_MODEL_NAME: str = "llama-3.1-8b-instant"
 
+    # Discord ingestion
+    DISCORD_BOT_TOKEN: Optional[str] = None
+    DISCORD_CHANNEL_IDS: Optional[str] = None
+
     # Vector Store
     QDRANT_URL: str = "http://localhost:6333"
     QDRANT_API_KEY: Optional[str] = None
@@ -29,5 +33,13 @@ class Settings(BaseSettings):
         case_sensitive = True
         env_file = ".env"
         extra = "ignore"
+
+    @property
+    def discord_channel_id_list(self) -> List[str]:
+        """Parse comma-separated channel IDs from DISCORD_CHANNEL_IDS."""
+        if not self.DISCORD_CHANNEL_IDS:
+            return []
+
+        return [cid.strip() for cid in self.DISCORD_CHANNEL_IDS.split(",") if cid.strip()]
 
 settings = Settings()
