@@ -137,6 +137,13 @@ def ask_question(question: str) -> str:
             retriever = RunnableLambda(lambda q: _fallback_keyword_retrieve(q, k=3))
         else:
             raise AskConfigError(str(exc)) from exc
+    except Exception as exc:
+        message = str(exc)
+        # Qdrant local mode uses a file lock and can fail when another process has opened it.
+        if "already accessed by another instance of Qdrant client" in message:
+            retriever = RunnableLambda(lambda q: _fallback_keyword_retrieve(q, k=3))
+        else:
+            raise AskConfigError(f"Vector store initialization failed: {message}") from exc
 
     prompt = build_rag_prompt_template()
 
