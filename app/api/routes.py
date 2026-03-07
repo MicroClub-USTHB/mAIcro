@@ -6,7 +6,7 @@ from fastapi import APIRouter, HTTPException
 
 from app.api.schemas import AskRequest, AskResponse, IngestFileRequest, IngestResponse
 from app.core.config import settings
-from app.services.qa_service import AskError, ask_question
+from app.services.qa_service import AskConfigError, AskError, ask_question
 
 router = APIRouter(prefix=settings.API_V1_STR)
 
@@ -34,6 +34,8 @@ async def ask(req: AskRequest):
 
     try:
         answer = ask_question(req.question)
+    except AskConfigError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
     except AskError as exc:
         raise HTTPException(status_code=502, detail=str(exc))
     except Exception as exc:
