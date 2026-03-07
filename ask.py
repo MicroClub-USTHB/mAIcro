@@ -83,8 +83,12 @@ if __name__ == "__main__":
         print("Error: GOOGLE_API_KEY not found in .env. Please set it to run.")
         sys.exit(1)
 
-    if provider not in {"google", "anthropic"}:
-        print("Error: LLM_PROVIDER must be either 'google' or 'anthropic'.")
+    if provider == "groq" and not settings.GROQ_API_KEY:
+        print("Error: GROQ_API_KEY not found in .env. Please set it to run.")
+        sys.exit(1)
+
+    if provider not in {"google", "anthropic", "groq"}:
+        print("Error: LLM_PROVIDER must be 'google', 'anthropic', or 'groq'.")
         sys.exit(1)
 
     if not settings.GOOGLE_API_KEY:

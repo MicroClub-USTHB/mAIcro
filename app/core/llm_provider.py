@@ -1,5 +1,6 @@
 from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 from langchain_anthropic import ChatAnthropic
+from langchain_groq import ChatGroq
 from app.core.config import settings
 
 def get_llm():
@@ -27,7 +28,18 @@ def get_llm():
             temperature=0,
         )
 
-    raise ValueError("Unsupported LLM_PROVIDER. Use 'google' or 'anthropic'.")
+    if provider == "groq":
+        if not settings.GROQ_API_KEY:
+            raise ValueError("GROQ_API_KEY not found in .env.")
+
+        model_name = settings.MODEL_NAME or settings.GROQ_MODEL_NAME
+        return ChatGroq(
+            model=model_name,
+            api_key=settings.GROQ_API_KEY,
+            temperature=0,
+        )
+
+    raise ValueError("Unsupported LLM_PROVIDER. Use 'google', 'anthropic', or 'groq'.")
 
 def get_embeddings():
     if not settings.GOOGLE_API_KEY:

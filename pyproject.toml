@@ -18,4 +18,5 @@ dependencies = [
     "python-dotenv>=1.2.2",
     "qdrant-client>=1.17.0",
     "uvicorn[standard]>=0.30.0",
+    "langchain-groq>=1.1.2",
 ]
