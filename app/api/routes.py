@@ -3,36 +3,12 @@ mAIcro REST API routes.
 """
 
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
-from typing import Optional
 
+from app.api.schemas import AskRequest, AskResponse, IngestFileRequest, IngestResponse
 from app.core.config import settings
+from app.services.qa_service import AskError, ask_question
 
 router = APIRouter(prefix=settings.API_V1_STR)
-
-
-# ---------------------------------------------------------------------------
-# Request / Response models
-# ---------------------------------------------------------------------------
-
-class AskRequest(BaseModel):
-    question: str
-
-
-class AskResponse(BaseModel):
-    question: str
-    answer: str
-
-
-class IngestFileRequest(BaseModel):
-    source: str = "file"  # "file"
-    path: str = "data/announcements.json"
-
-
-class IngestResponse(BaseModel):
-    status: str
-    documents_ingested: int
-    details: Optional[dict] = None
 
 
 # ---------------------------------------------------------------------------
@@ -53,8 +29,6 @@ async def health():
 @router.post("/ask", response_model=AskResponse)
 async def ask(req: AskRequest):
     """Answer a question using the RAG chain."""
-    from ask import ask_question, AskError
-
     if not req.question.strip():
         raise HTTPException(status_code=400, detail="Question cannot be empty.")
 
