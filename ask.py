@@ -6,6 +6,27 @@ from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
 from app.core.config import settings
 
+
+class AskError(Exception):
+    """Raised when asking the LLM fails with a user-actionable error."""
+
+
+def _format_llm_error(exc: Exception) -> str:
+    """Convert provider errors into short messages suitable for CLI users."""
+    message = str(exc)
+    lowered = message.lower()
+
+    if "resource_exhausted" in lowered or "quota" in lowered or "429" in lowered:
+        return (
+            "Gemini API quota/rate limit was exceeded. "
+            "Check billing/quota, wait a bit, then retry."
+        )
+
+    if "api key" in lowered or "permission denied" in lowered or "unauthorized" in lowered:
+        return "Invalid API credentials. Verify GOOGLE_API_KEY in your .env file."
+
+    return f"Request failed: {message}"
+
 def ask_question(question: str):
     llm = get_llm()
     vector_store = get_vector_store()
@@ -39,7 +60,10 @@ def ask_question(question: str):
         | StrOutputParser()
     )
     
-    return chain.invoke(question)
+    try:
+        return chain.invoke(question)
+    except Exception as exc:
+        raise AskError(_format_llm_error(exc)) from exc
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
@@ -51,5 +75,9 @@ if __name__ == "__main__":
         print("Error: GOOGLE_API_KEY not found in .env. Please set it to run.")
         sys.exit(1)
         
-    answer = ask_question(question)
-    print(f"\nAnswer: {answer}")
+    try:
+        answer = ask_question(question)
+        print(f"\nAnswer: {answer}")
+    except AskError as exc:
+        print(f"Error: {exc}")
+        sys.exit(2)
