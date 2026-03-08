@@ -11,6 +11,23 @@ uv run uvicorn main:app --reload
 
 Do not use `pip install -r requirements.txt`.
 
+## CLI Usage
+
+After `uv sync`, you can run:
+
+```bash
+uv run maicro-ask "When is the next event?"
+uv run maicro-ingest
+```
+
+## Package Publishing Notes
+
+This repository is structured for packaging from `pyproject.toml`.
+
+```bash
+uv build
+```
+
 ## Overview
 
 **mAIcro** is an open-source AI service designed to help organizations centralize information and answer questions based on their internal data.
