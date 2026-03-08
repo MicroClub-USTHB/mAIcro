@@ -44,3 +44,8 @@ maicro-ingest = "app.cli:ingest_main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["app"]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.0",
+]
