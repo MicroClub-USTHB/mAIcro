@@ -1,6 +1,5 @@
 """CLI entrypoints for mAIcro."""
 
-import os
 import sys
 
 from app.core.config import settings
@@ -15,20 +14,12 @@ def ask_main() -> None:
         question = input("Ask mAIcro: ")
 
     provider = settings.LLM_PROVIDER.lower().strip()
-    if provider == "anthropic" and not settings.ANTHROPIC_API_KEY:
-        print("Error: ANTHROPIC_API_KEY not found in .env. Please set it to run.")
+    if provider != "google":
+        print("Error: only Gemini is supported. Set LLM_PROVIDER=google in .env.")
         raise SystemExit(1)
 
-    if provider == "google" and not settings.GOOGLE_API_KEY:
+    if not settings.GOOGLE_API_KEY:
         print("Error: GOOGLE_API_KEY not found in .env. Please set it to run.")
-        raise SystemExit(1)
-
-    if provider == "groq" and not settings.GROQ_API_KEY:
-        print("Error: GROQ_API_KEY not found in .env. Please set it to run.")
-        raise SystemExit(1)
-
-    if provider not in {"google", "anthropic", "groq"}:
-        print("Error: LLM_PROVIDER must be 'google', 'anthropic', or 'groq'.")
         raise SystemExit(1)
 
     try:

@@ -10,7 +10,6 @@ from langchain_core.documents import Document
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnableLambda, RunnablePassthrough
 
-from app.core.config import settings
 from app.core.llm_provider import ConfigurationError, get_llm
 from app.core.prompt_template import build_rag_prompt_template
 from app.core.vector_store import get_vector_store
@@ -41,11 +40,6 @@ def _invoke_with_timeout(chain, question: str, timeout_seconds: int = _ASK_TIMEO
         ) from exc
     finally:
         executor.shutdown(wait=False, cancel_futures=True)
-
-
-def _should_failover_to_groq(message: str) -> bool:
-    lowered = message.lower()
-    return any(token in lowered for token in ["quota", "rate limit", "429", "timed out"])
 
 
 @lru_cache(maxsize=1)
@@ -188,20 +182,5 @@ def ask_question(question: str) -> str:
 
     try:
         return _invoke_with_timeout(chain, question)
-    except AskError as exc:
-        # If Google is rate-limited, retry once with Groq when its key exists.
-        if (
-            settings.LLM_PROVIDER.lower().strip() == "google"
-            and settings.GROQ_API_KEY
-            and _should_failover_to_groq(str(exc))
-        ):
-            try:
-                fallback_llm = get_llm(provider_override="groq")
-                fallback_chain = _build_chain(fallback_llm)
-                return _invoke_with_timeout(fallback_chain, question)
-            except Exception as fallback_exc:
-                raise AskError(_format_llm_error(fallback_exc)) from fallback_exc
-
-        raise
     except Exception as exc:
         raise AskError(_format_llm_error(exc)) from exc
