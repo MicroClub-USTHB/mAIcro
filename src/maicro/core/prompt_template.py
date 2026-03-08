@@ -1,6 +1,6 @@
 from langchain_core.prompts import PromptTemplate
 
-from app.core.config import settings
+from maicro.core.config import settings
 
 _BASE_TEMPLATE = """\
 You are the official AI assistant for {org_name}.

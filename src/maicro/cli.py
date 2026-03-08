@@ -7,8 +7,8 @@ import sys
 import urllib.error
 import urllib.request
 
-from app.core.config import settings
-from app.services.qa_service import AskError, ask_question
+from maicro.core.config import settings
+from maicro.services.qa_service import AskError, ask_question
 
 
 def ask_main() -> None:
@@ -40,7 +40,7 @@ def ask_main() -> None:
 
 def ingest_main() -> None:
     """Ingest data from JSON (default) or Discord from the command line."""
-    from app.core.ingestion import ingest_from_json
+    from maicro.core.ingestion import ingest_from_json
 
     parser = argparse.ArgumentParser(prog="maicro-ingest")
     parser.add_argument(
@@ -62,7 +62,7 @@ def ingest_main() -> None:
     args = parser.parse_args(sys.argv[1:])
 
     if args.discord:
-        from app.core.ingestion import ingest_from_discord
+        from maicro.core.ingestion import ingest_from_discord
 
         if not settings.DISCORD_BOT_TOKEN:
             print("Error: DISCORD_BOT_TOKEN not found in .env.")
@@ -109,7 +109,7 @@ def ingest_main() -> None:
     except Exception as exc:
         message = str(exc)
         if "already accessed by another instance of Qdrant client" in message:
-            # If the API server already owns the local_qdrant lock, delegate ingestion to it.
+            # If the API server already owns the local Qdrant lock, delegate ingestion to it.
             try:
                 req = urllib.request.Request(
                     "http://localhost:8000/api/v1/ingest",
@@ -126,8 +126,8 @@ def ingest_main() -> None:
                 return
             except urllib.error.URLError:
                 print(
-                    "Error: local_qdrant is locked by another process and API fallback failed. "
-                    "Start the API server (`uv run uvicorn app.main:app --reload`) or stop the other process."
+                    "Error: local Qdrant storage is locked by another process and API fallback failed. "
+                    "Start the API server (`uv run uvicorn maicro.main:app --reload`) or stop the other process."
                 )
                 raise SystemExit(2) from exc
 

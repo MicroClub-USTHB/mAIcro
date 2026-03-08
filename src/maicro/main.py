@@ -2,10 +2,10 @@
 
 from fastapi import FastAPI
 
-from app.api.error_handlers import register_exception_handlers
-from app.api.routes import router
-from app.core.config import settings
-from app.core.logging import configure_logging
+from maicro.api.error_handlers import register_exception_handlers
+from maicro.api.routes import router
+from maicro.core.config import settings
+from maicro.core.logging import configure_logging
 
 
 configure_logging()
@@ -27,4 +27,4 @@ register_exception_handlers(app)
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("maicro.main:app", host="0.0.0.0", port=8000, reload=True)

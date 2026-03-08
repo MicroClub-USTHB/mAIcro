@@ -4,9 +4,9 @@ mAIcro REST API routes.
 
 from fastapi import APIRouter, HTTPException
 
-from app.api.schemas import AskRequest, AskResponse, IngestFileRequest, IngestResponse
-from app.core.config import settings
-from app.services.qa_service import ask_question
+from maicro.api.schemas import AskRequest, AskResponse, IngestFileRequest, IngestResponse
+from maicro.core.config import settings
+from maicro.services.qa_service import ask_question
 
 router = APIRouter(prefix=settings.API_V1_STR)
 
@@ -40,7 +40,7 @@ async def ask(req: AskRequest):
 @router.post("/ingest", response_model=IngestResponse)
 async def ingest_file(req: IngestFileRequest):
     """Ingest documents from a local JSON file."""
-    from app.core.ingestion import ingest_from_json
+    from maicro.core.ingestion import ingest_from_json
 
     count = ingest_from_json(req.path)
 
@@ -50,7 +50,7 @@ async def ingest_file(req: IngestFileRequest):
 @router.post("/ingest/discord", response_model=IngestResponse)
 async def ingest_discord():
     """Fetch messages from Discord channels and ingest them."""
-    from app.core.ingestion import ingest_from_discord
+    from maicro.core.ingestion import ingest_from_discord
 
     if not settings.DISCORD_BOT_TOKEN:
         raise HTTPException(

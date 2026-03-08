@@ -6,7 +6,7 @@ This project uses `uv` as the single dependency manager.
 
 ```bash
 uv sync
-uv run uvicorn app.main:app --reload
+uv run uvicorn maicro.main:app --reload
 ```
 
 Do not use `pip install -r requirements.txt`.
@@ -59,21 +59,25 @@ The main goals of **mAIcro** are:
 
 ```text
 .
-├── app/
-│   ├── main.py            # Canonical FastAPI app entrypoint
-│   ├── cli.py             # CLI commands (ask, ingest)
-│   ├── api/               # HTTP routes, schemas, error handlers
-│   ├── core/              # Config, logging, ingestion, providers, vector store
-│   └── services/          # Business logic (Q&A service)
+├── src/
+│   └── maicro/
+│       ├── main.py        # Canonical FastAPI app entrypoint
+│       ├── cli.py         # CLI commands (ask, ingest)
+│       ├── api/           # HTTP routes, schemas, error handlers
+│       ├── core/          # Config, logging, ingestion, providers, vector store
+│       └── services/      # Business logic (Q&A service)
 ├── data/                  # Local data sources used for ingestion
-├── tests/                 # Unit and API tests
+├── tests/
+│   ├── api/               # API route tests
+│   └── unit/              # Unit tests
+├── var/                   # Runtime state (local vector DB path)
 ├── main.py                # Backward-compatible wrapper entrypoint
 ├── ask.py                 # Backward-compatible CLI wrapper
 ├── ingest.py              # Backward-compatible CLI wrapper
 └── pyproject.toml         # Packaging and script entrypoints
 ```
 
-For new setups, prefer `app.main:app` and the `maicro-*` CLI scripts.
+For new setups, prefer `maicro.main:app` and the `maicro-*` CLI scripts.
 
 ---
 

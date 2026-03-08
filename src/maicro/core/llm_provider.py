@@ -1,4 +1,4 @@
-from app.core.config import settings
+from maicro.core.config import settings
 
 
 class ConfigurationError(ValueError):

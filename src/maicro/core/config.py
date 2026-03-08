@@ -24,6 +24,7 @@ class Settings(BaseSettings):
     QDRANT_URL: str = "http://localhost:6333"
     QDRANT_API_KEY: Optional[str] = None
     COLLECTION_NAME: str = "microclub_knowledge"
+    QDRANT_PATH: str = "var/qdrant"
 
     model_config = SettingsConfigDict(
         case_sensitive=True,

@@ -10,9 +10,9 @@ from langchain_core.documents import Document
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnableLambda, RunnablePassthrough
 
-from app.core.llm_provider import ConfigurationError, get_llm
-from app.core.prompt_template import build_rag_prompt_template
-from app.core.vector_store import get_vector_store
+from maicro.core.llm_provider import ConfigurationError, get_llm
+from maicro.core.prompt_template import build_rag_prompt_template
+from maicro.core.vector_store import get_vector_store
 
 
 class AskError(Exception):

@@ -5,7 +5,7 @@ import logging
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from app.services.qa_service import AskConfigError, AskError
+from maicro.services.qa_service import AskConfigError, AskError
 
 logger = logging.getLogger(__name__)
 

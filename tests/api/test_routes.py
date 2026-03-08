@@ -1,8 +1,8 @@
 from fastapi.testclient import TestClient
 
-import app.api.routes as routes
-from app.services.qa_service import AskError
-from app.main import app
+import maicro.api.routes as routes
+from maicro.services.qa_service import AskError
+from maicro.main import app
 
 
 client = TestClient(app)
@@ -66,7 +66,7 @@ def test_ingest_discord_partial_response(monkeypatch):
             "total_documents": 5,
         }
 
-    import app.core.ingestion as ingestion
+    import maicro.core.ingestion as ingestion
 
     monkeypatch.setattr(ingestion, "ingest_from_discord", _fake_ingest)
 

@@ -39,11 +39,14 @@ dependencies = [
 ]
 
 [project.scripts]
-maicro-ask = "app.cli:ask_main"
-maicro-ingest = "app.cli:ingest_main"
+maicro-ask = "maicro.cli:ask_main"
+maicro-ingest = "maicro.cli:ingest_main"
 
 [tool.hatch.build.targets.wheel]
-packages = ["app"]
+packages = ["src/maicro"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
 
 [dependency-groups]
 dev = [

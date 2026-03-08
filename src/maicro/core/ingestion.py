@@ -12,8 +12,8 @@ import os
 
 from langchain_core.documents import Document
 
-from app.core.config import settings
-from app.core.vector_store import get_vector_store
+from maicro.core.config import settings
+from maicro.core.vector_store import get_vector_store
 
 
 # ---------------------------------------------------------------------------
@@ -109,7 +109,7 @@ async def ingest_from_discord(limit_per_channel: int = 200) -> dict:
     Fetch messages from all configured Discord channels and ingest them.
     Returns a summary dict with per-channel counts.
     """
-    from app.core.discord_fetcher import DiscordFetchError, fetch_channel_messages
+    from maicro.core.discord_fetcher import DiscordFetchError, fetch_channel_messages
 
     if not settings.DISCORD_BOT_TOKEN:
         raise ValueError("DISCORD_BOT_TOKEN not set in environment.")
