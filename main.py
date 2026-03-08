@@ -8,8 +8,13 @@ Run with:
 """
 
 from fastapi import FastAPI
+from app.api.error_handlers import register_exception_handlers
 from app.core.config import settings
+from app.core.logging import configure_logging
 from app.api.routes import router
+
+
+configure_logging()
 
 
 app = FastAPI(
@@ -22,6 +27,7 @@ app = FastAPI(
 )
 
 app.include_router(router)
+register_exception_handlers(app)
 
 
 if __name__ == "__main__":
