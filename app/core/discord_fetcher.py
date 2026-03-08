@@ -1,10 +1,3 @@
-"""
-Discord channel message fetcher.
-
-Uses Discord's REST API directly via aiohttp — no bot framework needed.
-Only requires a bot token with "Read Message History" permission.
-"""
-
 import aiohttp
 from typing import Optional
 
@@ -26,12 +19,6 @@ async def fetch_channel_messages(
     channel_id: str,
     limit: int = 100,
 ) -> list[dict]:
-    """
-    Fetch up to `limit` messages from a Discord channel.
-
-    Handles pagination automatically to fetch beyond the 100-per-request cap.
-    Returns messages newest-first, each as a raw Discord message dict.
-    """
     headers = {"Authorization": f"Bot {bot_token}"}
     all_messages: list[dict] = []
     before: Optional[str] = None
@@ -72,10 +59,6 @@ async def fetch_all_channels(
     channel_ids: list[str],
     limit_per_channel: int = 100,
 ) -> dict[str, list[dict]]:
-    """
-    Fetch messages from multiple channels.
-    Returns {channel_id: [messages]}.
-    """
     results: dict[str, list[dict]] = {}
     for cid in channel_ids:
         results[cid] = await fetch_channel_messages(bot_token, cid, limit_per_channel)
