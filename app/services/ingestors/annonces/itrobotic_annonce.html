@@ -1,0 +1,1255 @@
+<!DOCTYPE html><html lang=en><head><title>MicroClub - announcement</title><meta charset=utf-8><meta name=viewport content="width=device-width"><style>@font-face{src:url("https://cdn.jsdelivr.net/gh/Tyrrrz/DiscordFonts@master/ggsans-normal-400.woff2");font-family:gg sans;font-weight:400;font-style:normal}@font-face{src:url("https://cdn.jsdelivr.net/gh/Tyrrrz/DiscordFonts@master/ggsans-normal-500.woff2");font-family:gg sans;font-weight:500;font-style:normal}@font-face{src:url("https://cdn.jsdelivr.net/gh/Tyrrrz/DiscordFonts@master/ggsans-normal-600.woff2");font-family:gg sans;font-weight:600;font-style:normal}@font-face{src:url("https://cdn.jsdelivr.net/gh/Tyrrrz/DiscordFonts@master/ggsans-normal-700.woff2");font-family:gg sans;font-weight:700;font-style:normal}@font-face{src:url("https://cdn.jsdelivr.net/gh/Tyrrrz/DiscordFonts@master/ggsans-normal-800.woff2");font-family:gg sans;font-weight:800;font-style:normal}@font-face{src:url("https://cdn.jsdelivr.net/gh/Tyrrrz/DiscordFonts@master/ggsans-italic-400.woff2");font-family:gg sans;font-weight:400;font-style:italic}@font-face{src:url("https://cdn.jsdelivr.net/gh/Tyrrrz/DiscordFonts@master/ggsans-italic-500.woff2");font-family:gg sans;font-weight:500;font-style:italic}@font-face{src:url("https://cdn.jsdelivr.net/gh/Tyrrrz/DiscordFonts@master/ggsans-italic-600.woff2");font-family:gg sans;font-weight:600;font-style:italic}@font-face{src:url("https://cdn.jsdelivr.net/gh/Tyrrrz/DiscordFonts@master/ggsans-italic-700.woff2");font-family:gg sans;font-weight:700;font-style:italic}@font-face{src:url("https://cdn.jsdelivr.net/gh/Tyrrrz/DiscordFonts@master/ggsans-italic-800.woff2");font-family:gg sans;font-weight:800;font-style:italic}html,body{margin:0;padding:0;background-color:#36393e;color:#dcddde;font-family:"gg sans","Helvetica Neue",Helvetica,Arial,sans-serif;font-size:17px;font-weight:400;scroll-behavior:smooth}a{color:#00aff4;text-decoration:none}a:hover{text-decoration:underline}img{object-fit:contain;image-rendering:high-quality;image-rendering:-webkit-optimize-contrast}.preamble{display:grid;grid-template-columns:auto 1fr;max-width:100%;padding:1rem}.preamble__guild-icon-container{grid-column:1}.preamble__guild-icon{max-width:88px;max-height:88px}.preamble__entries-container{grid-column:2;margin-left:1rem}.preamble__entry{margin-bottom:0.15rem;color:#ffffff;font-size:1.4rem}.preamble__entry--small{font-size:1rem}.chatlog{padding:1rem 0;width:100%;border-top:1px solid rgba(255,255,255,0.1);border-bottom:1px solid rgba(255,255,255,0.1)}.chatlog__message-group{margin-bottom:1rem}.chatlog__message-container{background-color:transparent;transition:background-color 1s ease}.chatlog__message-container--highlighted{background-color:rgba(114,137,218,0.2)}.chatlog__message-container--pinned{background-color:rgba(249,168,37,0.05)}.chatlog__message{display:grid;grid-template-columns:auto 1fr;padding:0.15rem 0;direction:ltr;unicode-bidi:bidi-override}.chatlog__message:hover{background-color:#32353b}.chatlog__message:hover .chatlog__short-timestamp{display:block}.chatlog__message-aside{grid-column:1;width:72px;padding:0.15rem 0.15rem 0 0.15rem;text-align:center}.chatlog__reply-symbol{height:10px;margin:6px 4px 4px 36px;border-left:2px solid #4f545c;border-top:2px solid #4f545c;border-radius:8px 0 0 0}.chatlog__avatar{width:40px;height:40px;border-radius:50%}.chatlog__short-timestamp{display:none;color:#a3a6aa;font-size:0.75rem;font-weight:500;direction:ltr;unicode-bidi:bidi-override}.chatlog__message-primary{grid-column:2;min-width:0}.chatlog__reply{display:flex;margin-bottom:0.15rem;align-items:center;color:#b5b6b8;font-size:0.875rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.chatlog__reply-avatar{width:16px;height:16px;margin-right:0.25rem;border-radius:50%}.chatlog__reply-author{margin-right:0.3rem;font-weight:600}.chatlog__reply-content{overflow:hidden;text-overflow:ellipsis}.chatlog__reply-link{cursor:pointer}.chatlog__reply-link *{display:inline;pointer-events:none}.chatlog__reply-link .chatlog__markdown-quote{display:inline}.chatlog__reply-link .chatlog__markdown-pre{display:inline}.chatlog__reply-link:hover{color:#ffffff}.chatlog__reply-link:hover *:not(.chatlog__markdown-spoiler){color:inherit}.chatlog__reply-edited-timestamp{margin-left:0.25rem;color:#a3a6aa;font-size:0.75rem;font-weight:500;direction:ltr;unicode-bidi:bidi-override}.chatlog__forwarded{display:flex;flex-direction:column;margin-bottom:0.15rem;padding:0.5rem;border-left:4px solid #4f545c;border-radius:4px;background-color:rgba(46,48,54,0.3)}.chatlog__forwarded-header{display:flex;align-items:center;margin-bottom:0.25rem;color:#b5b6b8;font-size:0.75rem;font-weight:600}.chatlog__forwarded-icon{width:16px;height:16px;margin-right:0.25rem}.chatlog__forwarded-content{color:#dcddde;font-size:0.95rem}.chatlog__forwarded-attachments{margin-top:0.3rem}.chatlog__forwarded-attachment{max-width:300px;max-height:200px;border-radius:3px}.chatlog__forwarded-timestamp{margin-top:0.25rem;color:#a3a6aa;font-size:0.75rem}.chatlog__system-notification-icon{width:18px;height:18px}.chatlog__system-notification-author{font-weight:500;color:#ffffff}.chatlog__system-notification-content{color:#96989d}.chatlog__system-notification-link{font-weight:500;color:#ffffff}.chatlog__system-notification-timestamp{margin-left:0.3rem;color:#a3a6aa;font-size:0.75rem;font-weight:500;direction:ltr;unicode-bidi:bidi-override}.chatlog__system-notification-timestamp a{color:inherit}.chatlog__header{margin-bottom:0.1rem}.chatlog__author{font-weight:500;color:#ffffff}.chatlog__author-tag{position:relative;top:-0.1rem;margin-left:0.3rem;padding:0.05rem 0.3rem;border-radius:3px;background-color:#5865F2;color:#ffffff;font-size:0.625rem;font-weight:500;line-height:1.3}.chatlog__timestamp{margin-left:0.3rem;color:#a3a6aa;font-size:0.75rem;font-weight:500;direction:ltr;unicode-bidi:bidi-override}.chatlog__timestamp a{color:inherit}.chatlog__content{padding-right:1rem;font-size:0.95rem;word-wrap:break-word}.chatlog__edited-timestamp{margin-left:0.15rem;color:#a3a6aa;font-size:0.75rem;font-weight:500}.chatlog__attachment{position:relative;width:fit-content;margin-top:0.3rem;border-radius:3px;overflow:hidden}.chatlog__attachment--hidden{cursor:pointer;box-shadow:0 0 1px 1px rgba(0,0,0,0.1)}.chatlog__attachment--hidden *{pointer-events:none}.chatlog__attachment-spoiler-caption{display:none;position:absolute;left:50%;top:50%;z-index:999;padding:0.4rem 0.8rem;border-radius:20px;transform:translate(-50%,-50%);background-color:rgba(0,0,0,0.9);color:#dcddde;font-size:0.9rem;font-weight:600;letter-spacing:0.05rem}.chatlog__attachment--hidden .chatlog__attachment-spoiler-caption{display:block}.chatlog__attachment--hidden:hover .chatlog__attachment-spoiler-caption{color:#fff}.chatlog__attachment-media{max-width:45vw;max-height:500px;vertical-align:top;border-radius:3px}.chatlog__attachment--hidden .chatlog__attachment-media{filter:blur(44px)}.chatlog__attachment-generic{max-width:520px;width:100%;height:40px;padding:10px;border:1px solid #292b2f;border-radius:3px;background-color:#2f3136;overflow:hidden}.chatlog__attachment--hidden .chatlog__attachment-generic{filter:blur(44px)}.chatlog__attachment-generic-icon{float:left;width:30px;height:100%;margin-right:10px}.chatlog__attachment-generic-size{color:#72767d;font-size:12px}.chatlog__attachment-generic-name{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.chatlog__embed{display:flex;margin-top:0.3rem;max-width:520px}.chatlog__embed-color-pill{flex-shrink:0;width:0.25rem;border-top-left-radius:3px;border-bottom-left-radius:3px}.chatlog__embed-color-pill--default{background-color:#202225}.chatlog__embed-content-container{display:flex;flex-direction:column;padding:0.5rem 0.6rem;border:1px solid rgba(46,48,54,0.6);border-top-right-radius:3px;border-bottom-right-radius:3px;background-color:rgba(46,48,54,0.3)}.chatlog__embed-content{display:flex;width:100%}.chatlog__embed-text{flex:1}.chatlog__embed-author-container{display:flex;margin-bottom:0.5rem;align-items:center}.chatlog__embed-author-icon{width:20px;height:20px;margin-right:0.5rem;border-radius:50%}.chatlog__embed-author{color:#ffffff;font-size:0.875rem;font-weight:600;direction:ltr;unicode-bidi:bidi-override}.chatlog__embed-author-link{color:#ffffff}.chatlog__embed-title{margin-bottom:0.5rem;color:#ffffff;font-size:0.875rem;font-weight:600}.chatlog__embed-description{color:#dcddde;font-weight:500;font-size:0.85rem}.chatlog__embed-fields{display:flex;flex-wrap:wrap;gap:0 0.5rem}.chatlog__embed-field{flex:0;min-width:100%;max-width:506px;padding-top:0.6rem;font-size:0.875rem}.chatlog__embed-field--inline{flex:1;flex-basis:auto;min-width:50px}.chatlog__embed-field-name{margin-bottom:0.2rem;color:#ffffff;font-weight:600}.chatlog__embed-field-value{color:#dcddde;font-weight:500}.chatlog__embed-thumbnail{flex:0;max-width:80px;max-height:80px;margin-left:1.2rem;border-radius:3px}.chatlog__embed-images{display:grid;margin-top:0.6rem;grid-template-columns:repeat(2,1fr);gap:0.25rem}.chatlog__embed-images--single{display:block}.chatlog__embed-image{object-fit:cover;object-position:center;max-width:500px;max-height:400px;width:100%;height:100%;border-radius:3px}.chatlog__embed-footer{margin-top:0.6rem;color:#dcddde}.chatlog__embed-footer-icon{width:20px;height:20px;margin-right:0.2rem;border-radius:50%;vertical-align:middle}.chatlog__embed-footer-text{vertical-align:middle;font-size:0.75rem;font-weight:500}.chatlog__embed-invite-container{min-width:320px;padding:0.6rem 0.7rem;border:1px solid rgba(46,48,54,0.6);border-radius:3px;background-color:rgba(46,48,54,0.3)}.chatlog__embed-invite-title{margin:0 0 0.8rem 0;color:#b9bbbe;font-size:0.75rem;font-weight:700;text-transform:uppercase}.chatlog__embed-invite{display:flex}.chatlog__embed-invite-guild-icon{width:50px;height:50px;border-radius:0.85rem}.chatlog__embed-invite-info{margin-left:1rem}.chatlog__embed-invite-guild-name{color:#ffffff;font-weight:600}.chatlog__embed-invite-guild-name a{color:inherit}.chatlog__embed-invite-channel-icon{width:18px;height:18px;vertical-align:bottom}.chatlog__embed-invite-channel-name{font-size:0.9rem;font-weight:600}.chatlog__embed-generic-image{object-fit:contain;object-position:left;max-width:45vw;max-height:500px;vertical-align:top;border-radius:3px}.chatlog__embed-generic-video{object-fit:contain;object-position:left;max-width:45vw;max-height:500px;vertical-align:top;border-radius:3px}.chatlog__embed-generic-gifv{object-fit:contain;object-position:left;max-width:45vw;max-height:500px;vertical-align:top;border-radius:3px}.chatlog__embed-spotify{border:0}.chatlog__embed-twitch{border:0}.chatlog__embed-youtube-container{margin-top:0.6rem}.chatlog__embed-youtube-thumbnail{max-width:400px;max-height:225px;border-radius:3px;cursor:pointer}.chatlog__sticker{width:180px;height:180px}.chatlog__sticker--media{max-width:100%;max-height:100%}.chatlog__reactions{display:flex}.chatlog__reaction{display:flex;margin:0.35rem 0.1rem 0.1rem 0;padding:0.125rem 0.375rem;border:1px solid transparent;border-radius:8px;background-color:#2f3136;align-items:center}.chatlog__reaction:hover{border:1px solid hsla(0,0%,100%,.2);background-color:transparent}.chatlog__reaction-count{min-width:9px;margin-left:0.35rem;color:#b9bbbe;font-size:0.875rem}.chatlog__reaction:hover .chatlog__reaction-count{color:#dcddde}.chatlog__markdown{max-width:100%;line-height:1.3;overflow-wrap:break-word}.chatlog__markdown h1{margin:1rem 0 0.5rem;color:#f2f3f5;font-size:1.5rem;line-height:1}.chatlog__markdown h2{margin:1rem 0 0.5rem;color:#f2f3f5;font-size:1.25rem;line-height:1}.chatlog__markdown h3{margin:1rem 0 0.5rem;color:#f2f3f5;font-size:1rem;line-height:1}.chatlog__markdown h1:first-child,h2:first-child,h3:first-child{margin-top:0.5rem}.chatlog__markdown ul,ol{margin:0 0 0 1rem;padding:0}.chatlog__markdown-preserve{white-space:pre-wrap}.chatlog__markdown-spoiler{background-color:rgba(255,255,255,0.1);padding:0 2px;border-radius:3px}.chatlog__markdown-spoiler--hidden{cursor:pointer;background-color:#202225;color:rgba(0,0,0,0)}.chatlog__markdown-spoiler--hidden:hover{background-color:rgba(32,34,37,0.8)}.chatlog__markdown-spoiler--hidden::selection{color:rgba(0,0,0,0)}.chatlog__markdown-quote{display:flex;margin:0.05rem 0}.chatlog__markdown-quote-border{margin-right:0.5rem;border:2px solid #4f545c;border-radius:3px}.chatlog__markdown-pre{background-color:#2f3136;font-family:"Consolas","Courier New",Courier,monospace;font-size:0.85rem;text-decoration:inherit}.chatlog__markdown-pre--multiline{display:block;margin-top:0.25rem;padding:0.5rem;border:2px solid #282b30;border-radius:5px;color:#b9bbbe}.chatlog__markdown-pre--multiline.hljs{background-color:#2f3136;color:#b9bbbe}.chatlog__markdown-pre--inline{display:inline-block;padding:2px;border-radius:3px}.chatlog__markdown-mention{border-radius:3px;padding:0 2px;background-color:rgba(88,101,242,.3);color:#dee0fc;font-weight:500}.chatlog__markdown-mention:hover{background-color:#5865f2;color:#ffffff}.chatlog__markdown-timestamp{background-color:rgba(255,255,255,0.1);padding:0 2px;border-radius:3px}.chatlog__emoji{width:1.325rem;height:1.325rem;margin:0 0.06rem;vertical-align:-0.4rem}.chatlog__emoji--small{width:1rem;height:1rem}.chatlog__emoji--large{width:2.8rem;height:2.8rem}.postamble{padding:1.25rem}.postamble__entry{color:#ffffff}</style><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/solarized-dark.min.css><script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js></script><script>document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('.chatlog__markdown-pre--multiline').forEach(e=>hljs.highlightBlock(e));});</script><script src=https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.8.1/lottie.min.js></script><script>document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('.chatlog__sticker--media[data-source]').forEach(e=>{const anim=lottie.loadAnimation({container:e,renderer:'svg',loop:true,autoplay:true,path:e.getAttribute('data-source')});anim.addEventListener('data_failed',()=>e.innerHTML='<strong>[Sticker cannot be rendered]</strong>');});});</script><script>function scrollToMessage(event,id){const element=document.getElementById('chatlog__message-container-'+id);if(!element)
+return;event.preventDefault();element.classList.add('chatlog__message-container--highlighted');window.scrollTo({top:element.getBoundingClientRect().top-document.body.getBoundingClientRect().top-(window.innerHeight/2),behavior:'smooth'});window.setTimeout(()=>element.classList.remove('chatlog__message-container--highlighted'),2000);}
+function showSpoiler(event,element){if(!element)
+return;if(element.classList.contains('chatlog__attachment--hidden')){event.preventDefault();element.classList.remove('chatlog__attachment--hidden');}
+if(element.classList.contains('chatlog__markdown-spoiler--hidden')){event.preventDefault();element.classList.remove('chatlog__markdown-spoiler--hidden');}}</script><svg style=display:none xmlns=http://www.w3.org/2000/svg><defs><symbol id=attachment-icon viewBox="0 0 720 960"><path fill=#f4f5fb d=M50,935a25,25,0,0,1-25-25V50A25,25,0,0,1,50,25H519.6L695,201.32V910a25,25,0,0,1-25,25Z /><path fill=#7789c4 d=M509.21,50,670,211.63V910H50V50H509.21M530,0H50A50,50,0,0,0,0,50V910a50,50,0,0,0,50,50H670a50,50,0,0,0,50-50h0V191Z /><path fill=#f4f5fb d=M530,215a25,25,0,0,1-25-25V50a25,25,0,0,1,16.23-23.41L693.41,198.77A25,25,0,0,1,670,215Z /><path fill=#7789c4 d=M530,70.71,649.29,190H530V70.71M530,0a50,50,0,0,0-50,50V190a50,50,0,0,0,50,50H670a50,50,0,0,0,50-50Z /></symbol><symbol id=join-icon viewBox="0 0 18 18"><path fill=#3ba55c d="m0 8h14.2l-3.6-3.6 1.4-1.4 6 6-6 6-1.4-1.4 3.6-3.6h-14.2" /></symbol><symbol id=leave-icon viewBox="0 0 18 18"><path fill=#ed4245 d="m3.8 8 3.6-3.6-1.4-1.4-6 6 6 6 1.4-1.4-3.6-3.6h14.2v-2" /></symbol><symbol id=call-icon viewBox="0 0 18 18"><path fill=#3ba55c fill-rule=evenodd d="M17.7163041 15.36645368c-.0190957.02699568-1.9039523 2.6680735-2.9957762 2.63320406-3.0676659-.09785935-6.6733809-3.07188394-9.15694343-5.548738C3.08002193 9.9740657.09772497 6.3791404 0 3.3061316v-.024746C0 2.2060575 2.61386252.3152347 2.64082114.2972376c.7110335-.4971705 1.4917101-.3149497 1.80959713.1372281.19320342.2744561 2.19712724 3.2811005 2.42290565 3.6489167.09884826.1608492.14714912.3554431.14714912.5702838 0 .2744561-.07975258.5770327-.23701117.8751101-.1527655.2902036-.65262318 1.1664385-.89862055 1.594995.2673396.3768148.94804468 1.26429792 2.351016 2.66357424 1.39173858 1.39027775 2.28923588 2.07641807 2.67002628 2.34187563.4302146-.2452108 1.3086162-.74238132 1.5972981-.89423205.5447887-.28682915 1.0907006-.31944893 1.4568885-.08661115.3459689.2182151 3.3383754 2.21027167 3.6225641 2.41611376.2695862.19234426.4144887.5399137.4144887.91672846 0 .2969525-.089862.61190215-.2808189.88523346" /></symbol><symbol id=pencil-icon viewBox="0 0 18 18"><path fill=#99aab5 d="m0 14.25v3.75h3.75l11.06-11.06-3.75-3.75zm17.71-10.21c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75z" /></symbol><symbol id=pin-icon viewBox="0 0 18 18"><path fill=#b9bbbe d="m16.908 8.39684-8.29587-8.295827-1.18584 1.184157 1.18584 1.18584-4.14834 4.1475v.00167l-1.18583-1.18583-1.185 1.18583 3.55583 3.55502-4.740831 4.74 1.185001 1.185 4.74083-4.74 3.55581 3.555 1.185-1.185-1.185-1.185 4.1475-4.14836h.0009l1.185 1.185z" /></symbol><symbol id=channel-icon viewBox="0 0 24 24"><path fill=#b9bbbe d="M5.88657 21C5.57547 21 5.3399 20.7189 5.39427 20.4126L6.00001 17H2.59511C2.28449 17 2.04905 16.7198 2.10259 16.4138L2.27759 15.4138C2.31946 15.1746 2.52722 15 2.77011 15H6.35001L7.41001 9H4.00511C3.69449 9 3.45905 8.71977 3.51259 8.41381L3.68759 7.41381C3.72946 7.17456 3.93722 7 4.18011 7H7.76001L8.39677 3.41262C8.43914 3.17391 8.64664 3 8.88907 3H9.87344C10.1845 3 10.4201 3.28107 10.3657 3.58738L9.76001 7H15.76L16.3968 3.41262C16.4391 3.17391 16.6466 3 16.8891 3H17.8734C18.1845 3 18.4201 3.28107 18.3657 3.58738L17.76 7H21.1649C21.4755 7 21.711 7.28023 21.6574 7.58619L21.4824 8.58619C21.4406 8.82544 21.2328 9 20.9899 9H17.41L16.35 15H19.7549C20.0655 15 20.301 15.2802 20.2474 15.5862L20.0724 16.5862C20.0306 16.8254 19.8228 17 19.5799 17H16L15.3632 20.5874C15.3209 20.8261 15.1134 21 14.8709 21H13.8866C13.5755 21 13.3399 20.7189 13.3943 20.4126L14 17H8.00001L7.36325 20.5874C7.32088 20.8261 7.11337 21 6.87094 21H5.88657ZM9.41045 9L8.35045 15H14.3504L15.4104 9H9.41045Z" /></symbol><symbol id=thread-icon viewBox="0 0 24 24"><path fill=#b9bbbe d="M5.43309 21C5.35842 21 5.30189 20.9325 5.31494 20.859L5.99991 17H2.14274C2.06819 17 2.01168 16.9327 2.02453 16.8593L2.33253 15.0993C2.34258 15.0419 2.39244 15 2.45074 15H6.34991L7.40991 9H3.55274C3.47819 9 3.42168 8.93274 3.43453 8.85931L3.74253 7.09931C3.75258 7.04189 3.80244 7 3.86074 7H7.75991L8.45234 3.09903C8.46251 3.04174 8.51231 3 8.57049 3H10.3267C10.4014 3 10.4579 3.06746 10.4449 3.14097L9.75991 7H15.7599L16.4523 3.09903C16.4625 3.04174 16.5123 3 16.5705 3H18.3267C18.4014 3 18.4579 3.06746 18.4449 3.14097L17.7599 7H21.6171C21.6916 7 21.7481 7.06725 21.7353 7.14069L21.4273 8.90069C21.4172 8.95811 21.3674 9 21.3091 9H17.4099L17.0495 11.04H15.05L15.4104 9H9.41035L8.35035 15H10.5599V17H7.99991L7.30749 20.901C7.29732 20.9583 7.24752 21 7.18934 21H5.43309Z" /><path fill=#b9bbbe d="M13.4399 12.96C12.9097 12.96 12.4799 13.3898 12.4799 13.92V20.2213C12.4799 20.7515 12.9097 21.1813 13.4399 21.1813H14.3999C14.5325 21.1813 14.6399 21.2887 14.6399 21.4213V23.4597C14.6399 23.6677 14.8865 23.7773 15.0408 23.6378L17.4858 21.4289C17.6622 21.2695 17.8916 21.1813 18.1294 21.1813H22.5599C23.0901 21.1813 23.5199 20.7515 23.5199 20.2213V13.92C23.5199 13.3898 23.0901 12.96 22.5599 12.96H13.4399Z" /></symbol><symbol id=forward-icon viewBox="0 0 24 24"><path fill=#b9bbbe d="M13 4L21 12L13 20V15C8 15 4 17 1 22C2 16 6 10 13 9V4Z" /></symbol></defs></svg><body><div class=preamble><div class=preamble__guild-icon-container><img class=preamble__guild-icon src="https://cdn.discordapp.com/icons/1282095800079351851/a_0df0e6d260679c3fe65b924e669bb9a2.gif?size=512" alt="Guild icon" loading=lazy></div><div class=preamble__entries-container><div class=preamble__entry>MicroClub</div><div class=preamble__entry>IT x Robotics / announcement</div></div></div>
+<div class="chatlog">
+
+<div class=chatlog__message-group><div id=chatlog__message-container-1361091081197850714 class=chatlog__message-container data-message-id=1361091081197850714><div class=chatlog__message><div class=chatlog__message-aside><img class=chatlog__avatar src="https://cdn.discordapp.com/avatars/760952710383665192/2eee6f0f9285fbc125d3d71ae67c139d.png?size=512" alt=Avatar loading=lazy></div><div class=chatlog__message-primary><div class=chatlog__header><span class=chatlog__author style=color:rgb(6,0,0) title=y.abderrahmane data-user-id=760952710383665192>Abderrahmane.ts</span> <span class=chatlog__timestamp title="dimanche 13 avril 2025 14:30"><a href=#chatlog__message-container-1361091081197850714>13/04/2025 14:30</a></span></div><div class="chatlog__content chatlog__markdown"><span class=chatlog__markdown-preserve><h2>Hello MC Members <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="MC_Blue"
+    title="MC_Blue"
+    src="https://cdn.discordapp.com/emojis/1300918701629116499.png"> </h2>
+<strong>I am really excited to announce the first-ever and the most awaited <u>Collaboration</u></strong>
+
+<h1><span class="chatlog__markdown-mention" style="color: rgb(46, 204, 113); background-color: rgba(46, 204, 113, 0.1);">@IT</span> : X <span class="chatlog__markdown-mention" style="color: rgb(27, 97, 227); background-color: rgba(27, 97, 227, 0.1);">@Robotics</span> </h1>‎
+‎ <strong>in the entire history of Micro Club <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🎉"
+    title="tada"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f389.svg"></strong>
+
+Get ready for something new, innovative, and packed with knowledge <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🔥"
+    title="fire"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f525.svg"> 
+
+### <strong><u>More details coming soon—stay tuned! <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="👀"
+    title="eyes"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f440.svg"> </u></strong></span></div><div class=chatlog__reactions><div class=chatlog__reaction title=fire><img class="chatlog__emoji chatlog__emoji--small" alt=🔥 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f525.svg loading=lazy> <span class=chatlog__reaction-count>100</span></div><div class=chatlog__reaction title=speaking_head><img class="chatlog__emoji chatlog__emoji--small" alt=🗣️ src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f5e3.svg loading=lazy> <span class=chatlog__reaction-count>24</span></div><div class=chatlog__reaction title=eyes><img class="chatlog__emoji chatlog__emoji--small" alt=👀 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f440.svg loading=lazy> <span class=chatlog__reaction-count>14</span></div><div class=chatlog__reaction title=regional_indicator_i><img class="chatlog__emoji chatlog__emoji--small" alt=🇮 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f1ee.svg loading=lazy> <span class=chatlog__reaction-count>22</span></div><div class=chatlog__reaction title=regional_indicator_t><img class="chatlog__emoji chatlog__emoji--small" alt=🇹 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f1f9.svg loading=lazy> <span class=chatlog__reaction-count>21</span></div><div class=chatlog__reaction title=x><img class="chatlog__emoji chatlog__emoji--small" alt=❌ src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/274c.svg loading=lazy> <span class=chatlog__reaction-count>4</span></div><div class=chatlog__reaction title=regional_indicator_r><img class="chatlog__emoji chatlog__emoji--small" alt=🇷 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f1f7.svg loading=lazy> <span class=chatlog__reaction-count>6</span></div><div class=chatlog__reaction title=regional_indicator_o><img class="chatlog__emoji chatlog__emoji--small" alt=🇴 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f1f4.svg loading=lazy> <span class=chatlog__reaction-count>6</span></div><div class=chatlog__reaction title=regional_indicator_b><img class="chatlog__emoji chatlog__emoji--small" alt=🇧 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f1e7.svg loading=lazy> <span class=chatlog__reaction-count>6</span></div><div class=chatlog__reaction title=o><img class="chatlog__emoji chatlog__emoji--small" alt=⭕ src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2b55.svg loading=lazy> <span class=chatlog__reaction-count>5</span></div><div class=chatlog__reaction title=regional_indicator_c><img class="chatlog__emoji chatlog__emoji--small" alt=🇨 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f1e8.svg loading=lazy> <span class=chatlog__reaction-count>6</span></div><div class=chatlog__reaction title=regional_indicator_s><img class="chatlog__emoji chatlog__emoji--small" alt=🇸 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f1f8.svg loading=lazy> <span class=chatlog__reaction-count>6</span></div></div></div></div></div></div>
+<div class=chatlog__message-group><div id=chatlog__message-container-1361093034690871407 class=chatlog__message-container data-message-id=1361093034690871407><div class=chatlog__message><div class=chatlog__message-aside><img class=chatlog__avatar src="https://cdn.discordapp.com/avatars/725114544170467441/c22bc19ceea4a158d6905809766cf9df.png?size=512" alt=Avatar loading=lazy></div><div class=chatlog__message-primary><div class=chatlog__header><span class=chatlog__author style=color:rgb(17,128,106) title=alvine. data-user-id=725114544170467441>MahdiDbh</span> <span class=chatlog__timestamp title="dimanche 13 avril 2025 14:37"><a href=#chatlog__message-container-1361093034690871407>13/04/2025 14:37</a></span></div><div class="chatlog__content chatlog__markdown"><span class=chatlog__markdown-preserve><h1>together we can make a difference  </h1>Stay tuned.. !</span></div><div class=chatlog__reactions><div class=chatlog__reaction title=fire><img class="chatlog__emoji chatlog__emoji--small" alt=🔥 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f525.svg loading=lazy> <span class=chatlog__reaction-count>47</span></div><div class=chatlog__reaction title=flag_iq><img class="chatlog__emoji chatlog__emoji--small" alt=🇮🇶 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f1ee-1f1f6.svg loading=lazy> <span class=chatlog__reaction-count>8</span></div><div class=chatlog__reaction title=regional_indicator_r><img class="chatlog__emoji chatlog__emoji--small" alt=🇷 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f1f7.svg loading=lazy> <span class=chatlog__reaction-count>17</span></div><div class=chatlog__reaction title=regional_indicator_o><img class="chatlog__emoji chatlog__emoji--small" alt=🇴 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f1f4.svg loading=lazy> <span class=chatlog__reaction-count>18</span></div><div class=chatlog__reaction title=regional_indicator_b><img class="chatlog__emoji chatlog__emoji--small" alt=🇧 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f1e7.svg loading=lazy> <span class=chatlog__reaction-count>17</span></div><div class=chatlog__reaction title=o><img class="chatlog__emoji chatlog__emoji--small" alt=⭕ src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2b55.svg loading=lazy> <span class=chatlog__reaction-count>14</span></div><div class=chatlog__reaction title=regional_indicator_t><img class="chatlog__emoji chatlog__emoji--small" alt=🇹 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f1f9.svg loading=lazy> <span class=chatlog__reaction-count>16</span></div><div class=chatlog__reaction title=information_source><img class="chatlog__emoji chatlog__emoji--small" alt=ℹ️ src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2139.svg loading=lazy> <span class=chatlog__reaction-count>17</span></div><div class=chatlog__reaction title=regional_indicator_c><img class="chatlog__emoji chatlog__emoji--small" alt=🇨 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f1e8.svg loading=lazy> <span class=chatlog__reaction-count>16</span></div><div class=chatlog__reaction title=regional_indicator_s><img class="chatlog__emoji chatlog__emoji--small" alt=🇸 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f1f8.svg loading=lazy> <span class=chatlog__reaction-count>16</span></div><div class=chatlog__reaction title=itsection><img class="chatlog__emoji chatlog__emoji--small" alt=itsection src=https://cdn.discordapp.com/emojis/1300928710609866783.png loading=lazy> <span class=chatlog__reaction-count>10</span></div></div></div></div></div></div>
+<div class=chatlog__message-group><div id=chatlog__message-container-1361406708232097853 class=chatlog__message-container data-message-id=1361406708232097853><div class=chatlog__message><div class=chatlog__message-aside><img class=chatlog__avatar src="https://cdn.discordapp.com/avatars/900408163679997952/2e4d9be51be0bd80f2b80cbe03cd1189.png?size=512" alt=Avatar loading=lazy></div><div class=chatlog__message-primary><div class=chatlog__header><span class=chatlog__author style=color:rgb(96,125,139) title=hadildh data-user-id=900408163679997952>Hadil</span> <span class=chatlog__timestamp title="lundi 14 avril 2025 11:24"><a href=#chatlog__message-container-1361406708232097853>14/04/2025 11:24</a></span></div><div class="chatlog__content chatlog__markdown"><span class=chatlog__markdown-preserve><h1>Hello to <span class="chatlog__markdown-mention" style="color: rgb(27, 97, 227); background-color: rgba(27, 97, 227, 0.1);">@Robotics</span> and <span class="chatlog__markdown-mention" style="color: rgb(46, 204, 113); background-color: rgba(46, 204, 113, 0.1);">@IT</span> ,</h1>*Well this is a big crowd to say the least <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="zayerrouhek"
+    title="zayerrouhek"
+    src="https://cdn.discordapp.com/emojis/1300933980526346310.png">....... *
+ 
+We’re thrilled to kick off our very first joint workshop between the Robotics and IT sections!<img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🤖"
+    title="robot"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f916.svg"> <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🤝"
+    title="handshake"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f91d.svg"><img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="💻"
+    title="computer"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f4bb.svg">
+
+<img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🗓️"
+    title="calendar_spiral"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f5d3.svg"> Date: <strong>Tomorrow</strong>, April 15th at <strong>9pm</strong>
+<img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="📍"
+    title="round_pushpin"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f4cd.svg"> Topic: *Introduction to the ESP32 Microcontroller and other electronic components<img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="✨"
+    title="sparkles"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2728.svg"> *
+
+Basic but super important concepts to build a solid foundation <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="sasasaha"
+    title="sasasaha"
+    src="https://cdn.discordapp.com/emojis/1300933820429631518.png"> 
+
+Whether you&#39;re in IT and curious about hardware, or in Robotics and missed the earlier hands-on sessions — this is your chance to jump in and catch up!
+
+See you there <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🌻"
+    title="sunflower"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f33b.svg"></span></div><div class=chatlog__reactions><div class=chatlog__reaction title=fire><img class="chatlog__emoji chatlog__emoji--small" alt=🔥 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f525.svg loading=lazy> <span class=chatlog__reaction-count>60</span></div><div class=chatlog__reaction title=heart><img class="chatlog__emoji chatlog__emoji--small" alt=❤️ src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2764.svg loading=lazy> <span class=chatlog__reaction-count>49</span></div></div></div></div></div></div>
+<div class=chatlog__message-group><div id=chatlog__message-container-1361473168899969064 class=chatlog__message-container data-message-id=1361473168899969064><div class=chatlog__message><div class=chatlog__message-aside><img class=chatlog__avatar src="https://cdn.discordapp.com/avatars/894826226781421618/bfb45aa2f8a23bedb3a359f7da2d76d0.png?size=512" alt=Avatar loading=lazy></div><div class=chatlog__message-primary><div class=chatlog__header><span class=chatlog__author style=color:rgb(46,204,113) title=slimane_30 data-user-id=894826226781421618>slimane_evrywr</span> <span class=chatlog__timestamp title="lundi 14 avril 2025 15:48"><a href=#chatlog__message-container-1361473168899969064>14/04/2025 15:48</a></span></div><div class="chatlog__content chatlog__markdown"><span class=chatlog__markdown-preserve><img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="📢"
+    title="loudspeaker"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f4e2.svg"> <strong>Hello MC Members!</strong>
+
+I’m really happy about this collaboration between the <span class="chatlog__markdown-mention" style="color: rgb(46, 204, 113); background-color: rgba(46, 204, 113, 0.1);">@IT</span> and  <span class="chatlog__markdown-mention" style="color: rgb(27, 97, 227); background-color: rgba(27, 97, 227, 0.1);">@Robotics</span> sections — it’s going to be an awesome experience!
+
+We’ll be diving into <strong>Dart</strong> and <strong>Flutter</strong> in the upcoming sessions. During our in-person meetup at <strong>OUR HQ</strong>, we’ll explore environment setup, Dart basics, Flutter basics, widgets, and more!
+
+<img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="📅"
+    title="date"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f4c5.svg"> <strong>Thursday, 17/04/2025 at 13:00</strong>
+
+Please make sure <strong>Flutter is installed</strong> on your machines beforehand.
+
+<img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="📌"
+    title="pushpin"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f4cc.svg"> Setup guide: <a href="https://www.youtube.com/watch?v=mMeQhLGD-og&amp;t=1s">Flutter Installation Guide</a>
+
+<strong>Don’t forget to fill out the form to confirm your attendance:</strong> <a href="https://docs.google.com/forms/d/e/1FAIpQLSe-rfmMKimb54Ei9-RF1T2YWE5lo-5aFkFUs2Ijt66r4zYByA/viewform">RSVP Form</a>
+
+If you run into any issues, we’ve got your back.
+
+<img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🔹"
+    title="small_blue_diamond"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f539.svg"> <strong>Tip:</strong> A stable internet connection will help during the installation.
+
+Can’t wait to build together! <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🚀"
+    title="rocket"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f680.svg"><img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🔥"
+    title="fire"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f525.svg">
+
+<strong>Don’t forget tomorrow’s session:</strong> <strong>Introduction to the ESP32 Microcontroller and other electronic components.</strong></span></div><div class=chatlog__reactions><div class=chatlog__reaction title=fire><img class="chatlog__emoji chatlog__emoji--small" alt=🔥 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f525.svg loading=lazy> <span class=chatlog__reaction-count>34</span></div><div class=chatlog__reaction title=hearts><img class="chatlog__emoji chatlog__emoji--small" alt=♥️ src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2665.svg loading=lazy> <span class=chatlog__reaction-count>24</span></div><div class=chatlog__reaction title=regional_indicator_s><img class="chatlog__emoji chatlog__emoji--small" alt=🇸 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f1f8.svg loading=lazy> <span class=chatlog__reaction-count>5</span></div><div class=chatlog__reaction title=regional_indicator_l><img class="chatlog__emoji chatlog__emoji--small" alt=🇱 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f1f1.svg loading=lazy> <span class=chatlog__reaction-count>5</span></div><div class=chatlog__reaction title=information_source><img class="chatlog__emoji chatlog__emoji--small" alt=ℹ️ src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2139.svg loading=lazy> <span class=chatlog__reaction-count>5</span></div><div class=chatlog__reaction title=m><img class="chatlog__emoji chatlog__emoji--small" alt=Ⓜ️ src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/24c2.svg loading=lazy> <span class=chatlog__reaction-count>5</span></div><div class=chatlog__reaction title=regional_indicator_a><img class="chatlog__emoji chatlog__emoji--small" alt=🇦 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f1e6.svg loading=lazy> <span class=chatlog__reaction-count>5</span></div><div class=chatlog__reaction title=ng><img class="chatlog__emoji chatlog__emoji--small" alt=🆖 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f196.svg loading=lazy> <span class=chatlog__reaction-count>4</span></div></div></div></div></div></div>
+<div class=chatlog__message-group><div id=chatlog__message-container-1361791173840339006 class=chatlog__message-container data-message-id=1361791173840339006><div class=chatlog__message><div class=chatlog__message-aside><img class=chatlog__avatar src="https://cdn.discordapp.com/avatars/900408163679997952/2e4d9be51be0bd80f2b80cbe03cd1189.png?size=512" alt=Avatar loading=lazy></div><div class=chatlog__message-primary><div class=chatlog__header><span class=chatlog__author style=color:rgb(96,125,139) title=hadildh data-user-id=900408163679997952>Hadil</span> <span class=chatlog__timestamp title="mardi 15 avril 2025 12:51"><a href=#chatlog__message-container-1361791173840339006>15/04/2025 12:51</a></span></div><div class="chatlog__content chatlog__markdown"><span class=chatlog__markdown-preserve>Salam <span class="chatlog__markdown-mention" style="color: rgb(27, 97, 227); background-color: rgba(27, 97, 227, 0.1);">@Robotics</span> and <span class="chatlog__markdown-mention" style="color: rgb(46, 204, 113); background-color: rgba(46, 204, 113, 0.1);">@IT</span> 
+
+Join us in less then<strong>10 min</strong> in the <strong>Voice Room</strong> to learn more about basic electronic components and boards you will need during this journey between our 2 sections &#129761; <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="✨"
+    title="sparkles"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2728.svg"></span></div><div class=chatlog__reactions><div class=chatlog__reaction title=heart><img class="chatlog__emoji chatlog__emoji--small" alt=❤️ src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2764.svg loading=lazy> <span class=chatlog__reaction-count>22</span></div><div class=chatlog__reaction title=regional_indicator_u><img class="chatlog__emoji chatlog__emoji--small" alt=🇺 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f1fa.svg loading=lazy> <span class=chatlog__reaction-count>4</span></div><div class=chatlog__reaction title=regional_indicator_c><img class="chatlog__emoji chatlog__emoji--small" alt=🇨 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f1e8.svg loading=lazy> <span class=chatlog__reaction-count>5</span></div><div class=chatlog__reaction title=regional_indicator_l><img class="chatlog__emoji chatlog__emoji--small" alt=🇱 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f1f1.svg loading=lazy> <span class=chatlog__reaction-count>4</span></div><div class=chatlog__reaction title=El_Marketing><img class="chatlog__emoji chatlog__emoji--small" alt=El_Marketing src=https://cdn.discordapp.com/emojis/1300928657715494983.png loading=lazy> <span class=chatlog__reaction-count>2</span></div><div class=chatlog__reaction title=approved><img class="chatlog__emoji chatlog__emoji--small" alt=approved src=https://cdn.discordapp.com/emojis/1340384987542716437.png loading=lazy> <span class=chatlog__reaction-count>2</span></div><div class=chatlog__reaction title=fire><img class="chatlog__emoji chatlog__emoji--small" alt=🔥 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f525.svg loading=lazy> <span class=chatlog__reaction-count>5</span></div><div class=chatlog__reaction title=fire_extinguisher><img class="chatlog__emoji chatlog__emoji--small" alt=🧯 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f9ef.svg loading=lazy> <span class=chatlog__reaction-count>3</span></div><div class=chatlog__reaction title=information_source><img class="chatlog__emoji chatlog__emoji--small" alt=ℹ️ src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2139.svg loading=lazy> <span class=chatlog__reaction-count>1</span></div><div class=chatlog__reaction title=last_quarter_moon_with_face><img class="chatlog__emoji chatlog__emoji--small" alt=🌜 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f31c.svg loading=lazy> <span class=chatlog__reaction-count>1</span></div><div class=chatlog__reaction title=regional_indicator_h><img class="chatlog__emoji chatlog__emoji--small" alt=🇭 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f1ed.svg loading=lazy> <span class=chatlog__reaction-count>1</span></div><div class=chatlog__reaction title=regional_indicator_a><img class="chatlog__emoji chatlog__emoji--small" alt=🇦 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f1e6.svg loading=lazy> <span class=chatlog__reaction-count>1</span></div><div class=chatlog__reaction title=pensive><img class="chatlog__emoji chatlog__emoji--small" alt=😔 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f614.svg loading=lazy> <span class=chatlog__reaction-count>1</span></div></div></div></div></div></div>
+<div class=chatlog__message-group><div id=chatlog__message-container-1361794554935644240 class=chatlog__message-container data-message-id=1361794554935644240><div class=chatlog__message><div class=chatlog__message-aside><img class=chatlog__avatar src="https://cdn.discordapp.com/avatars/760952710383665192/2eee6f0f9285fbc125d3d71ae67c139d.png?size=512" alt=Avatar loading=lazy></div><div class=chatlog__message-primary><div class=chatlog__header><span class=chatlog__author style=color:rgb(6,0,0) title=y.abderrahmane data-user-id=760952710383665192>Abderrahmane.ts</span> <span class=chatlog__timestamp title="mardi 15 avril 2025 13:05"><a href=#chatlog__message-container-1361794554935644240>15/04/2025 13:05</a></span></div><div class="chatlog__content chatlog__markdown"><span class=chatlog__markdown-preserve><span class="chatlog__markdown-mention" style="color: rgb(46, 204, 113); background-color: rgba(46, 204, 113, 0.1);">@IT</span> <span class="chatlog__markdown-mention" style="color: rgb(27, 97, 227); background-color: rgba(27, 97, 227, 0.1);">@Robotics</span> we are starting , join us <span class="chatlog__markdown-mention">🔊Room</span></span></div><div class=chatlog__reactions><div class=chatlog__reaction title=heart><img class="chatlog__emoji chatlog__emoji--small" alt=❤️ src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2764.svg loading=lazy> <span class=chatlog__reaction-count>4</span></div></div></div></div></div></div>
+<div class=chatlog__message-group><div id=chatlog__message-container-1362095743699259475 class=chatlog__message-container data-message-id=1362095743699259475><div class=chatlog__message><div class=chatlog__message-aside><div class=chatlog__reply-symbol></div><img class=chatlog__avatar src="https://cdn.discordapp.com/avatars/760952710383665192/2eee6f0f9285fbc125d3d71ae67c139d.png?size=512" alt=Avatar loading=lazy></div><div class=chatlog__message-primary><div class=chatlog__reply><img class=chatlog__reply-avatar src="https://cdn.discordapp.com/avatars/894826226781421618/bfb45aa2f8a23bedb3a359f7da2d76d0.png?size=512" alt=Avatar loading=lazy><div class=chatlog__reply-author style=color:rgb(46,204,113) title=slimane_30>slimane_evrywr</div><div class=chatlog__reply-content><span class=chatlog__reply-link onclick="scrollToMessage(event,'1361473168899969064')"> <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="📢"
+    title="loudspeaker"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f4e2.svg"> <strong>Hello MC Members!</strong>
+
+I’m really happy about this collaboration between the <span class="chatlog__markdown-mention" style="color: rgb(46, 204, 113); background-color: rgba(46, 204, 113, 0.1);">@IT</span> and  <span class="chatlog__markdown-mention" style="color: rgb(27, 97, 227); background-color: rgba(27, 97, 227, 0.1);">@Robotics</span> sections — it’s going to be an awesome experience!
+
+We’ll be diving into <strong>Dart</strong> and <strong>Flutter</strong> in the upcoming sessions. During our in-person meetup at <strong>OUR HQ</strong>, we’ll explore environment setup, Dart basics, Flutter basics, widgets, and more!
+
+<img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="📅"
+    title="date"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f4c5.svg"> <strong>Thursday, 17/04/2025 at 13:00</strong>
+
+Please make sure <strong>Flutter is installed</strong> on your machines beforehand.
+
+<img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="📌"
+    title="pushpin"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f4cc.svg"> Setup guide: <a href="https://www.youtube.com/watch?v=mMeQhLGD-og&amp;t=1s">Flutter Installation Guide</a>
+
+<strong>Don’t forget to fill out the form to confirm your attendance:</strong> <a href="https://docs.google.com/forms/d/e/1FAIpQLSe-rfmMKimb54Ei9-RF1T2YWE5lo-5aFkFUs2Ijt66r4zYByA/viewform">RSVP Form</a>
+
+If you run into any issues, we’ve got your back.
+
+<img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🔹"
+    title="small_blue_diamond"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f539.svg"> <strong>Tip:</strong> A stable internet connection will help during the installation.
+
+Can’t wait to build together! <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🚀"
+    title="rocket"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f680.svg"><img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🔥"
+    title="fire"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f525.svg">
+
+<strong>Don’t forget tomorrow’s session:</strong> <strong>Introduction to the ESP32 Microcontroller and other electronic components.</strong> </span></div></div><div class=chatlog__header><span class=chatlog__author style=color:rgb(6,0,0) title=y.abderrahmane data-user-id=760952710383665192>Abderrahmane.ts</span> <span class=chatlog__timestamp title="mercredi 16 avril 2025 09:02"><a href=#chatlog__message-container-1362095743699259475>16/04/2025 09:02</a></span></div><div class="chatlog__content chatlog__markdown"><span class=chatlog__markdown-preserve><h1>Reminder <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="⏰"
+    title="alarm_clock"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/23f0.svg"> </h1>
+friendly reminder that the form for Tomorrow&#39;s workshop <strong>Introduction to mobile development (flutter)</strong> will close tonight. places still available , join us now!
+
+<span class="chatlog__markdown-mention" style="color: rgb(46, 204, 113); background-color: rgba(46, 204, 113, 0.1);">@IT</span> <span class="chatlog__markdown-mention" style="color: rgb(27, 97, 227); background-color: rgba(27, 97, 227, 0.1);">@Robotics</span></span></div><div class=chatlog__reactions><div class=chatlog__reaction title=heart><img class="chatlog__emoji chatlog__emoji--small" alt=❤️ src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2764.svg loading=lazy> <span class=chatlog__reaction-count>12</span></div></div></div></div></div></div>
+<div class=chatlog__message-group><div id=chatlog__message-container-1362186466461094018 class=chatlog__message-container data-message-id=1362186466461094018><div class=chatlog__message><div class=chatlog__message-aside><img class=chatlog__avatar src="https://cdn.discordapp.com/avatars/760952710383665192/2eee6f0f9285fbc125d3d71ae67c139d.png?size=512" alt=Avatar loading=lazy></div><div class=chatlog__message-primary><div class=chatlog__header><span class=chatlog__author style=color:rgb(6,0,0) title=y.abderrahmane data-user-id=760952710383665192>Abderrahmane.ts</span> <span class=chatlog__timestamp title="mercredi 16 avril 2025 15:02"><a href=#chatlog__message-container-1362186466461094018>16/04/2025 15:02</a></span></div><div class="chatlog__content chatlog__markdown"><span class=chatlog__markdown-preserve>Hello <span class="chatlog__markdown-mention" style="color: rgb(46, 204, 113); background-color: rgba(46, 204, 113, 0.1);">@IT</span> <span class="chatlog__markdown-mention" style="color: rgb(27, 97, 227); background-color: rgba(27, 97, 227, 0.1);">@Robotics</span> members
+
+The flutter workshop will take place Tomorrow (17/04) in <em>Library of Info faculty (la bib d&#39;info)</em>
+
+The workshop will be open for everyone (even visitors from community) 
+<ul><li>So the form is uselss ? No , the persons that filled the form will have the <span class="chatlog__markdown-mention" style="">@deleted-role</span> role</li></ul>
+
+have a good day! see you tommorow <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="👀"
+    title="eyes"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f440.svg"></span></div><div class=chatlog__reactions><div class=chatlog__reaction title=heart><img class="chatlog__emoji chatlog__emoji--small" alt=❤️ src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2764.svg loading=lazy> <span class=chatlog__reaction-count>21</span></div><div class=chatlog__reaction title=white_square_button><img class="chatlog__emoji chatlog__emoji--small" alt=🔳 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f533.svg loading=lazy> <span class=chatlog__reaction-count>5</span></div><div class=chatlog__reaction title=fire><img class="chatlog__emoji chatlog__emoji--small" alt=🔥 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f525.svg loading=lazy> <span class=chatlog__reaction-count>7</span></div><div class=chatlog__reaction title=frog><img class="chatlog__emoji chatlog__emoji--small" alt=🐸 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f438.svg loading=lazy> <span class=chatlog__reaction-count>4</span></div></div></div></div></div></div>
+<div class=chatlog__message-group><div id=chatlog__message-container-1362476631528312892 class=chatlog__message-container data-message-id=1362476631528312892><div class=chatlog__message><div class=chatlog__message-aside><img class=chatlog__avatar src="https://cdn.discordapp.com/avatars/894826226781421618/bfb45aa2f8a23bedb3a359f7da2d76d0.png?size=512" alt=Avatar loading=lazy></div><div class=chatlog__message-primary><div class=chatlog__header><span class=chatlog__author style=color:rgb(46,204,113) title=slimane_30 data-user-id=894826226781421618>slimane_evrywr</span> <span class=chatlog__timestamp title="jeudi 17 avril 2025 10:15"><a href=#chatlog__message-container-1362476631528312892>17/04/2025 10:15</a></span></div><div class="chatlog__content chatlog__markdown"><span class=chatlog__markdown-preserve>Hey <span class="chatlog__markdown-mention" style="color: rgb(46, 204, 113); background-color: rgba(46, 204, 113, 0.1);">@IT</span> X <span class="chatlog__markdown-mention" style="color: rgb(27, 97, 227); background-color: rgba(27, 97, 227, 0.1);">@Robotics</span> ,
+
+Thanks again for showing up to the Flutter workshop! Whether you followed along perfectly or felt a little lost, that’s totally normal — Flutter is a journey, not something you learn in one session.
+
+<img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="📑"
+    title="bookmark_tabs"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f4d1.svg"> <strong>Workshop Slides</strong>  
+Missed a concept? Want a refresher?  
+<img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="👉"
+    title="point_right"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f449.svg"> <a href="https://www.canva.com/design/DAGfkYoPHy8/ZUOSlZEf3ow_57zIoY8GYA/edit">View here</a>
+
+<img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🗺️"
+    title="map"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f5fa.svg"> <strong>Flutter Roadmap</strong>  
+Start small — learn widget by widget. Once you’re comfortable, use ChatGPT or the Flutter docs to go deeper:  
+<img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="👉"
+    title="point_right"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f449.svg"> <a href="https://www.canva.com/design/DAGk4aTk7Vg/uFQ6S1oKRp4i1iV90qKgXA/edit?utm_content=DAGk4aTk7Vg&amp;utm_campaign=designshare&amp;utm_medium=link2&amp;utm_source=sharebutton">View here</a>
+
+<img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🎯"
+    title="dart"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f3af.svg"> <strong>Challenge</strong>  
+Try recreating the UI of the first 3 screens from this Figma file (Onboarding, Login, Register):  
+<img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="👉"
+    title="point_right"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f449.svg"> <a href="https://www.figma.com/design/Ibib98WM3cZ5VrjwgxBi9o/Onboarding--Login---Register---App-Ui--Community-?node-id=1-2&amp;t=UtkRq2daSUOugHAZ-0">Figma Design</a>  
+If you’re stuck or don’t know how to begin, just ask — I’ve got you.
+
+<img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="📝"
+    title="pencil"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f4dd.svg"> <strong>Anonymous Feedback</strong>  
+Your feedback is super valuable. It only takes a minute — be honest and help us improve:  
+<img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="👉"
+    title="point_right"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f449.svg"> <a href="https://docs.google.com/forms/d/e/1FAIpQLSeGqU5WDtEMzKNTpQ7gY07k3sY8BnikfeNhH2cyS8sHQUvwpg/viewform?usp=dialog">Fill out the form</a>
+
+Check the resources post here: <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🔗"
+    title="link"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f517.svg"> (<a href="https://discordapp.com/channels/1282095800079351851/1362472785602941230/1362472785602941230)">https://discordapp.com/channels/1282095800079351851/1362472785602941230/1362472785602941230)</a>
+
+Take your time, build at your own pace, and reach out anytime. You&#39;re doing great! <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🚀"
+    title="rocket"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f680.svg"></span> <span class=chatlog__edited-timestamp title="vendredi 18 avril 2025 03:01">(edited)</span></div><div class=chatlog__reactions><div class=chatlog__reaction title=heart><img class="chatlog__emoji chatlog__emoji--small" alt=❤️ src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2764.svg loading=lazy> <span class=chatlog__reaction-count>22</span></div><div class=chatlog__reaction title=white_check_mark><img class="chatlog__emoji chatlog__emoji--small" alt=✅ src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2705.svg loading=lazy> <span class=chatlog__reaction-count>6</span></div><div class=chatlog__reaction title=heart_on_fire><img class="chatlog__emoji chatlog__emoji--small" alt=❤️‍🔥 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2764-fe0f-200d-1f525.svg loading=lazy> <span class=chatlog__reaction-count>1</span></div></div></div></div></div></div>
+<div class=chatlog__message-group><div id=chatlog__message-container-1362479927483699515 class=chatlog__message-container data-message-id=1362479927483699515><div class=chatlog__message><div class=chatlog__message-aside><div class=chatlog__reply-symbol></div><img class=chatlog__avatar src="https://cdn.discordapp.com/avatars/894826226781421618/bfb45aa2f8a23bedb3a359f7da2d76d0.png?size=512" alt=Avatar loading=lazy></div><div class=chatlog__message-primary><div class=chatlog__reply><img class=chatlog__reply-avatar src="https://cdn.discordapp.com/avatars/894826226781421618/bfb45aa2f8a23bedb3a359f7da2d76d0.png?size=512" alt=Avatar loading=lazy><div class=chatlog__reply-author style=color:rgb(46,204,113) title=slimane_30>slimane_evrywr</div><div class=chatlog__reply-content><span class=chatlog__reply-link onclick="scrollToMessage(event,'1362476631528312892')"> Hey <span class="chatlog__markdown-mention" style="color: rgb(46, 204, 113); background-color: rgba(46, 204, 113, 0.1);">@IT</span> X <span class="chatlog__markdown-mention" style="color: rgb(27, 97, 227); background-color: rgba(27, 97, 227, 0.1);">@Robotics</span> ,
+
+Thanks again for showing up to the Flutter workshop! Whether you followed along perfectly or felt a little lost, that’s totally normal — Flutter is a journey, not something you learn in one session.
+
+<img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="📑"
+    title="bookmark_tabs"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f4d1.svg"> <strong>Workshop Slides</strong>  
+Missed a concept? Want a refresher?  
+<img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="👉"
+    title="point_right"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f449.svg"> <a href="https://www.canva.com/design/DAGfkYoPHy8/ZUOSlZEf3ow_57zIoY8GYA/edit">View here</a>
+
+<img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🗺️"
+    title="map"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f5fa.svg"> <strong>Flutter Roadmap</strong>  
+Start small — learn widget by widget. Once you’re comfortable, use ChatGPT or the Flutter docs to go deeper:  
+<img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="👉"
+    title="point_right"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f449.svg"> <a href="https://www.canva.com/design/DAGk4aTk7Vg/uFQ6S1oKRp4i1iV90qKgXA/edit?utm_content=DAGk4aTk7Vg&amp;utm_campaign=designshare&amp;utm_medium=link2&amp;utm_source=sharebutton">View here</a>
+
+<img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🎯"
+    title="dart"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f3af.svg"> <strong>Challenge</strong>  
+Try recreating the UI of the first 3 screens from this Figma file (Onboarding, Login, Register):  
+<img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="👉"
+    title="point_right"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f449.svg"> <a href="https://www.figma.com/design/Ibib98WM3cZ5VrjwgxBi9o/Onboarding--Login---Register---App-Ui--Community-?node-id=1-2&amp;t=UtkRq2daSUOugHAZ-0">Figma Design</a>  
+If you’re stuck or don’t know how to begin, just ask — I’ve got you.
+
+<img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="📝"
+    title="pencil"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f4dd.svg"> <strong>Anonymous Feedback</strong>  
+Your feedback is super valuable. It only takes a minute — be honest and help us improve:  
+<img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="👉"
+    title="point_right"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f449.svg"> <a href="https://docs.google.com/forms/d/e/1FAIpQLSeGqU5WDtEMzKNTpQ7gY07k3sY8BnikfeNhH2cyS8sHQUvwpg/viewform?usp=dialog">Fill out the form</a>
+
+Check the resources post here: <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🔗"
+    title="link"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f517.svg"> (<a href="https://discordapp.com/channels/1282095800079351851/1362472785602941230/1362472785602941230)">https://discordapp.com/channels/1282095800079351851/1362472785602941230/1362472785602941230)</a>
+
+Take your time, build at your own pace, and reach out anytime. You&#39;re doing great! <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🚀"
+    title="rocket"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f680.svg"> </span> <span class=chatlog__reply-edited-timestamp title="vendredi 18 avril 2025 03:01">(edited)</span></div></div><div class=chatlog__header><span class=chatlog__author style=color:rgb(46,204,113) title=slimane_30 data-user-id=894826226781421618>slimane_evrywr</span> <span class=chatlog__timestamp title="jeudi 17 avril 2025 10:28"><a href=#chatlog__message-container-1362479927483699515>17/04/2025 10:28</a></span></div><div class="chatlog__content chatlog__markdown"><span class=chatlog__markdown-preserve>Hackathon jay smokom kml tkhdmo flutter <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🔪"
+    title="knife"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f52a.svg"></span></div><div class=chatlog__reactions><div class=chatlog__reaction title=aaaaaaaaaaaaaa><img class="chatlog__emoji chatlog__emoji--small" alt=aaaaaaaaaaaaaa src=https://cdn.discordapp.com/emojis/1300928552522219591.png loading=lazy> <span class=chatlog__reaction-count>14</span></div><div class=chatlog__reaction title=joy><img class="chatlog__emoji chatlog__emoji--small" alt=😂 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f602.svg loading=lazy> <span class=chatlog__reaction-count>21</span></div></div></div></div></div></div>
+<div class=chatlog__message-group><div id=chatlog__message-container-1362497662749905058 class=chatlog__message-container data-message-id=1362497662749905058><div class=chatlog__message><div class=chatlog__message-aside><div class=chatlog__reply-symbol></div><img class=chatlog__avatar src="https://cdn.discordapp.com/avatars/695816546710323250/fb0836d6bbf0f43b270b792490fc0fab.png?size=512" alt=Avatar loading=lazy></div><div class=chatlog__message-primary><div class=chatlog__reply><img class=chatlog__reply-avatar src="https://cdn.discordapp.com/avatars/894826226781421618/bfb45aa2f8a23bedb3a359f7da2d76d0.png?size=512" alt=Avatar loading=lazy><div class=chatlog__reply-author style=color:rgb(46,204,113) title=slimane_30>slimane_evrywr</div><div class=chatlog__reply-content><span class=chatlog__reply-link onclick="scrollToMessage(event,'1362479927483699515')"> Hackathon jay smokom kml tkhdmo flutter <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🔪"
+    title="knife"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f52a.svg"> </span></div></div><div class=chatlog__header><span class=chatlog__author style=color:rgb(17,128,106) title=wimou64 data-user-id=695816546710323250>! عبد العالي</span> <span class=chatlog__timestamp title="jeudi 17 avril 2025 11:39"><a href=#chatlog__message-container-1362497662749905058>17/04/2025 11:39</a></span></div><div class="chatlog__content chatlog__markdown"><span class=chatlog__markdown-preserve>li yakhdam b flutter raho winners direct &#129762;&#129763;</span></div><div class=chatlog__reactions><div class=chatlog__reaction title=joy><img class="chatlog__emoji chatlog__emoji--small" alt=😂 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f602.svg loading=lazy> <span class=chatlog__reaction-count>12</span></div><div class=chatlog__reaction title=one><img class="chatlog__emoji chatlog__emoji--small" alt=1️⃣ src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/31-20e3.svg loading=lazy> <span class=chatlog__reaction-count>1</span></div><div class=chatlog__reaction title=white_check_mark><img class="chatlog__emoji chatlog__emoji--small" alt=✅ src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2705.svg loading=lazy> <span class=chatlog__reaction-count>1</span></div><div class=chatlog__reaction title=aaaaaaaaaaaaaa><img class="chatlog__emoji chatlog__emoji--small" alt=aaaaaaaaaaaaaa src=https://cdn.discordapp.com/emojis/1300928552522219591.png loading=lazy> <span class=chatlog__reaction-count>1</span></div></div></div></div></div></div>
+<div class=chatlog__message-group><div id=chatlog__message-container-1363042377362833419 class=chatlog__message-container data-message-id=1363042377362833419><div class=chatlog__message><div class=chatlog__message-aside><img class=chatlog__avatar src="https://cdn.discordapp.com/avatars/894826226781421618/bfb45aa2f8a23bedb3a359f7da2d76d0.png?size=512" alt=Avatar loading=lazy></div><div class=chatlog__message-primary><div class=chatlog__header><span class=chatlog__author style=color:rgb(46,204,113) title=slimane_30 data-user-id=894826226781421618>slimane_evrywr</span> <span class=chatlog__timestamp title="vendredi 18 avril 2025 23:43"><a href=#chatlog__message-container-1363042377362833419>18/04/2025 23:43</a></span></div><div class="chatlog__content chatlog__markdown"><span class=chatlog__markdown-preserve>Hello <span class="chatlog__markdown-mention" style="color: rgb(46, 204, 113); background-color: rgba(46, 204, 113, 0.1);">@IT</span>  X <span class="chatlog__markdown-mention" style="color: rgb(27, 97, 227); background-color: rgba(27, 97, 227, 0.1);">@Robotics</span> Family!
+
+We’ve got <strong>two exciting online workshops</strong> coming your way — don’t miss out on this chance to <strong>level up</strong> and connect with awesome people!
+
+---
+
+<strong><img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🗓️"
+    title="calendar_spiral"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f5d3.svg"> Today (19/04/2025)</strong> – <strong>Workshop #1</strong>  
+<strong><img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="⏰"
+    title="alarm_clock"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/23f0.svg"> Time:</strong> 9:00 PM  
+<strong><img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🤖"
+    title="robot"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f916.svg"> Topic:</strong> <em>Robotics Applications Using ESP32</em>  
+<strong><img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🎙️"
+    title="microphone2"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f399.svg"> Host:</strong> <span class="chatlog__markdown-mention" title="1ly3s_rh7d">@!LYES</span>
+
+---
+
+<strong><img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🗓️"
+    title="calendar_spiral"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f5d3.svg"> Tomorrow (Sunday)</strong> – <strong>Workshop #2</strong>  
+<strong><img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="⏰"
+    title="alarm_clock"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/23f0.svg"> Time:</strong> 8:30 PM  
+<strong><img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="💻"
+    title="computer"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f4bb.svg"> Topic:</strong> <em>Flutter Challenge Correction</em>  
+<strong><img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🎙️"
+    title="microphone2"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f399.svg"> Host:</strong> <span class="chatlog__markdown-mention" title="gwnrtje">@Cama&#239;eu</span>
+
+---
+
+<strong><img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="📍"
+    title="round_pushpin"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f4cd.svg"> Location (both workshops):</strong>  
+Join us on <a href="https://discord.com/channels/1282095800079351851/1358940743367921755" onclick="scrollToMessage(event, '1358940743367921755')">https://discord.com/channels/1282095800079351851/1358940743367921755</a>
+
+
+<strong><img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="✅"
+    title="white_check_mark"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2705.svg"> Be there, participate, and grow with us.</strong>  
+<strong>Your future self will thank you!</strong></span> <span class=chatlog__edited-timestamp title="samedi 19 avril 2025 00:05">(edited)</span></div><div class=chatlog__reactions><div class=chatlog__reaction title=heart><img class="chatlog__emoji chatlog__emoji--small" alt=❤️ src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2764.svg loading=lazy> <span class=chatlog__reaction-count>18</span></div><div class=chatlog__reaction title=heart_on_fire><img class="chatlog__emoji chatlog__emoji--small" alt=❤️‍🔥 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2764-fe0f-200d-1f525.svg loading=lazy> <span class=chatlog__reaction-count>8</span></div><div class=chatlog__reaction title=fire><img class="chatlog__emoji chatlog__emoji--small" alt=🔥 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f525.svg loading=lazy> <span class=chatlog__reaction-count>7</span></div><div class=chatlog__reaction title=IT><img class="chatlog__emoji chatlog__emoji--small" alt=IT src=https://cdn.discordapp.com/emojis/1300928708655321108.png loading=lazy> <span class=chatlog__reaction-count>3</span></div><div class=chatlog__reaction title=MC_White><img class="chatlog__emoji chatlog__emoji--small" alt=MC_White src=https://cdn.discordapp.com/emojis/1300918704099557537.png loading=lazy> <span class=chatlog__reaction-count>1</span></div></div></div></div></div></div>
+<div class=chatlog__message-group><div id=chatlog__message-container-1363045577629106276 class=chatlog__message-container data-message-id=1363045577629106276><div class=chatlog__message><div class=chatlog__message-aside><img class=chatlog__avatar src="https://cdn.discordapp.com/avatars/483240863787384833/edd3b453a0c70a8ddc9820d4e28dd94b.png?size=512" alt=Avatar loading=lazy></div><div class=chatlog__message-primary><div class=chatlog__header><span class=chatlog__author style=color:rgb(17,128,106) title=ordistar data-user-id=483240863787384833>! Amine ta3 MCC</span> <span class=chatlog__timestamp title="vendredi 18 avril 2025 23:56"><a href=#chatlog__message-container-1363045577629106276>18/04/2025 23:56</a></span></div><div class="chatlog__content chatlog__markdown"><span class=chatlog__markdown-preserve><span class="chatlog__markdown-mention" style="color: rgb(27, 97, 227); background-color: rgba(27, 97, 227, 0.1);">@Robotics</span></span></div></div></div></div></div>
+<div class=chatlog__message-group><div id=chatlog__message-container-1363239010532724967 class=chatlog__message-container data-message-id=1363239010532724967><div class=chatlog__message><div class=chatlog__message-aside><img class=chatlog__avatar src="https://cdn.discordapp.com/avatars/900408163679997952/2e4d9be51be0bd80f2b80cbe03cd1189.png?size=512" alt=Avatar loading=lazy></div><div class=chatlog__message-primary><div class=chatlog__header><span class=chatlog__author style=color:rgb(96,125,139) title=hadildh data-user-id=900408163679997952>Hadil</span> <span class=chatlog__timestamp title="samedi 19 avril 2025 12:45"><a href=#chatlog__message-container-1363239010532724967>19/04/2025 12:45</a></span></div><div class="chatlog__content chatlog__markdown"><span class=chatlog__markdown-preserve>Hillaww <span class="chatlog__markdown-mention" style="color: rgb(46, 204, 113); background-color: rgba(46, 204, 113, 0.1);">@IT</span> &#215; <span class="chatlog__markdown-mention" style="color: rgb(27, 97, 227); background-color: rgba(27, 97, 227, 0.1);">@Robotics</span>
+Get ready your workshop starts in 15 min nchlh <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🙂"
+    title="slight_smile"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f642.svg">‍<img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="↕️"
+    title="arrow_up_down"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2195.svg">
+Hope to see you there</span></div><div class=chatlog__reactions><div class=chatlog__reaction title=aaaaaaaaaaaaaa><img class="chatlog__emoji chatlog__emoji--small" alt=aaaaaaaaaaaaaa src=https://cdn.discordapp.com/emojis/1300928552522219591.png loading=lazy> <span class=chatlog__reaction-count>5</span></div><div class=chatlog__reaction title=heart><img class="chatlog__emoji chatlog__emoji--small" alt=❤️ src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2764.svg loading=lazy> <span class=chatlog__reaction-count>9</span></div><div class=chatlog__reaction title=information_source><img class="chatlog__emoji chatlog__emoji--small" alt=ℹ️ src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2139.svg loading=lazy> <span class=chatlog__reaction-count>3</span></div><div class=chatlog__reaction title=regional_indicator_c><img class="chatlog__emoji chatlog__emoji--small" alt=🇨 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f1e8.svg loading=lazy> <span class=chatlog__reaction-count>3</span></div><div class=chatlog__reaction title=regional_indicator_h><img class="chatlog__emoji chatlog__emoji--small" alt=🇭 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f1ed.svg loading=lazy> <span class=chatlog__reaction-count>3</span></div><div class=chatlog__reaction title=regional_indicator_a><img class="chatlog__emoji chatlog__emoji--small" alt=🇦 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f1e6.svg loading=lazy> <span class=chatlog__reaction-count>2</span></div><div class=chatlog__reaction title=pensive><img class="chatlog__emoji chatlog__emoji--small" alt=😔 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f614.svg loading=lazy> <span class=chatlog__reaction-count>1</span></div></div></div></div></div></div>
+<div class=chatlog__message-group><div id=chatlog__message-container-1363244122692911185 class=chatlog__message-container data-message-id=1363244122692911185><div class=chatlog__message><div class=chatlog__message-aside><img class=chatlog__avatar src="https://cdn.discordapp.com/avatars/663106702991818803/21c44bf22486bddd2b55c15d11bf13a6.png?size=512" alt=Avatar loading=lazy></div><div class=chatlog__message-primary><div class=chatlog__header><span class=chatlog__author style=color:rgb(96,125,139) title=diobrand data-user-id=663106702991818803>uranium</span> <span class=chatlog__timestamp title="samedi 19 avril 2025 13:05"><a href=#chatlog__message-container-1363244122692911185>19/04/2025 13:05</a></span></div><div class="chatlog__content chatlog__markdown"><span class=chatlog__markdown-preserve><span class="chatlog__markdown-mention" style="color: rgb(46, 204, 113); background-color: rgba(46, 204, 113, 0.1);">@IT</span> X <span class="chatlog__markdown-mention" style="color: rgb(27, 97, 227); background-color: rgba(27, 97, 227, 0.1);">@Robotics</span>  la3zaz the meet will be in this google meet  !!
+
+<strong>link </strong>  : <a href="https://meet.google.com/csv-vvkn-paq">https://meet.google.com/csv-vvkn-paq</a></span></div><div class=chatlog__embed><div class="chatlog__embed-color-pill chatlog__embed-color-pill--default"></div><div class=chatlog__embed-content-container><div class=chatlog__embed-content><div class=chatlog__embed-text><div class=chatlog__embed-title><a class=chatlog__embed-title-link href=https://meet.google.com/csv-vvkn-paq><div class="chatlog__markdown chatlog__markdown-preserve">Meet</div></a></div><div class=chatlog__embed-description><div class="chatlog__markdown chatlog__markdown-preserve">Real-time meetings by Google. Using your browser, share your video, desktop, and presentations with teammates and customers.</div></div></div><div class=chatlog__embed-thumbnail-container><a class=chatlog__embed-thumbnail-link href=https://images-ext-1.discordapp.net/external/GCEsHEuoDTlzmJI_A4QfZk7rhbRzgKpjyZ2wWn9VqrM/https/fonts.gstatic.com/s/i/productlogos/meet_2020q4/v1/web-96dp/logo_meet_2020q4_color_2x_web_96dp.png> <img class=chatlog__embed-thumbnail src=https://images-ext-1.discordapp.net/external/GCEsHEuoDTlzmJI_A4QfZk7rhbRzgKpjyZ2wWn9VqrM/https/fonts.gstatic.com/s/i/productlogos/meet_2020q4/v1/web-96dp/logo_meet_2020q4_color_2x_web_96dp.png alt=Thumbnail loading=lazy data-canonical-url=https://fonts.gstatic.com/s/i/productlogos/meet_2020q4/v1/web-96dp/logo_meet_2020q4_color_2x_web_96dp.png> </a></div></div></div></div><div class=chatlog__reactions><div class=chatlog__reaction title=heart><img class="chatlog__emoji chatlog__emoji--small" alt=❤️ src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2764.svg loading=lazy> <span class=chatlog__reaction-count>3</span></div><div class=chatlog__reaction title=heart_on_fire><img class="chatlog__emoji chatlog__emoji--small" alt=❤️‍🔥 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2764-fe0f-200d-1f525.svg loading=lazy> <span class=chatlog__reaction-count>3</span></div></div></div></div></div></div>
+<div class=chatlog__message-group><div id=chatlog__message-container-1363573799219363931 class=chatlog__message-container data-message-id=1363573799219363931><div class=chatlog__message><div class=chatlog__message-aside><img class=chatlog__avatar src="https://cdn.discordapp.com/avatars/894826226781421618/bfb45aa2f8a23bedb3a359f7da2d76d0.png?size=512" alt=Avatar loading=lazy></div><div class=chatlog__message-primary><div class=chatlog__header><span class=chatlog__author style=color:rgb(46,204,113) title=slimane_30 data-user-id=894826226781421618>slimane_evrywr</span> <span class=chatlog__timestamp title="dimanche 20 avril 2025 10:55"><a href=#chatlog__message-container-1363573799219363931>20/04/2025 10:55</a></span></div><div class="chatlog__content chatlog__markdown"><span class=chatlog__markdown-preserve>Hey <span class="chatlog__markdown-mention" style="color: rgb(46, 204, 113); background-color: rgba(46, 204, 113, 0.1);">@IT</span> X <span class="chatlog__markdown-mention" style="color: rgb(27, 97, 227); background-color: rgba(27, 97, 227, 0.1);">@Robotics</span>  Family!
+
+Tonight at 8:30 PM — join us for the Flutter Challenge Correction workshop with <span class="chatlog__markdown-mention" title="gwnrtje">@Cama&#239;eu</span> !
+
+Discord Stage: Join Here <a href="https://discord.com/channels/1282095800079351851/1358940743367921755" onclick="scrollToMessage(event, '1358940743367921755')">https://discord.com/channels/1282095800079351851/1358940743367921755</a>
+
+Let’s level up together — don’t miss it!</span></div><div class=chatlog__reactions><div class=chatlog__reaction title=heart_on_fire><img class="chatlog__emoji chatlog__emoji--small" alt=❤️‍🔥 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2764-fe0f-200d-1f525.svg loading=lazy> <span class=chatlog__reaction-count>14</span></div><div class=chatlog__reaction title=approved><img class="chatlog__emoji chatlog__emoji--small" alt=approved src=https://cdn.discordapp.com/emojis/1340384987542716437.png loading=lazy> <span class=chatlog__reaction-count>4</span></div><div class=chatlog__reaction title=regional_indicator_c><img class="chatlog__emoji chatlog__emoji--small" alt=🇨 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f1e8.svg loading=lazy> <span class=chatlog__reaction-count>9</span></div><div class=chatlog__reaction title=regional_indicator_a><img class="chatlog__emoji chatlog__emoji--small" alt=🇦 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f1e6.svg loading=lazy> <span class=chatlog__reaction-count>9</span></div><div class=chatlog__reaction title=regional_indicator_m><img class="chatlog__emoji chatlog__emoji--small" alt=🇲 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f1f2.svg loading=lazy> <span class=chatlog__reaction-count>8</span></div><div class=chatlog__reaction title=a><img class="chatlog__emoji chatlog__emoji--small" alt=🅰️ src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f170.svg loading=lazy> <span class=chatlog__reaction-count>8</span></div><div class=chatlog__reaction title=regional_indicator_h><img class="chatlog__emoji chatlog__emoji--small" alt=🇭 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f1ed.svg loading=lazy> <span class=chatlog__reaction-count>7</span></div><div class=chatlog__reaction title=regional_indicator_o><img class="chatlog__emoji chatlog__emoji--small" alt=🇴 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f1f4.svg loading=lazy> <span class=chatlog__reaction-count>7</span></div><div class=chatlog__reaction title=camel><img class="chatlog__emoji chatlog__emoji--small" alt=🐫 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f42b.svg loading=lazy> <span class=chatlog__reaction-count>5</span></div></div></div></div></div></div>
+<div class=chatlog__message-group><div id=chatlog__message-container-1363596964851351793 class=chatlog__message-container data-message-id=1363596964851351793><div class=chatlog__message><div class=chatlog__message-aside><img class=chatlog__avatar src="https://cdn.discordapp.com/avatars/894826226781421618/bfb45aa2f8a23bedb3a359f7da2d76d0.png?size=512" alt=Avatar loading=lazy></div><div class=chatlog__message-primary><div class=chatlog__header><span class=chatlog__author style=color:rgb(46,204,113) title=slimane_30 data-user-id=894826226781421618>slimane_evrywr</span> <span class=chatlog__timestamp title="dimanche 20 avril 2025 12:27"><a href=#chatlog__message-container-1363596964851351793>20/04/2025 12:27</a></span></div><div class="chatlog__content chatlog__markdown"><span class=chatlog__markdown-preserve><span class="chatlog__markdown-mention" style="color: rgb(46, 204, 113); background-color: rgba(46, 204, 113, 0.1);">@IT</span> <span class="chatlog__markdown-mention" style="color: rgb(27, 97, 227); background-color: rgba(27, 97, 227, 0.1);">@Robotics</span> We are starting join us</span></div><div class=chatlog__reactions><div class=chatlog__reaction title=white_square_button><img class="chatlog__emoji chatlog__emoji--small" alt=🔳 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f533.svg loading=lazy> <span class=chatlog__reaction-count>3</span></div><div class=chatlog__reaction title=pensive><img class="chatlog__emoji chatlog__emoji--small" alt=😔 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f614.svg loading=lazy> <span class=chatlog__reaction-count>1</span></div></div></div></div></div></div>
+<div class=chatlog__message-group><div id=chatlog__message-container-1364695169802174586 class=chatlog__message-container data-message-id=1364695169802174586><div class=chatlog__message><div class=chatlog__message-aside><img class=chatlog__avatar src="https://cdn.discordapp.com/avatars/894826226781421618/bfb45aa2f8a23bedb3a359f7da2d76d0.png?size=512" alt=Avatar loading=lazy></div><div class=chatlog__message-primary><div class=chatlog__header><span class=chatlog__author style=color:rgb(46,204,113) title=slimane_30 data-user-id=894826226781421618>slimane_evrywr</span> <span class=chatlog__timestamp title="mercredi 23 avril 2025 13:11"><a href=#chatlog__message-container-1364695169802174586>23/04/2025 13:11</a></span></div><div class="chatlog__content chatlog__markdown"><span class=chatlog__markdown-preserve><strong>Hello <span class="chatlog__markdown-mention" style="color: rgb(46, 204, 113); background-color: rgba(46, 204, 113, 0.1);">@IT</span> X <span class="chatlog__markdown-mention" style="color: rgb(27, 97, 227); background-color: rgba(27, 97, 227, 0.1);">@Robotics</span>  Family!</strong>
+
+We’ve got <em>another Flutter session</em> coming up for this awesome collab!
+
+---
+
+<strong><img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🗓️"
+    title="calendar_spiral"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f5d3.svg"> Date:</strong> <strong>Tomorrow, Thursday – 24/04/2025</strong>  
+<strong><img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="⏰"
+    title="alarm_clock"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/23f0.svg"> Time:</strong> 9:00 PM  
+<strong><img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🎙️"
+    title="microphone2"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f399.svg"> Host:</strong>  amazing <span class="chatlog__markdown-mention" title="amneee">@AM!NEEE</span>
+
+---
+
+<strong><img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="📍"
+    title="round_pushpin"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f4cd.svg"> Location:</strong>  
+Join us here: <a href="https://discord.com/channels/1282095800079351851/1358940743367921755" onclick="scrollToMessage(event, '1358940743367921755')">Discord Channel</a>
+
+---
+
+<strong><img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="✅"
+    title="white_check_mark"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2705.svg"> Be there, participate, and grow with us.</strong>  
+<strong>Your future self will thank you!</strong></span></div><div class=chatlog__reactions><div class=chatlog__reaction title=fire><img class="chatlog__emoji chatlog__emoji--small" alt=🔥 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f525.svg loading=lazy> <span class=chatlog__reaction-count>19</span></div></div></div></div></div></div>
+<div class=chatlog__message-group><div id=chatlog__message-container-1365055289107415142 class=chatlog__message-container data-message-id=1365055289107415142><div class=chatlog__message><div class=chatlog__message-aside><img class=chatlog__avatar src="https://cdn.discordapp.com/avatars/894826226781421618/bfb45aa2f8a23bedb3a359f7da2d76d0.png?size=512" alt=Avatar loading=lazy></div><div class=chatlog__message-primary><div class=chatlog__header><span class=chatlog__author style=color:rgb(46,204,113) title=slimane_30 data-user-id=894826226781421618>slimane_evrywr</span> <span class=chatlog__timestamp title="jeudi 24 avril 2025 13:02"><a href=#chatlog__message-container-1365055289107415142>24/04/2025 13:02</a></span></div><div class="chatlog__content chatlog__markdown"><span class=chatlog__markdown-preserve><span class="chatlog__markdown-mention" style="color: rgb(46, 204, 113); background-color: rgba(46, 204, 113, 0.1);">@IT</span> <span class="chatlog__markdown-mention" style="color: rgb(27, 97, 227); background-color: rgba(27, 97, 227, 0.1);">@Robotics</span> we are starting</span></div><div class=chatlog__reactions><div class=chatlog__reaction title=heart><img class="chatlog__emoji chatlog__emoji--small" alt=❤️ src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2764.svg loading=lazy> <span class=chatlog__reaction-count>6</span></div></div></div></div></div><div id=chatlog__message-container-1365056756039815260 class=chatlog__message-container data-message-id=1365056756039815260><div class=chatlog__message><div class=chatlog__message-aside><div class=chatlog__short-timestamp title="jeudi 24 avril 2025 13:08">13:08</div></div><div class=chatlog__message-primary><div class="chatlog__content chatlog__markdown"><span class=chatlog__markdown-preserve>Don&#39;t miss the session flutter for IOT</span></div><div class=chatlog__reactions><div class=chatlog__reaction title=heart><img class="chatlog__emoji chatlog__emoji--small" alt=❤️ src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2764.svg loading=lazy> <span class=chatlog__reaction-count>2</span></div></div></div></div></div></div>
+<div class=chatlog__message-group><div id=chatlog__message-container-1385341263603306668 class=chatlog__message-container data-message-id=1385341263603306668><div class=chatlog__message><div class=chatlog__message-aside><img class=chatlog__avatar src="https://cdn.discordapp.com/avatars/894826226781421618/bfb45aa2f8a23bedb3a359f7da2d76d0.png?size=512" alt=Avatar loading=lazy></div><div class=chatlog__message-primary><div class=chatlog__header><span class=chatlog__author style=color:rgb(46,204,113) title=slimane_30 data-user-id=894826226781421618>slimane_evrywr</span> <span class=chatlog__timestamp title="jeudi 19 juin 2025 12:31"><a href=#chatlog__message-container-1385341263603306668>19/06/2025 12:31</a></span></div><div class="chatlog__content chatlog__markdown"><span class=chatlog__markdown-preserve><img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🔔"
+    title="bell"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f514.svg"> <span class="chatlog__markdown-mention" style="color: rgb(46, 204, 113); background-color: rgba(46, 204, 113, 0.1);">@IT</span> x <span class="chatlog__markdown-mention" style="color: rgb(27, 97, 227); background-color: rgba(27, 97, 227, 0.1);">@Robotics</span> – Flutter for IoT Session <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🔔"
+    title="bell"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f514.svg">
+
+We&#39;re excited to announce our upcoming session:
+&#128736; Flutter for IoT: Create Your First App
+
+<img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="📅"
+    title="date"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f4c5.svg"> Date: Friday, 20/06/2025
+<img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🕘"
+    title="clock9"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f558.svg"> Time: 21:00 
+
+Let’s build something awesome together!
+Please make sure to attend.</span></div><div class=chatlog__reactions><div class=chatlog__reaction title=heart><img class="chatlog__emoji chatlog__emoji--small" alt=❤️ src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2764.svg loading=lazy> <span class=chatlog__reaction-count>33</span></div><div class=chatlog__reaction title=heart_eyes_cat><img class="chatlog__emoji chatlog__emoji--small" alt=😻 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f63b.svg loading=lazy> <span class=chatlog__reaction-count>4</span></div><div class=chatlog__reaction title=fire><img class="chatlog__emoji chatlog__emoji--small" alt=🔥 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f525.svg loading=lazy> <span class=chatlog__reaction-count>7</span></div></div></div></div></div></div>
+<div class=chatlog__message-group><div id=chatlog__message-container-1385688978920968232 class=chatlog__message-container data-message-id=1385688978920968232><div class=chatlog__message><div class=chatlog__message-aside><img class=chatlog__avatar src="https://cdn.discordapp.com/avatars/894826226781421618/bfb45aa2f8a23bedb3a359f7da2d76d0.png?size=512" alt=Avatar loading=lazy></div><div class=chatlog__message-primary><div class=chatlog__header><span class=chatlog__author style=color:rgb(46,204,113) title=slimane_30 data-user-id=894826226781421618>slimane_evrywr</span> <span class=chatlog__timestamp title="vendredi 20 juin 2025 11:33"><a href=#chatlog__message-container-1385688978920968232>20/06/2025 11:33</a></span></div><div class="chatlog__content chatlog__markdown"><span class=chatlog__markdown-preserve><img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🚀"
+    title="rocket"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f680.svg"> <span class="chatlog__markdown-mention" style="color: rgb(46, 204, 113); background-color: rgba(46, 204, 113, 0.1);">@IT</span> x <span class="chatlog__markdown-mention" style="color: rgb(27, 97, 227); background-color: rgba(27, 97, 227, 0.1);">@Robotics</span> – Flutter for IoT Session
+<img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="📅"
+    title="date"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f4c5.svg"> Don&#39;t forget our session today!</span></div><div class=chatlog__reactions><div class=chatlog__reaction title=heart><img class="chatlog__emoji chatlog__emoji--small" alt=❤️ src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2764.svg loading=lazy> <span class=chatlog__reaction-count>12</span></div><div class=chatlog__reaction title=fire><img class="chatlog__emoji chatlog__emoji--small" alt=🔥 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f525.svg loading=lazy> <span class=chatlog__reaction-count>1</span></div><div class=chatlog__reaction title=zap><img class="chatlog__emoji chatlog__emoji--small" alt=⚡ src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/26a1.svg loading=lazy> <span class=chatlog__reaction-count>1</span></div><div class=chatlog__reaction title=factory_worker><img class="chatlog__emoji chatlog__emoji--small" alt=🧑‍🏭 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f9d1-200d-1f3ed.svg loading=lazy> <span class=chatlog__reaction-count>1</span></div></div></div></div></div></div>
+<div class=chatlog__message-group><div id=chatlog__message-container-1385706858039476295 class=chatlog__message-container data-message-id=1385706858039476295><div class=chatlog__message><div class=chatlog__message-aside><img class=chatlog__avatar src="https://cdn.discordapp.com/avatars/894826226781421618/bfb45aa2f8a23bedb3a359f7da2d76d0.png?size=512" alt=Avatar loading=lazy></div><div class=chatlog__message-primary><div class=chatlog__header><span class=chatlog__author style=color:rgb(46,204,113) title=slimane_30 data-user-id=894826226781421618>slimane_evrywr</span> <span class=chatlog__timestamp title="vendredi 20 juin 2025 12:44"><a href=#chatlog__message-container-1385706858039476295>20/06/2025 12:44</a></span></div><div class="chatlog__content chatlog__markdown"><span class=chatlog__markdown-preserve><span class="chatlog__markdown-mention" style="color: rgb(46, 204, 113); background-color: rgba(46, 204, 113, 0.1);">@IT</span> x <span class="chatlog__markdown-mention" style="color: rgb(27, 97, 227); background-color: rgba(27, 97, 227, 0.1);">@Robotics</span>  we are starting in 15 min join us</span></div><div class=chatlog__reactions><div class=chatlog__reaction title=heart><img class="chatlog__emoji chatlog__emoji--small" alt=❤️ src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2764.svg loading=lazy> <span class=chatlog__reaction-count>7</span></div></div></div></div></div></div>
+<div class=chatlog__message-group><div id=chatlog__message-container-1389966026116038867 class=chatlog__message-container data-message-id=1389966026116038867><div class=chatlog__message><div class=chatlog__message-aside><img class=chatlog__avatar src="https://cdn.discordapp.com/avatars/760952710383665192/2eee6f0f9285fbc125d3d71ae67c139d.png?size=512" alt=Avatar loading=lazy></div><div class=chatlog__message-primary><div class=chatlog__header><span class=chatlog__author style=color:rgb(6,0,0) title=y.abderrahmane data-user-id=760952710383665192>Abderrahmane.ts</span> <span class=chatlog__timestamp title="mercredi 2 juillet 2025 06:48"><a href=#chatlog__message-container-1389966026116038867>02/07/2025 06:48</a></span></div><div class="chatlog__content chatlog__markdown"><span class=chatlog__markdown-preserve><h1><img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🤖"
+    title="robot"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f916.svg"> FrAIday is BACK! <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🧠"
+    title="brain"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f9e0.svg"><img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🎉"
+    title="tada"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f389.svg"></h1>
+Hey <span class="chatlog__markdown-mention" style="color: rgb(46, 204, 113); background-color: rgba(46, 204, 113, 0.1);">@IT</span> and <span class="chatlog__markdown-mention" style="color: rgb(27, 97, 227); background-color: rgba(27, 97, 227, 0.1);">@Robotics</span>
+
+We’re thrilled to announce the return of FrAIday, your favorite weekly AI meetup! But wait... you haven’t heard of FrAIday??
+
+FrAIday is a weekly activity organized by the AI subsection of Micro Club&#39;s IT section, where every Friday we dive deep into the fascinating world of Artificial Intelligence <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🤖"
+    title="robot"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f916.svg">.
+
+Each session features a specific AI topic from cutting-edge technologies to real world applications, and includes interactive discussions  and insights from incredible guest speakers with real experience in the field <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="💡"
+    title="bulb"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f4a1.svg">.
+
+And here’s the big news...
+
+<img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🎉"
+    title="tada"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f389.svg"> We’re now officially open to <span class="chatlog__markdown-mention" style="color: rgb(27, 97, 227); background-color: rgba(27, 97, 227, 0.1);">@Robotics</span> members too! <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🎉"
+    title="tada"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f389.svg"> 
+
+Stay tuned for the next session of the activity in <span class="chatlog__markdown-mention">🔊&#129504;AI Voice</span> <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="👀"
+    title="eyes"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f440.svg"></span></div><div class=chatlog__reactions><div class=chatlog__reaction title=eyes><img class="chatlog__emoji chatlog__emoji--small" alt=👀 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f440.svg loading=lazy> <span class=chatlog__reaction-count>13</span></div><div class=chatlog__reaction title=white_heart><img class="chatlog__emoji chatlog__emoji--small" alt=🤍 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f90d.svg loading=lazy> <span class=chatlog__reaction-count>7</span></div><div class=chatlog__reaction title=fire><img class="chatlog__emoji chatlog__emoji--small" alt=🔥 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f525.svg loading=lazy> <span class=chatlog__reaction-count>15</span></div><div class=chatlog__reaction title=heart><img class="chatlog__emoji chatlog__emoji--small" alt=❤️ src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2764.svg loading=lazy> <span class=chatlog__reaction-count>1</span></div></div></div></div></div></div>
+<div class=chatlog__message-group><div id=chatlog__message-container-1390057620425015498 class=chatlog__message-container data-message-id=1390057620425015498><div class=chatlog__message><div class=chatlog__message-aside><img class=chatlog__avatar src="https://cdn.discordapp.com/avatars/914140108159074344/3974f9369dbc9b3b908150b5b89b5405.png?size=512" alt=Avatar loading=lazy></div><div class=chatlog__message-primary><div class=chatlog__header><span class=chatlog__author style=color:rgb(46,204,113) title=nesrine._. data-user-id=914140108159074344>Nesrine</span> <span class=chatlog__timestamp title="mercredi 2 juillet 2025 12:52"><a href=#chatlog__message-container-1390057620425015498>02/07/2025 12:52</a></span></div><div class="chatlog__content chatlog__markdown"><span class=chatlog__markdown-preserve><h1><span class="chatlog__markdown-mention" style="color: rgb(87, 173, 92); background-color: rgba(87, 173, 92, 0.1);">@FrAIday</span> is back! and it’s reached new grounds <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="📍"
+    title="round_pushpin"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f4cd.svg"><img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="❤️‍🔥"
+    title="heart_on_fire"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2764-fe0f-200d-1f525.svg"> </h1>For our new <span class="chatlog__markdown-mention" style="color: rgb(27, 97, 227); background-color: rgba(27, 97, 227, 0.1);">@Robotics</span> fellas (and and <span class="chatlog__markdown-mention" style="color: rgb(46, 204, 113); background-color: rgba(46, 204, 113, 0.1);">@IT</span> folks who don’t have their role yet) if you&#39;re intrested in getting FrAIday notifications fill out this <a href="https://docs.google.com/forms/d/e/1FAIpQLSfifZD2oa-PIM3ZB7GQOxBaXVpzTLD1rxIFwayHw4G-_8vQfQ/viewform?usp=dialog">form</a>
+--
+
+Now!
+Special occasions call for special guests, you’ve waited long for this one… 
+<h2>We’re happy to welcome none other thaaan <span class="chatlog__markdown-spoiler chatlog__markdown-spoiler--hidden" onclick="showSpoiler(event, this)"> <span class="chatlog__markdown-mention" title="axios4466">@axios</span> <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🥳"
+    title="partying_face"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f973.svg"></span></h2>--
+
+
+For the first time in FrAIday history, our guest is giving <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="✨"
+    title="sparkles"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2728.svg"> <strong>you</strong><img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="✨"
+    title="sparkles"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2728.svg"> the power to choose this session’s subject. React below to vote:
+
+<img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="1️⃣"
+    title="one"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/31-20e3.svg"> <strong>Explainability of Transformers</strong>: 
+Explore a subfield of AI that asks: why did the model make that decision? <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🧐"
+    title="face_with_monocle"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f9d0.svg">
+We’ll look at 3 papers exploring a technique called <strong>Layer-wise Relevance Propagation (LRP)</strong>. Expect some solid math—and a bonus section on how to <em>critically read  research papers</em>.
+
+<img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="2️⃣"
+    title="two"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/32-20e3.svg"> <strong>Mechanistic Interpretibility</strong>: 
+Dive into a fascinating new domain where models are <em>reverse-engineered</em> <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🛠️"
+    title="tools"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f6e0.svg">  to uncover their internal mechanisms.
+Two papers:
+<strong>1.</strong> An intro to mechanistic interpretability
+<strong>2.</strong> A powerful technique to partially automate the process
+
+Choose wisely and stay tuned! &#129761;</span> <span class=chatlog__edited-timestamp title="mercredi 2 juillet 2025 12:53">(edited)</span></div><div class=chatlog__reactions><div class=chatlog__reaction title=one><img class="chatlog__emoji chatlog__emoji--small" alt=1️⃣ src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/31-20e3.svg loading=lazy> <span class=chatlog__reaction-count>14</span></div><div class=chatlog__reaction title=two><img class="chatlog__emoji chatlog__emoji--small" alt=2️⃣ src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/32-20e3.svg loading=lazy> <span class=chatlog__reaction-count>8</span></div><div class=chatlog__reaction title=heartpulse><img class="chatlog__emoji chatlog__emoji--small" alt=💗 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f497.svg loading=lazy> <span class=chatlog__reaction-count>7</span></div></div></div></div></div></div>
+<div class=chatlog__message-group><div id=chatlog__message-container-1390687725841027192 class=chatlog__message-container data-message-id=1390687725841027192><div class=chatlog__message><div class=chatlog__message-aside><img class=chatlog__avatar src="https://cdn.discordapp.com/avatars/914140108159074344/3974f9369dbc9b3b908150b5b89b5405.png?size=512" alt=Avatar loading=lazy></div><div class=chatlog__message-primary><div class=chatlog__header><span class=chatlog__author style=color:rgb(46,204,113) title=nesrine._. data-user-id=914140108159074344>Nesrine</span> <span class=chatlog__timestamp title="vendredi 4 juillet 2025 06:36"><a href=#chatlog__message-container-1390687725841027192>04/07/2025 06:36</a></span></div><div class="chatlog__content chatlog__markdown"><span class=chatlog__markdown-preserve><h1><img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="📢"
+    title="loudspeaker"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f4e2.svg">  Reminder!!!!</h1>
+Hello <span class="chatlog__markdown-mention" style="color: rgb(87, 173, 92); background-color: rgba(87, 173, 92, 0.1);">@FrAIday</span>
+This is your reminder of today&#39;s FrAIday session
+
+<img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="📰"
+    title="newspaper"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f4f0.svg"> <strong>Topic</strong>: Explainability of Transformers and Interpretibility <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🧐"
+    title="face_with_monocle"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f9d0.svg"> (you&#39;ll be getting a bit of both eventually <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="❤️‍🔥"
+    title="heart_on_fire"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2764-fe0f-200d-1f525.svg"> )
+<img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🎙️"
+    title="microphone2"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f399.svg"> <strong>Guest</strong>:  <span class="chatlog__markdown-mention" title="axios4466">@axios</span> 
+<img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="📍"
+    title="round_pushpin"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f4cd.svg"> <strong>Place</strong>: <a href="https://discord.com/channels/1282095800079351851/1358940743367921755" onclick="scrollToMessage(event, '1358940743367921755')">https://discord.com/channels/1282095800079351851/1358940743367921755</a>
+<img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="⏰"
+    title="alarm_clock"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/23f0.svg">  <strong>Time</strong>: 21:00
+
+Get early access to fresh ideas as our guest breaks them down just for you. 
+Come curious and don’t miss out! <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🧠"
+    title="brain"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f9e0.svg"></span></div><div class=chatlog__reactions><div class=chatlog__reaction title=heart><img class="chatlog__emoji chatlog__emoji--small" alt=❤️ src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2764.svg loading=lazy> <span class=chatlog__reaction-count>10</span></div><div class=chatlog__reaction title=fire><img class="chatlog__emoji chatlog__emoji--small" alt=🔥 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f525.svg loading=lazy> <span class=chatlog__reaction-count>5</span></div></div></div></div></div></div>
+<div class=chatlog__message-group><div id=chatlog__message-container-1390690114493223094 class=chatlog__message-container data-message-id=1390690114493223094><div class=chatlog__message><div class=chatlog__message-aside><img class=chatlog__avatar src="https://cdn.discordapp.com/avatars/663106702991818803/21c44bf22486bddd2b55c15d11bf13a6.png?size=512" alt=Avatar loading=lazy></div><div class=chatlog__message-primary><div class=chatlog__header><span class=chatlog__author style=color:rgb(96,125,139) title=diobrand data-user-id=663106702991818803>uranium</span> <span class=chatlog__timestamp title="vendredi 4 juillet 2025 06:46"><a href=#chatlog__message-container-1390690114493223094>04/07/2025 06:46</a></span></div><div class="chatlog__content chatlog__markdown"><span class=chatlog__markdown-preserve><span class="chatlog__markdown-mention" style="color: rgb(27, 97, 227); background-color: rgba(27, 97, 227, 0.1);">@Robotics</span> <span class="chatlog__markdown-mention" style="color: rgb(46, 204, 113); background-color: rgba(46, 204, 113, 0.1);">@IT</span> do not miss out on this new oppurtunity to take a bite of a new topic in the ever growing field of artificial intelligence !</span></div><div class=chatlog__reactions><div class=chatlog__reaction title=heart_on_fire><img class="chatlog__emoji chatlog__emoji--small" alt=❤️‍🔥 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2764-fe0f-200d-1f525.svg loading=lazy> <span class=chatlog__reaction-count>12</span></div><div class=chatlog__reaction title=heart><img class="chatlog__emoji chatlog__emoji--small" alt=❤️ src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2764.svg loading=lazy> <span class=chatlog__reaction-count>1</span></div></div></div></div></div></div>
+<div class=chatlog__message-group><div id=chatlog__message-container-1390782168451649578 class=chatlog__message-container data-message-id=1390782168451649578><div class=chatlog__message><div class=chatlog__message-aside><img class=chatlog__avatar src="https://cdn.discordapp.com/avatars/914140108159074344/3974f9369dbc9b3b908150b5b89b5405.png?size=512" alt=Avatar loading=lazy></div><div class=chatlog__message-primary><div class=chatlog__header><span class=chatlog__author style=color:rgb(46,204,113) title=nesrine._. data-user-id=914140108159074344>Nesrine</span> <span class=chatlog__timestamp title="vendredi 4 juillet 2025 12:51"><a href=#chatlog__message-container-1390782168451649578>04/07/2025 12:51</a></span></div><div class="chatlog__content chatlog__markdown"><span class=chatlog__markdown-preserve># 10min left for today&#39;s session <span class="chatlog__markdown-mention" style="color: rgb(87, 173, 92); background-color: rgba(87, 173, 92, 0.1);">@FrAIday</span> !!</span></div></div></div></div></div>
+<div class=chatlog__message-group><div id=chatlog__message-container-1390786154919497778 class=chatlog__message-container data-message-id=1390786154919497778><div class=chatlog__message><div class=chatlog__message-aside><img class=chatlog__avatar src="https://cdn.discordapp.com/avatars/914140108159074344/3974f9369dbc9b3b908150b5b89b5405.png?size=512" alt=Avatar loading=lazy></div><div class=chatlog__message-primary><div class=chatlog__header><span class=chatlog__author style=color:rgb(46,204,113) title=nesrine._. data-user-id=914140108159074344>Nesrine</span> <span class=chatlog__timestamp title="vendredi 4 juillet 2025 13:07"><a href=#chatlog__message-container-1390786154919497778>04/07/2025 13:07</a></span></div><div class="chatlog__content chatlog__markdown"><span class=chatlog__markdown-preserve># <span class="chatlog__markdown-mention" style="color: rgb(87, 173, 92); background-color: rgba(87, 173, 92, 0.1);">@FrAIday</span> we&#39;re startiiiing</span></div><div class=chatlog__reactions><div class=chatlog__reaction title=heart_on_fire><img class="chatlog__emoji chatlog__emoji--small" alt=❤️‍🔥 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2764-fe0f-200d-1f525.svg loading=lazy> <span class=chatlog__reaction-count>3</span></div></div></div></div></div></div>
+<div class=chatlog__message-group><div id=chatlog__message-container-1392619091801542656 class=chatlog__message-container data-message-id=1392619091801542656><div class=chatlog__message><div class=chatlog__message-aside><img class=chatlog__avatar src="https://cdn.discordapp.com/avatars/914140108159074344/3974f9369dbc9b3b908150b5b89b5405.png?size=512" alt=Avatar loading=lazy></div><div class=chatlog__message-primary><div class=chatlog__header><span class=chatlog__author style=color:rgb(46,204,113) title=nesrine._. data-user-id=914140108159074344>Nesrine</span> <span class=chatlog__timestamp title="mercredi 9 juillet 2025 14:31"><a href=#chatlog__message-container-1392619091801542656>09/07/2025 14:31</a></span></div><div class="chatlog__content chatlog__markdown"><span class=chatlog__markdown-preserve><h1>Hellooo <span class="chatlog__markdown-mention" style="color: rgb(87, 173, 92); background-color: rgba(87, 173, 92, 0.1);">@FrAIday</span> <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🙌"
+    title="raised_hands"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f64c.svg"> </h1>
+This summer we&#39;re bringing out <strong>les grands moyens</strong> <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="😤"
+    title="triumph"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f624.svg"> , and this week&#39;s guest is proof..
+
+A Technical Co-Manager at <em>School of AI Algiers</em>, a Lead at <em>CubTech</em>, a Bioinformatics Student, but a lot of you know him as a mentor, judge and serial hackathon winner <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="👑"
+    title="crown"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f451.svg"> 
+<h2>Please make some noise foooor <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🥁"
+    title="drum"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f941.svg"> : <span class="chatlog__markdown-spoiler chatlog__markdown-spoiler--hidden" onclick="showSpoiler(event, this)">Oussama Boussahla <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🔥"
+    title="fire"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f525.svg"><img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🔥"
+    title="fire"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f525.svg"> </span></h2>
+--
+
+<img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🔍"
+    title="mag"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f50d.svg"> Now to the mse99i, this Friday&#39;s subject:
+<h1>&quot;Predict the Future with AI: Time Series Forecasting&quot;  <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🔮"
+    title="crystal_ball"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f52e.svg"></h1>From stock market trends to weather predictions and energy demand, <strong>Time Series Forecasting</strong> is one of the most powerful tools in the AI toolbox <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🧰"
+    title="toolbox"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f9f0.svg"> .
+
+In this session, we’ll explore <em>how AI can learn from the past to predict what comes next</em>. Whether you&#39;re new to forecasting or have some experience, this talk is for <strong>you</strong> <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🤞"
+    title="fingers_crossed"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f91e.svg">
+
+Don’t miss this opportunity to learn from someone <strong>deeply embedded</strong> in the AI community <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🧠"
+    title="brain"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f9e0.svg"></span></div><div class=chatlog__reactions><div class=chatlog__reaction title=fire><img class="chatlog__emoji chatlog__emoji--small" alt=🔥 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f525.svg loading=lazy> <span class=chatlog__reaction-count>16</span></div><div class=chatlog__reaction title=sparkles><img class="chatlog__emoji chatlog__emoji--small" alt=✨ src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2728.svg loading=lazy> <span class=chatlog__reaction-count>2</span></div></div></div></div></div></div>
+<div class=chatlog__message-group><div id=chatlog__message-container-1392807720981102733 class=chatlog__message-container data-message-id=1392807720981102733><div class=chatlog__message><div class=chatlog__message-aside><img class=chatlog__avatar src="https://cdn.discordapp.com/avatars/663106702991818803/21c44bf22486bddd2b55c15d11bf13a6.png?size=512" alt=Avatar loading=lazy></div><div class=chatlog__message-primary><div class=chatlog__header><span class=chatlog__author style=color:rgb(96,125,139) title=diobrand data-user-id=663106702991818803>uranium</span> <span class=chatlog__timestamp title="jeudi 10 juillet 2025 03:00"><a href=#chatlog__message-container-1392807720981102733>10/07/2025 03:00</a></span></div><div class="chatlog__content chatlog__markdown"><span class=chatlog__markdown-preserve><span class="chatlog__markdown-mention" style="color: rgb(27, 97, 227); background-color: rgba(27, 97, 227, 0.1);">@Robotics</span>  don&#39;t miss these out !</span></div><div class=chatlog__reactions><div class=chatlog__reaction title=heart><img class="chatlog__emoji chatlog__emoji--small" alt=❤️ src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2764.svg loading=lazy> <span class=chatlog__reaction-count>2</span></div></div></div></div></div></div>
+<div class=chatlog__message-group><div id=chatlog__message-container-1393191088419770478 class=chatlog__message-container data-message-id=1393191088419770478><div class=chatlog__message><div class=chatlog__message-aside><img class=chatlog__avatar src="https://cdn.discordapp.com/avatars/914140108159074344/3974f9369dbc9b3b908150b5b89b5405.png?size=512" alt=Avatar loading=lazy></div><div class=chatlog__message-primary><div class=chatlog__header><span class=chatlog__author style=color:rgb(46,204,113) title=nesrine._. data-user-id=914140108159074344>Nesrine</span> <span class=chatlog__timestamp title="vendredi 11 juillet 2025 04:23"><a href=#chatlog__message-container-1393191088419770478>11/07/2025 04:23</a></span></div><div class="chatlog__content chatlog__markdown"><span class=chatlog__markdown-preserve><h1><img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="📢"
+    title="loudspeaker"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f4e2.svg">  Reminder!!!!</h1>
+Hey <span class="chatlog__markdown-mention" style="color: rgb(87, 173, 92); background-color: rgba(87, 173, 92, 0.1);">@FrAIday</span> <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="👋"
+    title="wave"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f44b.svg"> 
+This is your reminder for today&#39;s session
+
+<img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="📰"
+    title="newspaper"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f4f0.svg"> <strong>Topic</strong>: &quot;Predict the Future with AI: Time Series Forecasting&quot; 
+<img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🎙️"
+    title="microphone2"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f399.svg"> <strong>Guest</strong>:  Oussama Boussahla (First <strong>EXTERNAL</strong> guest)
+<img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="📍"
+    title="round_pushpin"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f4cd.svg"> <strong>Place</strong>: <a href="https://meet.google.com/nbt-xrvt-ebt">https://meet.google.com/nbt-xrvt-ebt</a>
+<img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="⏰"
+    title="alarm_clock"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/23f0.svg">  <strong>Time</strong>: 21:00
+
+Time Series is an important building bloc in the world of AI <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🧠"
+    title="brain"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f9e0.svg"> , make sure to not miss out!
+Come curious :&gt;</span></div><div class=chatlog__reactions><div class=chatlog__reaction title=fire><img class="chatlog__emoji chatlog__emoji--small" alt=🔥 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f525.svg loading=lazy> <span class=chatlog__reaction-count>17</span></div></div></div></div></div></div>
+<div class=chatlog__message-group><div id=chatlog__message-container-1393319044198957086 class=chatlog__message-container data-message-id=1393319044198957086><div class=chatlog__message><div class=chatlog__message-aside><img class=chatlog__avatar src="https://cdn.discordapp.com/avatars/914140108159074344/3974f9369dbc9b3b908150b5b89b5405.png?size=512" alt=Avatar loading=lazy></div><div class=chatlog__message-primary><div class=chatlog__header><span class=chatlog__author style=color:rgb(46,204,113) title=nesrine._. data-user-id=914140108159074344>Nesrine</span> <span class=chatlog__timestamp title="vendredi 11 juillet 2025 12:52"><a href=#chatlog__message-container-1393319044198957086>11/07/2025 12:52</a></span></div><div class="chatlog__content chatlog__markdown"><span class=chatlog__markdown-preserve># <span class="chatlog__markdown-mention" style="color: rgb(87, 173, 92); background-color: rgba(87, 173, 92, 0.1);">@FrAIday</span> we&#39;ll start in 10 min, join us</span></div></div></div></div></div>
+<div class=chatlog__message-group><div id=chatlog__message-container-1393322324152942633 class=chatlog__message-container data-message-id=1393322324152942633><div class=chatlog__message><div class=chatlog__message-aside><img class=chatlog__avatar src="https://cdn.discordapp.com/avatars/914140108159074344/3974f9369dbc9b3b908150b5b89b5405.png?size=512" alt=Avatar loading=lazy></div><div class=chatlog__message-primary><div class=chatlog__header><span class=chatlog__author style=color:rgb(46,204,113) title=nesrine._. data-user-id=914140108159074344>Nesrine</span> <span class=chatlog__timestamp title="vendredi 11 juillet 2025 13:05"><a href=#chatlog__message-container-1393322324152942633>11/07/2025 13:05</a></span></div><div class="chatlog__content chatlog__markdown"><span class=chatlog__markdown-preserve><span class="chatlog__markdown-mention" style="color: rgb(87, 173, 92); background-color: rgba(87, 173, 92, 0.1);">@FrAIday</span> we&#39;re starting</span></div></div></div></div></div>
+<div class=chatlog__message-group><div id=chatlog__message-container-1395030608777973921 class=chatlog__message-container data-message-id=1395030608777973921><div class=chatlog__message><div class=chatlog__message-aside><img class=chatlog__avatar src="https://cdn.discordapp.com/avatars/914140108159074344/3974f9369dbc9b3b908150b5b89b5405.png?size=512" alt=Avatar loading=lazy></div><div class=chatlog__message-primary><div class=chatlog__header><span class=chatlog__author style=color:rgb(46,204,113) title=nesrine._. data-user-id=914140108159074344>Nesrine</span> <span class=chatlog__timestamp title="mercredi 16 juillet 2025 06:13"><a href=#chatlog__message-container-1395030608777973921>16/07/2025 06:13</a></span></div><div class="chatlog__content chatlog__markdown"><span class=chatlog__markdown-preserve><h2>You weren&#39;t accepted f Junction and now your weekend&#39;s free? <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="😔"
+    title="pensive"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f614.svg"> </h2><h1><span class="chatlog__markdown-mention" style="color: rgb(87, 173, 92); background-color: rgba(87, 173, 92, 0.1);">@FrAIday</span>&#39;s got you <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🤝"
+    title="handshake"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f91d.svg"> <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="❤️‍🔥"
+    title="heart_on_fire"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2764-fe0f-200d-1f525.svg"> </h1>
+the irony? our <strong>guest speaker</strong> is a <strong>junction winner </strong> <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="😂"
+    title="joy"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f602.svg"> <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="😂"
+    title="joy"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f602.svg">
+He also a SII graduate, now Ph.D Candidate in AI at Paris-Est and works as an AI/ML Engineer
+<h3>Please welcome <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🥁"
+    title="drum"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f941.svg"><img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🥁"
+    title="drum"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f941.svg"><img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🥁"
+    title="drum"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f941.svg">: <span class="chatlog__markdown-spoiler chatlog__markdown-spoiler--hidden" onclick="showSpoiler(event, this)"><span class="chatlog__markdown-mention" title="imad_ken">@imad_ken</span> <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🗣️"
+    title="speaking_head"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f5e3.svg"> </span></h3>--
+
+This week we&#39;re talking <strong>vision</strong> 
+<h2>“Teaching LLMs to See” <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="👀"
+    title="eyes"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f440.svg"> </h2><img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🤖"
+    title="robot"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f916.svg"> <strong>CNNs</strong> were the go to for computer vision, until transformers showed up with better performance and less ressources needed. 
+Join us to see how models like <strong>CLIP</strong> and BLIP are helping <strong>LLMs</strong> interpret the visual world <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🧠"
+    title="brain"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f9e0.svg"> .
+We&#39;ll be diving to the following papers <a href="https://arxiv.org/pdf/2010.11929">1</a>, <a href="https://openai.com/index/clip/">2</a>, <a href="https://arxiv.org/pdf/2201.12086">3</a>, <a href="https://arxiv.org/pdf/2301.12597">4</a>
+
+Like always be there, be square <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🔳"
+    title="white_square_button"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f533.svg"></span></div><div class=chatlog__reactions><div class=chatlog__reaction title=white_heart><img class="chatlog__emoji chatlog__emoji--small" alt=🤍 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f90d.svg loading=lazy> <span class=chatlog__reaction-count>19</span></div><div class=chatlog__reaction title=rofl><img class="chatlog__emoji chatlog__emoji--small" alt=🤣 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f923.svg loading=lazy> <span class=chatlog__reaction-count>4</span></div><div class=chatlog__reaction title=heart_on_fire><img class="chatlog__emoji chatlog__emoji--small" alt=❤️‍🔥 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2764-fe0f-200d-1f525.svg loading=lazy> <span class=chatlog__reaction-count>3</span></div><div class=chatlog__reaction title=fire><img class="chatlog__emoji chatlog__emoji--small" alt=🔥 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f525.svg loading=lazy> <span class=chatlog__reaction-count>1</span></div><div class=chatlog__reaction title=muscle><img class="chatlog__emoji chatlog__emoji--small" alt=💪 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f4aa.svg loading=lazy> <span class=chatlog__reaction-count>1</span></div><div class=chatlog__reaction title=white_square_button><img class="chatlog__emoji chatlog__emoji--small" alt=🔳 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f533.svg loading=lazy> <span class=chatlog__reaction-count>2</span></div></div></div></div></div></div>
+<div class=chatlog__message-group><div id=chatlog__message-container-1395051131880603658 class=chatlog__message-container data-message-id=1395051131880603658><div class=chatlog__message><div class=chatlog__message-aside><div class=chatlog__reply-symbol></div><img class=chatlog__avatar src="https://cdn.discordapp.com/avatars/725114544170467441/c22bc19ceea4a158d6905809766cf9df.png?size=512" alt=Avatar loading=lazy></div><div class=chatlog__message-primary><div class=chatlog__reply><img class=chatlog__reply-avatar src="https://cdn.discordapp.com/avatars/914140108159074344/3974f9369dbc9b3b908150b5b89b5405.png?size=512" alt=Avatar loading=lazy><div class=chatlog__reply-author style=color:rgb(46,204,113) title=nesrine._.>Nesrine</div><div class=chatlog__reply-content><span class=chatlog__reply-link onclick="scrollToMessage(event,'1395030608777973921')"> <h2>You weren&#39;t accepted f Junction and now your weekend&#39;s free? <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="😔"
+    title="pensive"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f614.svg"> </h2><h1><span class="chatlog__markdown-mention" style="color: rgb(87, 173, 92); background-color: rgba(87, 173, 92, 0.1);">@FrAIday</span>&#39;s got you <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🤝"
+    title="handshake"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f91d.svg"> <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="❤️‍🔥"
+    title="heart_on_fire"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2764-fe0f-200d-1f525.svg"> </h1>
+the irony? our <strong>guest speaker</strong> is a <strong>junction winner </strong> <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="😂"
+    title="joy"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f602.svg"> <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="😂"
+    title="joy"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f602.svg">
+He also a SII graduate, now Ph.D Candidate in AI at Paris-Est and works as an AI/ML Engineer
+<h3>Please welcome <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🥁"
+    title="drum"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f941.svg"><img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🥁"
+    title="drum"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f941.svg"><img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🥁"
+    title="drum"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f941.svg">: <span class="chatlog__markdown-spoiler chatlog__markdown-spoiler--hidden" onclick="showSpoiler(event, this)"><span class="chatlog__markdown-mention" title="imad_ken">@imad_ken</span> <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🗣️"
+    title="speaking_head"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f5e3.svg"> </span></h3>--
+
+This week we&#39;re talking <strong>vision</strong> 
+<h2>“Teaching LLMs to See” <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="👀"
+    title="eyes"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f440.svg"> </h2><img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🤖"
+    title="robot"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f916.svg"> <strong>CNNs</strong> were the go to for computer vision, until transformers showed up with better performance and less ressources needed. 
+Join us to see how models like <strong>CLIP</strong> and BLIP are helping <strong>LLMs</strong> interpret the visual world <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🧠"
+    title="brain"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f9e0.svg"> .
+We&#39;ll be diving to the following papers <a href="https://arxiv.org/pdf/2010.11929">1</a>, <a href="https://openai.com/index/clip/">2</a>, <a href="https://arxiv.org/pdf/2201.12086">3</a>, <a href="https://arxiv.org/pdf/2301.12597">4</a>
+
+Like always be there, be square <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🔳"
+    title="white_square_button"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f533.svg"> </span></div></div><div class=chatlog__header><span class=chatlog__author style=color:rgb(17,128,106) title=alvine. data-user-id=725114544170467441>MahdiDbh</span> <span class=chatlog__timestamp title="mercredi 16 juillet 2025 07:35"><a href=#chatlog__message-container-1395051131880603658>16/07/2025 07:35</a></span></div><div class="chatlog__content chatlog__markdown"><span class=chatlog__markdown-preserve><span class="chatlog__markdown-mention" style="color: rgb(27, 97, 227); background-color: rgba(27, 97, 227, 0.1);">@Robotics</span></span></div><div class=chatlog__reactions><div class=chatlog__reaction title=heart><img class="chatlog__emoji chatlog__emoji--small" alt=❤️ src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2764.svg loading=lazy> <span class=chatlog__reaction-count>3</span></div></div></div></div></div></div>
+<div class=chatlog__message-group><div id=chatlog__message-container-1395713730393931867 class=chatlog__message-container data-message-id=1395713730393931867><div class=chatlog__message><div class=chatlog__message-aside><img class=chatlog__avatar src="https://cdn.discordapp.com/avatars/914140108159074344/3974f9369dbc9b3b908150b5b89b5405.png?size=512" alt=Avatar loading=lazy></div><div class=chatlog__message-primary><div class=chatlog__header><span class=chatlog__author style=color:rgb(46,204,113) title=nesrine._. data-user-id=914140108159074344>Nesrine</span> <span class=chatlog__timestamp title="vendredi 18 juillet 2025 03:28"><a href=#chatlog__message-container-1395713730393931867>18/07/2025 03:28</a></span></div><div class="chatlog__content chatlog__markdown"><span class=chatlog__markdown-preserve><h2><img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🔥"
+    title="fire"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f525.svg"> Want to stand out in tomorrow’s Datathon with killer vision models?</h2>Still relying on CNNs? <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="😴"
+    title="sleeping"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f634.svg"> Time to level up.
+
+Join us <strong>TODAY</strong> in <span class="chatlog__markdown-mention" style="color: rgb(87, 173, 92); background-color: rgba(87, 173, 92, 0.1);">@FrAIday</span> talk to discover the DL architectures used lately for <strong>better performance</strong> and <strong>more efficiency </strong> 
+
+<img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="📰"
+    title="newspaper"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f4f0.svg"> <strong>Topic</strong>: <em>“Teaching LLMs to See”</em>
+<img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🎙️"
+    title="microphone2"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f399.svg"> <strong>Guest</strong>:  <span class="chatlog__markdown-mention" title="imad_ken">@imad_ken</span>
+<img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="📍"
+    title="round_pushpin"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f4cd.svg"> <strong>Place</strong>: <a href="https://discord.com/channels/1282095800079351851/1358940743367921755" onclick="scrollToMessage(event, '1358940743367921755')">https://discord.com/channels/1282095800079351851/1358940743367921755</a>
+<img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="⏰"
+    title="alarm_clock"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/23f0.svg">  <strong>Time</strong>: <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="⚠️"
+    title="warning"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/26a0.svg"><strong>22:00</strong><img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="⚠️"
+    title="warning"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/26a0.svg">
+<span class="chatlog__markdown-spoiler chatlog__markdown-spoiler--hidden" onclick="showSpoiler(event, this)"><strong>(Read that time again &gt;:U, ik you didn&#39;t)</strong></span>
+
+Don&#39;t miss it, see you tonight <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="✨"
+    title="sparkles"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2728.svg"></span></div><div class=chatlog__reactions><div class=chatlog__reaction title=fire><img class="chatlog__emoji chatlog__emoji--small" alt=🔥 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f525.svg loading=lazy> <span class=chatlog__reaction-count>11</span></div><div class=chatlog__reaction title=white_heart><img class="chatlog__emoji chatlog__emoji--small" alt=🤍 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f90d.svg loading=lazy> <span class=chatlog__reaction-count>3</span></div></div></div></div></div></div>
+<div class=chatlog__message-group><div id=chatlog__message-container-1395870737281187962 class=chatlog__message-container data-message-id=1395870737281187962><div class=chatlog__message><div class=chatlog__message-aside><img class=chatlog__avatar src="https://cdn.discordapp.com/avatars/914140108159074344/3974f9369dbc9b3b908150b5b89b5405.png?size=512" alt=Avatar loading=lazy></div><div class=chatlog__message-primary><div class=chatlog__header><span class=chatlog__author style=color:rgb(46,204,113) title=nesrine._. data-user-id=914140108159074344>Nesrine</span> <span class=chatlog__timestamp title="vendredi 18 juillet 2025 13:51"><a href=#chatlog__message-container-1395870737281187962>18/07/2025 13:51</a></span></div><div class="chatlog__content chatlog__markdown"><span class=chatlog__markdown-preserve>## <span class="chatlog__markdown-mention" style="color: rgb(87, 173, 92); background-color: rgba(87, 173, 92, 0.1);">@FrAIday</span> see you in 10min</span></div></div></div></div></div>
+<div class=chatlog__message-group><div id=chatlog__message-container-1397675511903289504 class=chatlog__message-container data-message-id=1397675511903289504><div class=chatlog__message><div class=chatlog__message-aside><img class=chatlog__avatar src="https://cdn.discordapp.com/avatars/914140108159074344/3974f9369dbc9b3b908150b5b89b5405.png?size=512" alt=Avatar loading=lazy></div><div class=chatlog__message-primary><div class=chatlog__header><span class=chatlog__author style=color:rgb(46,204,113) title=nesrine._. data-user-id=914140108159074344>Nesrine</span> <span class=chatlog__timestamp title="mercredi 23 juillet 2025 13:23"><a href=#chatlog__message-container-1397675511903289504>23/07/2025 13:23</a></span></div><div class="chatlog__content chatlog__markdown"><span class=chatlog__markdown-preserve><h2>Hey <span class="chatlog__markdown-mention" style="color: rgb(87, 173, 92); background-color: rgba(87, 173, 92, 0.1);">@FrAIday</span> and the yappers of the world</h2>To celebrate our 10th session, we&#39;re diving into an often overlooked, yet incredibly important topic.
+
+
+Our guest is a <strong>Vision student</strong>, a <strong>GitHub Campus expert</strong> and proficient in the <strong>latest in AI</strong> and that&#39;s common in our guests <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="💁‍♀️"
+    title="woman_tipping_hand"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f481-200d-2640-fe0f.svg"> 
+Buuut, she&#39;s also something of an <strong>activist</strong> <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🗣️"
+    title="speaking_head"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f5e3.svg"> , an ex-leader at USTHB&#39;s <strong>reading club</strong> and now a manager at bbz debate gatherings <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="💪"
+    title="muscle"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f4aa.svg"> 
+<h2>Please welcome <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🥁"
+    title="drum"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f941.svg">  <span class="chatlog__markdown-spoiler chatlog__markdown-spoiler--hidden" onclick="showSpoiler(event, this)"><span class="chatlog__markdown-mention" title="selma963">@Selma</span> <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="cuteFrog"
+    title="cuteFrog"
+    src="https://cdn.discordapp.com/emojis/1300928645933563904.png"> <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="✨"
+    title="sparkles"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2728.svg"> </span></h2>--
+why am I oversharing about the guest? <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="😅"
+    title="sweat_smile"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f605.svg"> trust me it&#39;s relevant to the subject
+<h1><img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="👊"
+    title="punch"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f44a.svg"> AI in war: how to fight back? </h1>We&#39;ll be having an <strong>ethical discussion</strong> relevant to the <strong>current global events</strong> , and try to have an <strong>analytic</strong> take on the the <strong>newest</strong> technology <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🧐"
+    title="face_with_monocle"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f9d0.svg"> 
+It will be a discussion (debate maybe) heavy session, and everyone is invited to share their opinion <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🤝"
+    title="handshake"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f91d.svg"> 
+
+
+Join us with a guest who brings the best in both worlds to discuss important causes! <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="❤️‍🔥"
+    title="heart_on_fire"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2764-fe0f-200d-1f525.svg"><img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="❤️‍🔥"
+    title="heart_on_fire"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2764-fe0f-200d-1f525.svg"></span></div><div class=chatlog__reactions><div class=chatlog__reaction title=heart><img class="chatlog__emoji chatlog__emoji--small" alt=❤️ src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2764.svg loading=lazy> <span class=chatlog__reaction-count>13</span></div><div class=chatlog__reaction title=fire><img class="chatlog__emoji chatlog__emoji--small" alt=🔥 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f525.svg loading=lazy> <span class=chatlog__reaction-count>9</span></div><div class=chatlog__reaction title=sparkles><img class="chatlog__emoji chatlog__emoji--small" alt=✨ src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2728.svg loading=lazy> <span class=chatlog__reaction-count>4</span></div><div class=chatlog__reaction title=anatomical_heart><img class="chatlog__emoji chatlog__emoji--small" alt=🫀 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1fac0.svg loading=lazy> <span class=chatlog__reaction-count>3</span></div><div class=chatlog__reaction title=cuteFrog><img class="chatlog__emoji chatlog__emoji--small" alt=cuteFrog src=https://cdn.discordapp.com/emojis/1300928645933563904.png loading=lazy> <span class=chatlog__reaction-count>2</span></div><div class=chatlog__reaction title=🫶><img class="chatlog__emoji chatlog__emoji--small" alt=🫶 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1faf6.svg loading=lazy> <span class=chatlog__reaction-count>2</span></div><div class=chatlog__reaction title=white_heart><img class="chatlog__emoji chatlog__emoji--small" alt=🤍 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f90d.svg loading=lazy> <span class=chatlog__reaction-count>2</span></div></div></div></div></div></div>
+<div class=chatlog__message-group><div id=chatlog__message-container-1398296755040288788 class=chatlog__message-container data-message-id=1398296755040288788><div class=chatlog__message><div class=chatlog__message-aside><img class=chatlog__avatar src="https://cdn.discordapp.com/avatars/914140108159074344/3974f9369dbc9b3b908150b5b89b5405.png?size=512" alt=Avatar loading=lazy></div><div class=chatlog__message-primary><div class=chatlog__header><span class=chatlog__author style=color:rgb(46,204,113) title=nesrine._. data-user-id=914140108159074344>Nesrine</span> <span class=chatlog__timestamp title="vendredi 25 juillet 2025 06:32"><a href=#chatlog__message-container-1398296755040288788>25/07/2025 06:32</a></span></div><div class="chatlog__content chatlog__markdown"><span class=chatlog__markdown-preserve><h1><img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="📢"
+    title="loudspeaker"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f4e2.svg">  Reminder</h1>
+Hello <span class="chatlog__markdown-mention" style="color: rgb(87, 173, 92); background-color: rgba(87, 173, 92, 0.1);">@FrAIday</span> <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="👋"
+    title="wave"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f44b.svg"> 
+Here’s your reminder for today’s session
+
+<img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="📰"
+    title="newspaper"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f4f0.svg"> <strong>Topic</strong>: <em><strong>AI in war: how to fight back?</strong></em>
+<img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🎙️"
+    title="microphone2"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f399.svg"> <strong>Guest</strong>:  <span class="chatlog__markdown-mention" title="selma963">@Selma</span> 
+<img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="📍"
+    title="round_pushpin"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f4cd.svg"> <strong>Place</strong>: <a href="https://discord.com/channels/1282095800079351851/1358940743367921755" onclick="scrollToMessage(event, '1358940743367921755')">https://discord.com/channels/1282095800079351851/1358940743367921755</a>
+<img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="⏰"
+    title="alarm_clock"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/23f0.svg">  <strong>Time</strong>: 22:00
+
+We&#39;re diving deep into some heavy discussions, so don&#39;t miss it!
+Li yrati my <em>binome</em>&#39;s session mantfahemch m3ah <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🤨"
+    title="face_with_raised_eyebrow"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f928.svg"></span></div><div class=chatlog__reactions><div class=chatlog__reaction title=fire><img class="chatlog__emoji chatlog__emoji--small" alt=🔥 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f525.svg loading=lazy> <span class=chatlog__reaction-count>13</span></div><div class=chatlog__reaction title=white_heart><img class="chatlog__emoji chatlog__emoji--small" alt=🤍 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f90d.svg loading=lazy> <span class=chatlog__reaction-count>2</span></div><div class=chatlog__reaction title=cuteFrog><img class="chatlog__emoji chatlog__emoji--small" alt=cuteFrog src=https://cdn.discordapp.com/emojis/1300928645933563904.png loading=lazy> <span class=chatlog__reaction-count>2</span></div></div></div></div></div></div>
+<div class=chatlog__message-group><div id=chatlog__message-container-1398402120851656744 class=chatlog__message-container data-message-id=1398402120851656744><div class=chatlog__message><div class=chatlog__message-aside><img class=chatlog__avatar src="https://cdn.discordapp.com/avatars/914140108159074344/3974f9369dbc9b3b908150b5b89b5405.png?size=512" alt=Avatar loading=lazy></div><div class=chatlog__message-primary><div class=chatlog__header><span class=chatlog__author style=color:rgb(46,204,113) title=nesrine._. data-user-id=914140108159074344>Nesrine</span> <span class=chatlog__timestamp title="vendredi 25 juillet 2025 13:30"><a href=#chatlog__message-container-1398402120851656744>25/07/2025 13:30</a></span></div><div class="chatlog__content chatlog__markdown"><span class=chatlog__markdown-preserve><h1><span class="chatlog__markdown-mention" style="color: rgb(87, 173, 92); background-color: rgba(87, 173, 92, 0.1);">@FrAIday</span> change of plan!!!</h1>Given the importance of the subject we&#39;ve decided to do it here <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="➡️"
+    title="arrow_right"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/27a1.svg"> <a href="https://discord.com/channels/1282095800079351851/1283150882099171408" onclick="scrollToMessage(event, '1283150882099171408')">https://discord.com/channels/1282095800079351851/1283150882099171408</a> <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="⬅️"
+    title="arrow_left"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2b05.svg"> 
+durring the session <strong>everyone</strong> will have <strong>access</strong> so.. <strong>tell a friend</strong>
+
+
+<strong>subject</strong>: AI in war: how to fight back?
+<strong>When</strong>: in 30 min
+
+See youu!!</span></div><div class=chatlog__reactions><div class=chatlog__reaction title=flag_ps><img class="chatlog__emoji chatlog__emoji--small" alt=🇵🇸 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f1f5-1f1f8.svg loading=lazy> <span class=chatlog__reaction-count>12</span></div><div class=chatlog__reaction title=heart><img class="chatlog__emoji chatlog__emoji--small" alt=❤️ src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2764.svg loading=lazy> <span class=chatlog__reaction-count>11</span></div><div class=chatlog__reaction title=white_heart><img class="chatlog__emoji chatlog__emoji--small" alt=🤍 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f90d.svg loading=lazy> <span class=chatlog__reaction-count>5</span></div></div></div></div></div></div>
+<div class=chatlog__message-group><div id=chatlog__message-container-1398402774529740960 class=chatlog__message-container data-message-id=1398402774529740960><div class=chatlog__message><div class=chatlog__message-aside><div class=chatlog__reply-symbol></div><img class=chatlog__avatar src="https://cdn.discordapp.com/avatars/725114544170467441/c22bc19ceea4a158d6905809766cf9df.png?size=512" alt=Avatar loading=lazy></div><div class=chatlog__message-primary><div class=chatlog__reply><img class=chatlog__reply-avatar src="https://cdn.discordapp.com/avatars/914140108159074344/3974f9369dbc9b3b908150b5b89b5405.png?size=512" alt=Avatar loading=lazy><div class=chatlog__reply-author style=color:rgb(46,204,113) title=nesrine._.>Nesrine</div><div class=chatlog__reply-content><span class=chatlog__reply-link onclick="scrollToMessage(event,'1398402120851656744')"> <h1><span class="chatlog__markdown-mention" style="color: rgb(87, 173, 92); background-color: rgba(87, 173, 92, 0.1);">@FrAIday</span> change of plan!!!</h1>Given the importance of the subject we&#39;ve decided to do it here <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="➡️"
+    title="arrow_right"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/27a1.svg"> <a href="https://discord.com/channels/1282095800079351851/1283150882099171408" onclick="scrollToMessage(event, '1283150882099171408')">https://discord.com/channels/1282095800079351851/1283150882099171408</a> <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="⬅️"
+    title="arrow_left"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2b05.svg"> 
+durring the session <strong>everyone</strong> will have <strong>access</strong> so.. <strong>tell a friend</strong>
+
+
+<strong>subject</strong>: AI in war: how to fight back?
+<strong>When</strong>: in 30 min
+
+See youu!! </span></div></div><div class=chatlog__header><span class=chatlog__author style=color:rgb(17,128,106) title=alvine. data-user-id=725114544170467441>MahdiDbh</span> <span class=chatlog__timestamp title="vendredi 25 juillet 2025 13:33"><a href=#chatlog__message-container-1398402774529740960>25/07/2025 13:33</a></span></div><div class="chatlog__content chatlog__markdown"><span class=chatlog__markdown-preserve><span class="chatlog__markdown-mention" style="">@MC BOUNADEM</span> 
+<h1>Don&#39;t miss this </h1>and next time join IT , bch t7dro l our activitys <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="❤️‍🔥"
+    title="heart_on_fire"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2764-fe0f-200d-1f525.svg"></span></div><div class=chatlog__reactions><div class=chatlog__reaction title=heartpulse><img class="chatlog__emoji chatlog__emoji--small" alt=💗 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f497.svg loading=lazy> <span class=chatlog__reaction-count>7</span></div><div class=chatlog__reaction title=heart_on_fire><img class="chatlog__emoji chatlog__emoji--small" alt=❤️‍🔥 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2764-fe0f-200d-1f525.svg loading=lazy> <span class=chatlog__reaction-count>11</span></div><div class=chatlog__reaction title=fire><img class="chatlog__emoji chatlog__emoji--small" alt=🔥 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f525.svg loading=lazy> <span class=chatlog__reaction-count>5</span></div></div></div></div></div></div>
+<div class=chatlog__message-group><div id=chatlog__message-container-1400089885112799374 class=chatlog__message-container data-message-id=1400089885112799374><div class=chatlog__message><div class=chatlog__message-aside><img class=chatlog__avatar src="https://cdn.discordapp.com/avatars/914140108159074344/3974f9369dbc9b3b908150b5b89b5405.png?size=512" alt=Avatar loading=lazy></div><div class=chatlog__message-primary><div class=chatlog__header><span class=chatlog__author style=color:rgb(46,204,113) title=nesrine._. data-user-id=914140108159074344>Nesrine</span> <span class=chatlog__timestamp title="mercredi 30 juillet 2025 05:17"><a href=#chatlog__message-container-1400089885112799374>30/07/2025 05:17</a></span></div><div class="chatlog__content chatlog__markdown"><span class=chatlog__markdown-preserve><h2>No <span class="chatlog__markdown-mention" style="color: rgb(87, 173, 92); background-color: rgba(87, 173, 92, 0.1);">@FrAIday</span> for you this week <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="😔"
+    title="pensive"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f614.svg"> </h2>We&#39;ve been hacked or whatava U~U 
+Since there is a ctf this weekend.. we&#39;ll take a break
+### Enjoy the GHCTF <img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🔥"
+    title="fire"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f525.svg"><img
+    loading="lazy"
+    class="chatlog__emoji "
+    alt="🔥"
+    title="fire"
+    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f525.svg"></span></div><div class=chatlog__reactions><div class=chatlog__reaction title=yeet><img class="chatlog__emoji chatlog__emoji--small" alt=yeet src=https://cdn.discordapp.com/emojis/1362822093682643204.png loading=lazy> <span class=chatlog__reaction-count>7</span></div><div class=chatlog__reaction title=teddy_bear><img class="chatlog__emoji chatlog__emoji--small" alt=🧸 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f9f8.svg loading=lazy> <span class=chatlog__reaction-count>4</span></div><div class=chatlog__reaction title=white_heart><img class="chatlog__emoji chatlog__emoji--small" alt=🤍 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f90d.svg loading=lazy> <span class=chatlog__reaction-count>2</span></div><div class=chatlog__reaction title=joy><img class="chatlog__emoji chatlog__emoji--small" alt=😂 src=https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f602.svg loading=lazy> <span class=chatlog__reaction-count>1</span></div></div></div></div></div><div id=chatlog__message-container-1400089947020595210 class=chatlog__message-container data-message-id=1400089947020595210><div class=chatlog__message><div class=chatlog__message-aside><div class=chatlog__short-timestamp title="mercredi 30 juillet 2025 05:17">05:17</div></div><div class=chatlog__message-primary><div class="chatlog__content chatlog__markdown"><span class=chatlog__markdown-preserve>the hacking process:</span></div></div></div></div><div id=chatlog__message-container-1400089964724748392 class=chatlog__message-container data-message-id=1400089964724748392><div class=chatlog__message><div class=chatlog__message-aside><div class=chatlog__short-timestamp title="mercredi 30 juillet 2025 05:17">05:17</div></div><div class=chatlog__message-primary><div class="chatlog__content chatlog__markdown"><span class=chatlog__markdown-preserve><a href="https://tenor.com/view/stan-twt-reaction-meme-funny-begging-crying-gif-11151243012681431164">https://tenor.com/view/stan-twt-reaction-meme-funny-begging-crying-gif-11151243012681431164</a></span></div></div></div></div></div>
+
+</div>
+<div class=postamble><div class=postamble__entry>Exported 45 message(s)</div><div class=postamble__entry>Timezone: UTC-8</div></div>
