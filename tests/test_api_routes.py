@@ -2,7 +2,7 @@ from fastapi.testclient import TestClient
 
 import app.api.routes as routes
 from app.services.qa_service import AskError
-from main import app
+from app.main import app
 
 
 client = TestClient(app)

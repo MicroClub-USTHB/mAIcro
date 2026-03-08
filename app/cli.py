@@ -71,7 +71,7 @@ def ingest_main() -> None:
             except urllib.error.URLError:
                 print(
                     "Error: local_qdrant is locked by another process and API fallback failed. "
-                    "Start the API server (`uv run uvicorn main:app --reload`) or stop the other process."
+                    "Start the API server (`uv run uvicorn app.main:app --reload`) or stop the other process."
                 )
                 raise SystemExit(2) from exc
 
