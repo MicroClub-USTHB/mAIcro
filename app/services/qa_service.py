@@ -2,6 +2,7 @@
 
 import json
 import re
+from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeoutError
 from functools import lru_cache
 from pathlib import Path
 
@@ -9,6 +10,7 @@ from langchain_core.documents import Document
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnableLambda, RunnablePassthrough
 
+from app.core.config import settings
 from app.core.llm_provider import ConfigurationError, get_llm
 from app.core.prompt_template import build_rag_prompt_template
 from app.core.vector_store import get_vector_store
@@ -20,6 +22,22 @@ class AskError(Exception):
 
 class AskConfigError(AskError):
     """Raised when server-side AI providers are not configured correctly."""
+
+
+_ASK_TIMEOUT_SECONDS = 30
+
+
+def _invoke_with_timeout(chain, question: str, timeout_seconds: int = _ASK_TIMEOUT_SECONDS) -> str:
+    """Run model invocation with a hard timeout to avoid long-hanging requests."""
+    with ThreadPoolExecutor(max_workers=1) as executor:
+        future = executor.submit(chain.invoke, question)
+        try:
+            return future.result(timeout=timeout_seconds)
+        except FutureTimeoutError as exc:
+            raise AskError(
+                "LLM request timed out after "
+                f"{timeout_seconds}s. Please retry or switch provider."
+            ) from exc
 
 
 @lru_cache(maxsize=1)
@@ -147,17 +165,35 @@ def ask_question(question: str) -> str:
 
     prompt = build_rag_prompt_template()
 
-    chain = (
-        {
-            "context": retriever | RunnableLambda(_format_context),
-            "question": RunnablePassthrough(),
-        }
-        | prompt
-        | llm
-        | StrOutputParser()
-    )
+    def _build_chain(model):
+        return (
+            {
+                "context": retriever | RunnableLambda(_format_context),
+                "question": RunnablePassthrough(),
+            }
+            | prompt
+            | model
+            | StrOutputParser()
+        )
+
+    chain = _build_chain(llm)
 
     try:
-        return chain.invoke(question)
+        return _invoke_with_timeout(chain, question)
+    except AskError as exc:
+        # If Google is rate-limited, retry once with Groq when its key exists.
+        if (
+            settings.LLM_PROVIDER.lower().strip() == "google"
+            and settings.GROQ_API_KEY
+            and "quota" in str(exc).lower()
+        ):
+            try:
+                fallback_llm = get_llm(provider_override="groq")
+                fallback_chain = _build_chain(fallback_llm)
+                return _invoke_with_timeout(fallback_chain, question)
+            except Exception as fallback_exc:
+                raise AskError(_format_llm_error(fallback_exc)) from fallback_exc
+
+        raise
     except Exception as exc:
         raise AskError(_format_llm_error(exc)) from exc

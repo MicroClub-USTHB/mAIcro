@@ -5,8 +5,8 @@ class ConfigurationError(ValueError):
     """Raised when model providers are misconfigured."""
 
 
-def get_llm():
-    provider = settings.LLM_PROVIDER.lower().strip()
+def get_llm(provider_override: str | None = None):
+    provider = (provider_override or settings.LLM_PROVIDER).lower().strip()
 
     if provider == "anthropic":
         from langchain_anthropic import ChatAnthropic
