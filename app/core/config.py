@@ -13,12 +13,8 @@ class Settings(BaseSettings):
     # AI Settings
     LLM_PROVIDER: str = "google"
     GOOGLE_API_KEY: Optional[str] = None
-    ANTHROPIC_API_KEY: Optional[str] = None
-    GROQ_API_KEY: Optional[str] = None
     MODEL_NAME: Optional[str] = None
     GOOGLE_MODEL_NAME: str = "gemini-2.0-flash-lite"
-    ANTHROPIC_MODEL_NAME: str = "claude-3-5-haiku-latest"
-    GROQ_MODEL_NAME: str = "llama-3.1-8b-instant"
 
     # Discord ingestion
     DISCORD_BOT_TOKEN: Optional[str] = None

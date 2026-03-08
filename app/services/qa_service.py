@@ -36,7 +36,7 @@ def _invoke_with_timeout(chain, question: str, timeout_seconds: int = _ASK_TIMEO
         future.cancel()
         raise AskError(
             "LLM request timed out after "
-            f"{timeout_seconds}s. Please retry or switch provider."
+            f"{timeout_seconds}s. Please retry and check Gemini API quota/connectivity."
         ) from exc
     finally:
         executor.shutdown(wait=False, cancel_futures=True)
@@ -116,7 +116,7 @@ def _format_llm_error(exc: Exception) -> str:
     if "api key" in lowered or "permission denied" in lowered or "unauthorized" in lowered:
         return (
             "Invalid API credentials. "
-            "Verify your provider key in .env (GOOGLE_API_KEY, ANTHROPIC_API_KEY, or GROQ_API_KEY)."
+            "Verify GOOGLE_API_KEY in your .env file."
         )
 
     return f"Request failed: {message}"

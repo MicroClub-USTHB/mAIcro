@@ -11,6 +11,8 @@ uv run uvicorn main:app --reload
 
 Do not use `pip install -r requirements.txt`.
 
+This build is **Gemini-only**: set `LLM_PROVIDER=google` and configure `GOOGLE_API_KEY`.
+
 ## CLI Usage
 
 After `uv sync`, you can run:
