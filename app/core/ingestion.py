@@ -9,7 +9,6 @@ Supports two sources:
 
 import json
 import os
-from datetime import datetime
 
 from langchain_core.documents import Document
 from langchain_qdrant import QdrantVectorStore

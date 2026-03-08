@@ -6,7 +6,7 @@ from fastapi import APIRouter, HTTPException
 
 from app.api.schemas import AskRequest, AskResponse, IngestFileRequest, IngestResponse
 from app.core.config import settings
-from app.services.qa_service import AskConfigError, AskError, ask_question
+from app.services.qa_service import ask_question
 
 router = APIRouter(prefix=settings.API_V1_STR)
 
@@ -32,14 +32,7 @@ async def ask(req: AskRequest):
     if not req.question.strip():
         raise HTTPException(status_code=400, detail="Question cannot be empty.")
 
-    try:
-        answer = ask_question(req.question)
-    except AskConfigError as exc:
-        raise HTTPException(status_code=400, detail=str(exc))
-    except AskError as exc:
-        raise HTTPException(status_code=502, detail=str(exc))
-    except Exception as exc:
-        raise HTTPException(status_code=500, detail=f"Internal error: {exc}")
+    answer = ask_question(req.question)
 
     return AskResponse(question=req.question, answer=answer)
 
@@ -49,12 +42,7 @@ async def ingest_file(req: IngestFileRequest):
     """Ingest documents from a local JSON file."""
     from app.core.ingestion import ingest_from_json
 
-    try:
-        count = ingest_from_json(req.path)
-    except FileNotFoundError as exc:
-        raise HTTPException(status_code=404, detail=str(exc))
-    except Exception as exc:
-        raise HTTPException(status_code=500, detail=f"Ingestion failed: {exc}")
+    count = ingest_from_json(req.path)
 
     return IngestResponse(status="ok", documents_ingested=count)
 
@@ -75,10 +63,7 @@ async def ingest_discord():
             detail="DISCORD_CHANNEL_IDS not configured. Set it in your .env file.",
         )
 
-    try:
-        result = await ingest_from_discord()
-    except Exception as exc:
-        raise HTTPException(status_code=500, detail=f"Discord ingestion failed: {exc}")
+    result = await ingest_from_discord()
 
     has_errors = bool(result.get("errors"))
 
