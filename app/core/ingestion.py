@@ -11,10 +11,9 @@ import json
 import os
 
 from langchain_core.documents import Document
-from langchain_qdrant import QdrantVectorStore
 
 from app.core.config import settings
-from app.core.llm_provider import get_embeddings
+from app.core.vector_store import get_vector_store
 
 
 # ---------------------------------------------------------------------------
@@ -94,12 +93,8 @@ def ingest_documents(documents: list[Document]) -> int:
     if not documents:
         return 0
 
-    QdrantVectorStore.from_documents(
-        documents=documents,
-        embedding=get_embeddings(),
-        path="local_qdrant",
-        collection_name=settings.COLLECTION_NAME,
-    )
+    vector_store = get_vector_store()
+    vector_store.add_documents(documents)
     return len(documents)
 
 
