@@ -115,7 +115,7 @@ async def ingest_from_discord() -> dict:
     Fetch messages from all configured Discord channels and ingest them.
     Returns a summary dict with per-channel counts.
     """
-    from app.core.discord_fetcher import fetch_channel_messages
+    from app.core.discord_fetcher import DiscordFetchError, fetch_channel_messages
 
     if not settings.DISCORD_BOT_TOKEN:
         raise ValueError("DISCORD_BOT_TOKEN not set in environment.")
@@ -123,17 +123,35 @@ async def ingest_from_discord() -> dict:
         raise ValueError("DISCORD_CHANNEL_IDS not set in environment.")
 
     summary: dict[str, int] = {}
+    errors: dict[str, str] = {}
     total = 0
 
     for channel_id in settings.discord_channel_id_list:
-        messages = await fetch_channel_messages(
-            bot_token=settings.DISCORD_BOT_TOKEN,
-            channel_id=channel_id,
-            limit=200,
-        )
-        docs = _docs_from_discord_messages(messages, channel_id)
-        count = ingest_documents(docs)
-        summary[channel_id] = count
-        total += count
+        try:
+            messages = await fetch_channel_messages(
+                bot_token=settings.DISCORD_BOT_TOKEN,
+                channel_id=channel_id,
+                limit=200,
+            )
+            docs = _docs_from_discord_messages(messages, channel_id)
+            count = ingest_documents(docs)
+            summary[channel_id] = count
+            total += count
+        except DiscordFetchError as exc:
+            if exc.status_code == 403:
+                errors[channel_id] = (
+                    "Missing access to channel. Ensure the bot is in the server and has "
+                    "View Channel + Read Message History permissions."
+                )
+            elif exc.status_code == 401:
+                errors[channel_id] = "Unauthorized bot token. Verify DISCORD_BOT_TOKEN."
+            else:
+                errors[channel_id] = exc.message
+        except Exception as exc:
+            errors[channel_id] = str(exc)
 
-    return {"channels": summary, "total_documents": total}
+    return {
+        "channels": summary,
+        "errors": errors,
+        "total_documents": total,
+    }

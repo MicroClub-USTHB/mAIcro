@@ -11,6 +11,16 @@ from typing import Optional
 DISCORD_API = "https://discord.com/api/v10"
 
 
+class DiscordFetchError(RuntimeError):
+    """Raised when a Discord channel fetch fails."""
+
+    def __init__(self, channel_id: str, status_code: int | None, message: str):
+        super().__init__(message)
+        self.channel_id = channel_id
+        self.status_code = status_code
+        self.message = message
+
+
 async def fetch_channel_messages(
     bot_token: str,
     channel_id: str,
@@ -36,8 +46,12 @@ async def fetch_channel_messages(
             async with session.get(url, headers=headers) as resp:
                 if resp.status != 200:
                     body = await resp.text()
-                    raise RuntimeError(
-                        f"Discord API error {resp.status} for channel {channel_id}: {body}"
+                    raise DiscordFetchError(
+                        channel_id=channel_id,
+                        status_code=resp.status,
+                        message=(
+                            f"Discord API error {resp.status} for channel {channel_id}: {body}"
+                        ),
                     )
                 batch = await resp.json()
 

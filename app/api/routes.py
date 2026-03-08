@@ -80,8 +80,13 @@ async def ingest_discord():
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"Discord ingestion failed: {exc}")
 
+    has_errors = bool(result.get("errors"))
+
     return IngestResponse(
-        status="ok",
+        status="partial" if has_errors else "ok",
         documents_ingested=result["total_documents"],
-        details=result["channels"],
+        details={
+            "channels": result.get("channels", {}),
+            "errors": result.get("errors", {}),
+        },
     )
