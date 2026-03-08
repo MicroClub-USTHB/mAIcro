@@ -9,15 +9,13 @@ Supports two sources:
 
 import json
 import os
-from pathlib import Path
 
 from langchain_core.documents import Document
-from qdrant_client import QdrantClient
 from qdrant_client.http import models as qdrant_models
 
 from maicro.core.config import settings
 from maicro.core.llm_provider import get_embeddings
-from maicro.core.vector_store import get_vector_store
+from maicro.core.vector_store import get_qdrant_client, get_vector_store
 
 
 # ---------------------------------------------------------------------------
@@ -91,21 +89,15 @@ def _docs_from_discord_messages(
 
 def _ensure_collection_exists(vector_size: int) -> None:
     """Create local collection if missing, without relying on cached vector store."""
-    path = Path(settings.QDRANT_PATH)
-    path.mkdir(parents=True, exist_ok=True)
-
-    client = QdrantClient(path=str(path))
-    try:
-        if not client.collection_exists(settings.COLLECTION_NAME):
-            client.create_collection(
-                collection_name=settings.COLLECTION_NAME,
-                vectors_config=qdrant_models.VectorParams(
-                    size=vector_size,
-                    distance=qdrant_models.Distance.COSINE,
-                ),
-            )
-    finally:
-        client.close()
+    client = get_qdrant_client()
+    if not client.collection_exists(settings.COLLECTION_NAME):
+        client.create_collection(
+            collection_name=settings.COLLECTION_NAME,
+            vectors_config=qdrant_models.VectorParams(
+                size=vector_size,
+                distance=qdrant_models.Distance.COSINE,
+            ),
+        )
 
 
 def ingest_documents(documents: list[Document]) -> int:
