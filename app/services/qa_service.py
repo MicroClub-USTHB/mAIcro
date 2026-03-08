@@ -32,6 +32,9 @@ def _invoke_with_timeout(chain, question: str, timeout_seconds: int = _ASK_TIMEO
     future = executor.submit(chain.invoke, question)
     try:
         return future.result(timeout=timeout_seconds)
+    except KeyboardInterrupt as exc:
+        future.cancel()
+        raise AskError("Request cancelled by user.") from exc
     except FutureTimeoutError as exc:
         future.cancel()
         raise AskError(

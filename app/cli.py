@@ -28,6 +28,9 @@ def ask_main() -> None:
     try:
         answer = ask_question(question)
         print(f"\nAnswer: {answer}")
+    except KeyboardInterrupt:
+        print("Cancelled by user.")
+        raise SystemExit(130)
     except AskError as exc:
         print(f"Error: {exc}")
         raise SystemExit(2) from exc
