@@ -1,5 +1,16 @@
 # mAIcro: Open Source AI Service
 
+## Setup (uv Only)
+
+This project uses `uv` as the single dependency manager.
+
+```bash
+uv sync
+uv run uvicorn main:app --reload
+```
+
+Do not use `pip install -r requirements.txt`.
+
 ## Overview
 
 **mAIcro** is an open-source AI service designed to help organizations centralize information and answer questions based on their internal data.
