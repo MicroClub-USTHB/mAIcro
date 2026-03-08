@@ -13,15 +13,22 @@ Do not use `pip install -r requirements.txt`.
 
 This build is **Gemini-only**: set `LLM_PROVIDER=google` and configure `GOOGLE_API_KEY`.
 
-## CLI Usage
+## API Usage
 
-After `uv sync`, you can run:
+After starting the server, the API is available under `/api/v1`:
 
 ```bash
-uv run maicro-ask "When is the next event?"
-uv run maicro-ingest
-uv run maicro-ingest --discord
-uv run maicro-ingest --discord --limit 1
+curl http://localhost:8000/api/v1/health
+
+curl -X POST http://localhost:8000/api/v1/ask \
+  -H "Content-Type: application/json" \
+  -d '{"question":"When is the next event?"}'
+
+curl -X POST http://localhost:8000/api/v1/ingest \
+  -H "Content-Type: application/json" \
+  -d '{"path":"data/announcements.json"}'
+
+curl -X POST http://localhost:8000/api/v1/ingest/discord
 ```
 
 ## Package Publishing Notes
@@ -62,7 +69,6 @@ The main goals of **mAIcro** are:
 ├── src/
 │   └── maicro/
 │       ├── main.py        # Canonical FastAPI app entrypoint
-│       ├── cli.py         # CLI commands (ask, ingest)
 │       ├── api/           # HTTP routes, schemas, error handlers
 │       ├── core/          # Config, logging, ingestion, providers, vector store
 │       └── services/      # Business logic (Q&A service)
@@ -72,12 +78,10 @@ The main goals of **mAIcro** are:
 │   └── unit/              # Unit tests
 ├── var/                   # Runtime state (local vector DB path)
 ├── main.py                # Backward-compatible wrapper entrypoint
-├── ask.py                 # Backward-compatible CLI wrapper
-├── ingest.py              # Backward-compatible CLI wrapper
-└── pyproject.toml         # Packaging and script entrypoints
+└── pyproject.toml         # Packaging and project metadata
 ```
 
-For new setups, prefer `maicro.main:app` and the `maicro-*` CLI scripts.
+For new setups, prefer `maicro.main:app`.
 
 ---
 

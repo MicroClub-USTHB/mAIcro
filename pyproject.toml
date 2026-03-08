@@ -38,10 +38,6 @@ dependencies = [
     "uvicorn>=0.35.0",
 ]
 
-[project.scripts]
-maicro-ask = "maicro.cli:ask_main"
-maicro-ingest = "maicro.cli:ingest_main"
-
 [tool.hatch.build.targets.wheel]
 packages = ["src/maicro"]
 
