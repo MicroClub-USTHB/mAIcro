@@ -4,7 +4,7 @@ from google import genai
 from google.genai import errors
 
 
-api_key = os.getenv("GOOGLE_API_KEY")
+api_key = "AIzaSyBxPPYebe1TWSRjq8qJi3AjS4y-7x7R3E8"
 if not api_key:
     raise SystemExit(
         "GOOGLE_API_KEY is not set. Export it first, for example: "
@@ -15,7 +15,7 @@ client = genai.Client(api_key=api_key)
 
 try:
     response = client.models.generate_content(
-        model="models/gemini-2.0-flash",
+        model="gemini-2.5-flash",
         contents="Explain quantum computing to a cat.",
     )
     print(response.text)

@@ -9,10 +9,14 @@ Supports two sources:
 
 import json
 import os
+from pathlib import Path
 
 from langchain_core.documents import Document
+from qdrant_client import QdrantClient
+from qdrant_client.http import models as qdrant_models
 
 from maicro.core.config import settings
+from maicro.core.llm_provider import get_embeddings
 from maicro.core.vector_store import get_vector_store
 
 
@@ -85,6 +89,25 @@ def _docs_from_discord_messages(
 # Ingestion entry points
 # ---------------------------------------------------------------------------
 
+def _ensure_collection_exists(vector_size: int) -> None:
+    """Create local collection if missing, without relying on cached vector store."""
+    path = Path(settings.QDRANT_PATH)
+    path.mkdir(parents=True, exist_ok=True)
+
+    client = QdrantClient(path=str(path))
+    try:
+        if not client.collection_exists(settings.COLLECTION_NAME):
+            client.create_collection(
+                collection_name=settings.COLLECTION_NAME,
+                vectors_config=qdrant_models.VectorParams(
+                    size=vector_size,
+                    distance=qdrant_models.Distance.COSINE,
+                ),
+            )
+    finally:
+        client.close()
+
+
 def ingest_documents(documents: list[Document]) -> int:
     """
     Push a list of LangChain Documents into the Qdrant vector store.
@@ -93,8 +116,21 @@ def ingest_documents(documents: list[Document]) -> int:
     if not documents:
         return 0
 
-    vector_store = get_vector_store()
-    vector_store.add_documents(documents)
+    try:
+        vector_store = get_vector_store()
+        vector_store.add_documents(documents)
+    except Exception as exc:
+        # First-run behavior: create the collection automatically if missing.
+        message = str(exc).lower()
+        if "not found" in message and settings.COLLECTION_NAME.lower() in message:
+            embedding = get_embeddings()
+            vector_size = len(embedding.embed_query("collection bootstrap"))
+            _ensure_collection_exists(vector_size)
+            get_vector_store.cache_clear()
+            vector_store = get_vector_store()
+            vector_store.add_documents(documents)
+        else:
+            raise
     return len(documents)
 
 
