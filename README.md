@@ -20,6 +20,8 @@ After `uv sync`, you can run:
 ```bash
 uv run maicro-ask "When is the next event?"
 uv run maicro-ingest
+uv run maicro-ingest --discord
+uv run maicro-ingest --discord --limit 1
 ```
 
 ## Package Publishing Notes

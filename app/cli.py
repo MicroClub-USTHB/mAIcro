@@ -1,5 +1,7 @@
 """CLI entrypoints for mAIcro."""
 
+import argparse
+import asyncio
 import json
 import sys
 import urllib.error
@@ -37,8 +39,62 @@ def ask_main() -> None:
 
 
 def ingest_main() -> None:
-    """Ingest default announcements data from the command line."""
+    """Ingest data from JSON (default) or Discord from the command line."""
     from app.core.ingestion import ingest_from_json
+
+    parser = argparse.ArgumentParser(prog="maicro-ingest")
+    parser.add_argument(
+        "--discord",
+        action="store_true",
+        help="Ingest from configured Discord channels instead of local JSON file.",
+    )
+    parser.add_argument(
+        "--limit",
+        type=int,
+        default=200,
+        help="Max messages to fetch per Discord channel (used with --discord).",
+    )
+    parser.add_argument(
+        "--path",
+        default="data/announcements.json",
+        help="Path to JSON file (used when --discord is not set).",
+    )
+    args = parser.parse_args(sys.argv[1:])
+
+    if args.discord:
+        from app.core.ingestion import ingest_from_discord
+
+        if not settings.DISCORD_BOT_TOKEN:
+            print("Error: DISCORD_BOT_TOKEN not found in .env.")
+            raise SystemExit(1)
+        if not settings.discord_channel_id_list:
+            print("Error: DISCORD_CHANNEL_IDS not found in .env.")
+            raise SystemExit(1)
+        if args.limit <= 0:
+            print("Error: --limit must be a positive integer.")
+            raise SystemExit(1)
+
+        try:
+            result = asyncio.run(ingest_from_discord(limit_per_channel=args.limit))
+            status = "partial" if result.get("errors") else "ok"
+            print(
+                "Discord ingestion complete. "
+                f"Status: {status}. Documents ingested: {result.get('total_documents', 0)}"
+            )
+            channels = result.get("channels") or {}
+            errors = result.get("errors") or {}
+            if channels:
+                print(f"Per-channel counts: {channels}")
+            if errors:
+                print(f"Channel errors: {errors}")
+                raise SystemExit(2)
+            return
+        except KeyboardInterrupt:
+            print("Cancelled by user.")
+            raise SystemExit(130)
+        except Exception as exc:
+            print(f"Error: {exc}")
+            raise SystemExit(2) from exc
 
     if not settings.GOOGLE_API_KEY:
         print(
@@ -48,7 +104,7 @@ def ingest_main() -> None:
         raise SystemExit(1)
 
     try:
-        count = ingest_from_json("data/announcements.json")
+        count = ingest_from_json(args.path)
         print(f"Ingestion complete. Documents ingested: {count}")
     except Exception as exc:
         message = str(exc)

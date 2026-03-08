@@ -104,7 +104,7 @@ def ingest_from_json(file_path: str) -> int:
     return ingest_documents(docs)
 
 
-async def ingest_from_discord() -> dict:
+async def ingest_from_discord(limit_per_channel: int = 200) -> dict:
     """
     Fetch messages from all configured Discord channels and ingest them.
     Returns a summary dict with per-channel counts.
@@ -125,7 +125,7 @@ async def ingest_from_discord() -> dict:
             messages = await fetch_channel_messages(
                 bot_token=settings.DISCORD_BOT_TOKEN,
                 channel_id=channel_id,
-                limit=200,
+                limit=limit_per_channel,
             )
             docs = _docs_from_discord_messages(messages, channel_id)
             count = ingest_documents(docs)
