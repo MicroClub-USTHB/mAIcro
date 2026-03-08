@@ -29,15 +29,23 @@ _ASK_TIMEOUT_SECONDS = 30
 
 def _invoke_with_timeout(chain, question: str, timeout_seconds: int = _ASK_TIMEOUT_SECONDS) -> str:
     """Run model invocation with a hard timeout to avoid long-hanging requests."""
-    with ThreadPoolExecutor(max_workers=1) as executor:
-        future = executor.submit(chain.invoke, question)
-        try:
-            return future.result(timeout=timeout_seconds)
-        except FutureTimeoutError as exc:
-            raise AskError(
-                "LLM request timed out after "
-                f"{timeout_seconds}s. Please retry or switch provider."
-            ) from exc
+    executor = ThreadPoolExecutor(max_workers=1)
+    future = executor.submit(chain.invoke, question)
+    try:
+        return future.result(timeout=timeout_seconds)
+    except FutureTimeoutError as exc:
+        future.cancel()
+        raise AskError(
+            "LLM request timed out after "
+            f"{timeout_seconds}s. Please retry or switch provider."
+        ) from exc
+    finally:
+        executor.shutdown(wait=False, cancel_futures=True)
+
+
+def _should_failover_to_groq(message: str) -> bool:
+    lowered = message.lower()
+    return any(token in lowered for token in ["quota", "rate limit", "429", "timed out"])
 
 
 @lru_cache(maxsize=1)
@@ -185,7 +193,7 @@ def ask_question(question: str) -> str:
         if (
             settings.LLM_PROVIDER.lower().strip() == "google"
             and settings.GROQ_API_KEY
-            and "quota" in str(exc).lower()
+            and _should_failover_to_groq(str(exc))
         ):
             try:
                 fallback_llm = get_llm(provider_override="groq")
