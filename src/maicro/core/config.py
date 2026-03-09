@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     LLM_PROVIDER: str = "google"
     GOOGLE_API_KEY: Optional[str] = None
     MODEL_NAME: Optional[str] = None
-    GOOGLE_MODEL_NAME: str = "gemini-2.0-flash-lite"
+    GOOGLE_MODEL_NAME: str = "gemini-2.5-flash"
 
     # Discord ingestion
     DISCORD_BOT_TOKEN: Optional[str] = None
