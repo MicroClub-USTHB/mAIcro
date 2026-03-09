@@ -29,6 +29,10 @@ _RECENCY_MESSAGE_PATTERN = re.compile(
     r"\b(last|latest|most recent|newest)\b.*\b(message|msg|post)\b|\bwhat(?:'s| is)\s+the\s+last\s+message\b",
     re.IGNORECASE,
 )
+_TODAY_UPDATES_PATTERN = re.compile(
+    r"\b(today)\b.*\b(update|updates|plan|agenda|have|happening)\b|\bwhat\b.*\b(have|happening)\b.*\btoday\b",
+    re.IGNORECASE,
+)
 _QUESTION_REWRITES: list[tuple[re.Pattern[str], str]] = [
     (re.compile(r"\bwhats\b", re.IGNORECASE), "what is"),
     (re.compile(r"\bwanna\b", re.IGNORECASE), "want to"),
@@ -207,6 +211,10 @@ def _is_recency_message_query(question: str) -> bool:
     return bool(_RECENCY_MESSAGE_PATTERN.search(question.strip()))
 
 
+def _is_today_updates_query(question: str) -> bool:
+    return bool(_TODAY_UPDATES_PATTERN.search(question.strip()))
+
+
 def _parse_iso_timestamp(value: str) -> datetime | None:
     if not value:
         return None
@@ -279,6 +287,57 @@ def _latest_discord_message() -> str | None:
     )
 
 
+def _collect_discord_messages_sorted() -> list[tuple[datetime, dict]]:
+    from qdrant_client.http import models as qdrant_models
+
+    vector_store = get_vector_store()
+    client = vector_store.client
+    collection_name = vector_store.collection_name
+
+    next_offset = None
+    items: list[tuple[datetime, dict]] = []
+
+    while True:
+        points, next_offset = client.scroll(
+            collection_name=collection_name,
+            scroll_filter=qdrant_models.Filter(
+                must=[
+                    qdrant_models.FieldCondition(
+                        key="metadata.source",
+                        match=qdrant_models.MatchValue(value="discord"),
+                    )
+                ]
+            ),
+            with_payload=True,
+            with_vectors=False,
+            limit=256,
+            offset=next_offset,
+        )
+
+        for point in points:
+            payload = point.payload or {}
+            metadata = payload.get("metadata") or {}
+            timestamp = str(metadata.get("timestamp") or "")
+            dt = _parse_iso_timestamp(timestamp)
+            if dt is None:
+                continue
+            items.append((dt, payload))
+
+        if next_offset is None:
+            break
+
+    items.sort(key=lambda x: x[0], reverse=True)
+    return items
+
+
+def _today_discord_messages(reference_date) -> list[dict]:
+    return [
+        payload
+        for dt, payload in _collect_discord_messages_sorted()
+        if dt.date() == reference_date
+    ]
+
+
 def _answer_from_latest_message_with_llm(question: str, latest_message: str, llm) -> str:
     """Use the LLM to phrase an answer grounded in the latest Discord message."""
     prompt = (
@@ -292,8 +351,46 @@ def _answer_from_latest_message_with_llm(question: str, latest_message: str, llm
     return _invoke_with_timeout(chain, prompt)
 
 
+def _answer_today_updates_with_llm(question: str, messages: list[dict], llm, reference_date: str) -> str:
+    rows = []
+    for item in messages[:8]:
+        metadata = item.get("metadata") or {}
+        rows.append(
+            f"- {metadata.get('timestamp', 'unknown')} | {metadata.get('author', 'unknown')}: "
+            f"{str(item.get('page_content') or '').strip()}"
+        )
+    prompt = (
+        "You are answering a question about today's Discord updates.\n"
+        "Use only the provided message list and do not invent details.\n"
+        f"Reference date (UTC): {reference_date}\n\n"
+        f"User question: {question}\n\n"
+        "Messages:\n"
+        + "\n".join(rows)
+    )
+    chain = RunnableLambda(lambda p: llm.invoke(p).content)
+    return _invoke_with_timeout(chain, prompt)
+
+
 def ask_question(question: str) -> str:
     """Answer a user question from the configured RAG pipeline."""
+    if _is_today_updates_query(question):
+        try:
+            llm = get_llm()
+            ref_date = datetime.now(timezone.utc).date()
+            today_messages = _today_discord_messages(reference_date=ref_date)
+            if today_messages:
+                return _answer_today_updates_with_llm(
+                    question=question,
+                    messages=today_messages,
+                    llm=llm,
+                    reference_date=ref_date.isoformat(),
+                )
+            latest = _latest_discord_message()
+            if latest:
+                return _answer_from_latest_message_with_llm(question, latest, llm)
+        except Exception:
+            pass
+
     if _is_recency_message_query(question):
         latest = None
         try:

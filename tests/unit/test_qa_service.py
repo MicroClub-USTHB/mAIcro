@@ -102,3 +102,18 @@ def test_augment_temporal_question_adds_reference_date():
 def test_augment_temporal_question_keeps_non_temporal_query():
     question = "who is the dev manager"
     assert qa_service._augment_temporal_question(question) == question
+
+
+def test_today_updates_query_uses_llm_summary(monkeypatch):
+    monkeypatch.setattr(qa_service, "_is_today_updates_query", lambda _q: True)
+    monkeypatch.setattr(qa_service, "_today_discord_messages", lambda reference_date: [{"metadata": {"timestamp": "2026-03-09T12:00:00+00:00", "author": "u"}, "page_content": "Meeting at 2pm"}])
+    monkeypatch.setattr(qa_service, "_invoke_with_timeout", lambda chain, question, timeout_seconds=30: chain.invoke(question))
+
+    class FakeLLM:
+        def invoke(self, _prompt):
+            return SimpleNamespace(content="Today summary")
+
+    monkeypatch.setattr(qa_service, "get_llm", lambda: FakeLLM())
+
+    answer = qa_service.ask_question("whats the we have today")
+    assert answer == "Today summary"
