@@ -3,6 +3,7 @@
 import json
 import re
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeoutError
+from datetime import datetime
 from functools import lru_cache
 from pathlib import Path
 
@@ -24,6 +25,10 @@ class AskConfigError(AskError):
 
 
 _ASK_TIMEOUT_SECONDS = 30
+_RECENCY_MESSAGE_PATTERN = re.compile(
+    r"\b(last|latest|most recent|newest)\b.*\b(message|msg|post)\b|\bwhat(?:'s| is)\s+the\s+last\s+message\b",
+    re.IGNORECASE,
+)
 
 
 def _invoke_with_timeout(chain, question: str, timeout_seconds: int = _ASK_TIMEOUT_SECONDS) -> str:
@@ -144,8 +149,93 @@ def _format_context(docs: list[Document]) -> str:
     return "\\n\\n".join(chunks)
 
 
+def _is_recency_message_query(question: str) -> bool:
+    return bool(_RECENCY_MESSAGE_PATTERN.search(question.strip()))
+
+
+def _parse_iso_timestamp(value: str) -> datetime | None:
+    if not value:
+        return None
+    try:
+        return datetime.fromisoformat(value)
+    except ValueError:
+        return None
+
+
+def _latest_discord_message() -> str | None:
+    """Return a deterministic response for the latest Discord message in storage."""
+    from qdrant_client.http import models as qdrant_models
+
+    vector_store = get_vector_store()
+    client = vector_store.client
+    collection_name = vector_store.collection_name
+
+    next_offset = None
+    latest_payload = None
+    latest_dt = None
+
+    while True:
+        points, next_offset = client.scroll(
+            collection_name=collection_name,
+            scroll_filter=qdrant_models.Filter(
+                must=[
+                    qdrant_models.FieldCondition(
+                        key="metadata.source",
+                        match=qdrant_models.MatchValue(value="discord"),
+                    )
+                ]
+            ),
+            with_payload=True,
+            with_vectors=False,
+            limit=256,
+            offset=next_offset,
+        )
+
+        for point in points:
+            payload = point.payload or {}
+            metadata = payload.get("metadata") or {}
+            timestamp = str(metadata.get("timestamp") or "")
+            dt = _parse_iso_timestamp(timestamp)
+            if dt is None:
+                continue
+            if latest_dt is None or dt > latest_dt:
+                latest_dt = dt
+                latest_payload = payload
+
+        if next_offset is None:
+            break
+
+    if not latest_payload:
+        return None
+
+    metadata = latest_payload.get("metadata") or {}
+    author = metadata.get("author") or "unknown"
+    timestamp = metadata.get("timestamp") or "unknown"
+    channel_id = metadata.get("channel_id") or "unknown"
+    text = str(latest_payload.get("page_content") or "").strip()
+    if not text:
+        text = "No text content."
+
+    return (
+        f"Latest Discord message:\n"
+        f"- author: {author}\n"
+        f"- timestamp: {timestamp}\n"
+        f"- channel_id: {channel_id}\n"
+        f"- content: {text}"
+    )
+
+
 def ask_question(question: str) -> str:
     """Answer a user question from the configured RAG pipeline."""
+    if _is_recency_message_query(question):
+        try:
+            latest = _latest_discord_message()
+            if latest:
+                return latest
+        except Exception:
+            # Fall back to standard RAG path if deterministic lookup fails.
+            pass
+
     try:
         llm = get_llm()
     except ConfigurationError as exc:

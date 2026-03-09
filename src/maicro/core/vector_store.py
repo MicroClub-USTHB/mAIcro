@@ -1,3 +1,4 @@
+import atexit
 from functools import lru_cache
 from pathlib import Path
 
@@ -26,3 +27,12 @@ def get_vector_store() -> QdrantVectorStore:
         distance=qdrant_models.Distance.COSINE,
         validate_collection_config=False,
     )
+
+
+@atexit.register
+def _close_qdrant_client_on_exit() -> None:
+    """Best-effort close to avoid noisy interpreter-shutdown warnings."""
+    try:
+        get_qdrant_client().close()
+    except Exception:
+        pass
