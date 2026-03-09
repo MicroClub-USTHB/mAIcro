@@ -64,3 +64,31 @@ def test_latest_discord_message_picks_newest_timestamp(monkeypatch):
     assert "author: b" in result
     assert "channel_id: c2" in result
     assert "newest message" in result
+
+
+def test_normalize_question_rewrites_common_broken_phrase():
+    normalized = qa_service._normalize_question("whats the we have today")
+    assert normalized.lower() == "what is do we have today"
+
+
+def test_retrieve_with_rewrites_merges_when_rewrite_changes_query(monkeypatch):
+    original_doc = SimpleNamespace(
+        page_content="original result",
+        metadata={"source": "discord", "message_id": "1"},
+    )
+    normalized_doc = SimpleNamespace(
+        page_content="normalized result",
+        metadata={"source": "discord", "message_id": "2"},
+    )
+
+    class FakeRetriever:
+        def invoke(self, query):
+            if query == "whats the we have today":
+                return [original_doc]
+            return [normalized_doc]
+
+    docs = qa_service._retrieve_with_rewrites("whats the we have today", FakeRetriever(), k=6)
+
+    assert len(docs) == 2
+    assert docs[0].page_content == "original result"
+    assert docs[1].page_content == "normalized result"
