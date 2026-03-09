@@ -92,3 +92,13 @@ def test_retrieve_with_rewrites_merges_when_rewrite_changes_query(monkeypatch):
     assert len(docs) == 2
     assert docs[0].page_content == "original result"
     assert docs[1].page_content == "normalized result"
+
+
+def test_augment_temporal_question_adds_reference_date():
+    augmented = qa_service._augment_temporal_question("what do we have today")
+    assert "Reference date (UTC): " in augmented
+
+
+def test_augment_temporal_question_keeps_non_temporal_query():
+    question = "who is the dev manager"
+    assert qa_service._augment_temporal_question(question) == question

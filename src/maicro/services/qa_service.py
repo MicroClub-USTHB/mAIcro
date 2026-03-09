@@ -3,7 +3,7 @@
 import json
 import re
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeoutError
-from datetime import datetime
+from datetime import datetime, timezone
 from functools import lru_cache
 from pathlib import Path
 
@@ -35,6 +35,7 @@ _QUESTION_REWRITES: list[tuple[re.Pattern[str], str]] = [
     (re.compile(r"\bgonna\b", re.IGNORECASE), "going to"),
     (re.compile(r"\bthe\s+we\s+have\b", re.IGNORECASE), "do we have"),
 ]
+_TEMPORAL_KEYWORDS_PATTERN = re.compile(r"\b(today|tomorrow|yesterday|this week|next week)\b", re.IGNORECASE)
 
 
 def _invoke_with_timeout(chain, question: str, timeout_seconds: int = _ASK_TIMEOUT_SECONDS) -> str:
@@ -195,6 +196,13 @@ def _retrieve_with_rewrites(question: str, retriever, k: int = 6) -> list[Docume
     return _merge_docs(primary, secondary, limit=k)
 
 
+def _augment_temporal_question(question: str) -> str:
+    if not _TEMPORAL_KEYWORDS_PATTERN.search(question):
+        return question
+    ref_date = datetime.now(timezone.utc).date().isoformat()
+    return f"{question}\nReference date (UTC): {ref_date}"
+
+
 def _is_recency_message_query(question: str) -> bool:
     return bool(_RECENCY_MESSAGE_PATTERN.search(question.strip()))
 
@@ -322,13 +330,14 @@ def ask_question(question: str) -> str:
 
     prompt = build_rag_prompt_template()
     normalized_question = _normalize_question(question)
+    effective_question = _augment_temporal_question(normalized_question)
 
     def _build_chain(model):
         return (
             {
                 "context": RunnableLambda(lambda q: _retrieve_with_rewrites(q, retriever, k=6))
                 | RunnableLambda(_format_context),
-                "question": RunnableLambda(lambda _q: normalized_question),
+                "question": RunnableLambda(lambda _q: effective_question),
             }
             | prompt
             | model
