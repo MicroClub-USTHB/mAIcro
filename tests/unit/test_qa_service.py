@@ -121,3 +121,39 @@ def test_today_updates_query_uses_llm_summary(monkeypatch):
 
 def test_today_updates_pattern_matches_whats_phrase():
     assert qa_service._is_today_updates_query("whats the we have today")
+
+
+def test_retrieve_with_rewrites_deduplicates_results():
+    shared_doc = SimpleNamespace(
+        page_content="same result",
+        metadata={"source": "discord", "message_id": "same"},
+    )
+
+    class FakeRetriever:
+        def invoke(self, _query):
+            return [shared_doc]
+
+    docs = qa_service._retrieve_with_rewrites("whats the we have today", FakeRetriever(), k=6)
+
+    assert len(docs) == 1
+    assert docs[0].page_content == "same result"
+
+
+def test_today_updates_without_today_messages_falls_back_to_latest(monkeypatch):
+    monkeypatch.setattr(qa_service, "_is_today_updates_query", lambda _q: True)
+    monkeypatch.setattr(qa_service, "_today_discord_messages", lambda reference_date: [])
+    monkeypatch.setattr(qa_service, "_latest_discord_message", lambda: "Latest Discord message:\n- content: fallback")
+    monkeypatch.setattr(
+        qa_service,
+        "_invoke_with_timeout",
+        lambda chain, question, timeout_seconds=30: chain.invoke(question),
+    )
+
+    class FakeLLM:
+        def invoke(self, _prompt):
+            return SimpleNamespace(content="Fallback latest summary")
+
+    monkeypatch.setattr(qa_service, "get_llm", lambda: FakeLLM())
+
+    answer = qa_service.ask_question("what do we have today")
+    assert answer == "Fallback latest summary"
