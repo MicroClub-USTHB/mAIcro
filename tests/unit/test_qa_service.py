@@ -117,3 +117,7 @@ def test_today_updates_query_uses_llm_summary(monkeypatch):
 
     answer = qa_service.ask_question("whats the we have today")
     assert answer == "Today summary"
+
+
+def test_today_updates_pattern_matches_whats_phrase():
+    assert qa_service._is_today_updates_query("whats the we have today")

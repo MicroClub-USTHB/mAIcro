@@ -30,7 +30,7 @@ _RECENCY_MESSAGE_PATTERN = re.compile(
     re.IGNORECASE,
 )
 _TODAY_UPDATES_PATTERN = re.compile(
-    r"\b(today)\b.*\b(update|updates|plan|agenda|have|happening)\b|\bwhat\b.*\b(have|happening)\b.*\btoday\b",
+    r"\b(today)\b.*\b(update|updates|plan|agenda|have|happening)\b|\bwhat(?:'s|s)?\b.*\b(have|happening)\b.*\btoday\b",
     re.IGNORECASE,
 )
 _QUESTION_REWRITES: list[tuple[re.Pattern[str], str]] = [
