@@ -29,6 +29,12 @@ _RECENCY_MESSAGE_PATTERN = re.compile(
     r"\b(last|latest|most recent|newest)\b.*\b(message|msg|post)\b|\bwhat(?:'s| is)\s+the\s+last\s+message\b",
     re.IGNORECASE,
 )
+_QUESTION_REWRITES: list[tuple[re.Pattern[str], str]] = [
+    (re.compile(r"\bwhats\b", re.IGNORECASE), "what is"),
+    (re.compile(r"\bwanna\b", re.IGNORECASE), "want to"),
+    (re.compile(r"\bgonna\b", re.IGNORECASE), "going to"),
+    (re.compile(r"\bthe\s+we\s+have\b", re.IGNORECASE), "do we have"),
+]
 
 
 def _invoke_with_timeout(chain, question: str, timeout_seconds: int = _ASK_TIMEOUT_SECONDS) -> str:
@@ -149,6 +155,46 @@ def _format_context(docs: list[Document]) -> str:
     return "\\n\\n".join(chunks)
 
 
+def _normalize_question(question: str) -> str:
+    normalized = " ".join(question.strip().split())
+    for pattern, replacement in _QUESTION_REWRITES:
+        normalized = pattern.sub(replacement, normalized)
+    return normalized
+
+
+def _merge_docs(primary: list[Document], secondary: list[Document], limit: int) -> list[Document]:
+    merged: list[Document] = []
+    seen: set[tuple[str, str, str]] = set()
+
+    def _key(doc: Document) -> tuple[str, str, str]:
+        metadata = doc.metadata or {}
+        return (
+            str(metadata.get("source", "")),
+            str(metadata.get("message_id", "")),
+            (doc.page_content or "")[:160],
+        )
+
+    for doc in primary + secondary:
+        key = _key(doc)
+        if key in seen:
+            continue
+        seen.add(key)
+        merged.append(doc)
+        if len(merged) >= limit:
+            break
+
+    return merged
+
+
+def _retrieve_with_rewrites(question: str, retriever, k: int = 6) -> list[Document]:
+    normalized = _normalize_question(question)
+    primary = retriever.invoke(question)
+    if normalized.lower() == question.strip().lower():
+        return primary
+    secondary = retriever.invoke(normalized)
+    return _merge_docs(primary, secondary, limit=k)
+
+
 def _is_recency_message_query(question: str) -> bool:
     return bool(_RECENCY_MESSAGE_PATTERN.search(question.strip()))
 
@@ -225,16 +271,32 @@ def _latest_discord_message() -> str | None:
     )
 
 
+def _answer_from_latest_message_with_llm(question: str, latest_message: str, llm) -> str:
+    """Use the LLM to phrase an answer grounded in the latest Discord message."""
+    prompt = (
+        "You are answering a question about the latest Discord message.\n"
+        "Use only the provided latest-message data and do not invent details.\n"
+        "Keep the answer concise and natural.\n\n"
+        f"User question: {question}\n\n"
+        f"{latest_message}\n"
+    )
+    chain = RunnableLambda(lambda p: llm.invoke(p).content)
+    return _invoke_with_timeout(chain, prompt)
+
+
 def ask_question(question: str) -> str:
     """Answer a user question from the configured RAG pipeline."""
     if _is_recency_message_query(question):
+        latest = None
         try:
             latest = _latest_discord_message()
             if latest:
-                return latest
+                llm = get_llm()
+                return _answer_from_latest_message_with_llm(question, latest, llm)
         except Exception:
-            # Fall back to standard RAG path if deterministic lookup fails.
-            pass
+            # Fall back to deterministic latest message, then standard RAG path.
+            if latest:
+                return latest
 
     try:
         llm = get_llm()
@@ -243,28 +305,30 @@ def ask_question(question: str) -> str:
 
     try:
         vector_store = get_vector_store()
-        retriever = vector_store.as_retriever(search_kwargs={"k": 3})
+        retriever = vector_store.as_retriever(search_kwargs={"k": 6})
     except ConfigurationError as exc:
         # Allow non-Google LLM setups to run using local lexical retrieval.
         if "GOOGLE_API_KEY" in str(exc):
-            retriever = RunnableLambda(lambda q: _fallback_keyword_retrieve(q, k=3))
+            retriever = RunnableLambda(lambda q: _fallback_keyword_retrieve(q, k=6))
         else:
             raise AskConfigError(str(exc)) from exc
     except Exception as exc:
         message = str(exc)
         # Qdrant local mode uses a file lock and can fail when another process has opened it.
         if "already accessed by another instance of Qdrant client" in message:
-            retriever = RunnableLambda(lambda q: _fallback_keyword_retrieve(q, k=3))
+            retriever = RunnableLambda(lambda q: _fallback_keyword_retrieve(q, k=6))
         else:
             raise AskConfigError(f"Vector store initialization failed: {message}") from exc
 
     prompt = build_rag_prompt_template()
+    normalized_question = _normalize_question(question)
 
     def _build_chain(model):
         return (
             {
-                "context": retriever | RunnableLambda(_format_context),
-                "question": RunnablePassthrough(),
+                "context": RunnableLambda(lambda q: _retrieve_with_rewrites(q, retriever, k=6))
+                | RunnableLambda(_format_context),
+                "question": RunnableLambda(lambda _q: normalized_question),
             }
             | prompt
             | model

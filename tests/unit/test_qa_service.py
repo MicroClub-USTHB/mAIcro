@@ -5,15 +5,21 @@ from maicro.services import qa_service
 
 def test_ask_question_uses_latest_shortcut(monkeypatch):
     monkeypatch.setattr(qa_service, "_latest_discord_message", lambda: "latest-message")
+    monkeypatch.setattr(
+        qa_service,
+        "_invoke_with_timeout",
+        lambda chain, question, timeout_seconds=30: chain.invoke(question),
+    )
 
-    def _should_not_run():
-        raise AssertionError("get_llm should not be called for latest-message intent")
+    class FakeLLM:
+        def invoke(self, _prompt):
+            return SimpleNamespace(content="LLM formatted latest answer")
 
-    monkeypatch.setattr(qa_service, "get_llm", _should_not_run)
+    monkeypatch.setattr(qa_service, "get_llm", lambda: FakeLLM())
 
     answer = qa_service.ask_question("whats the last message")
 
-    assert answer == "latest-message"
+    assert answer == "LLM formatted latest answer"
 
 
 def test_latest_discord_message_picks_newest_timestamp(monkeypatch):
