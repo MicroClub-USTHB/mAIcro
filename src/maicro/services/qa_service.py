@@ -419,8 +419,23 @@ def ask_question(question: str) -> str:
             raise AskConfigError(str(exc)) from exc
     except Exception as exc:
         message = str(exc)
-        # Qdrant local mode uses a file lock and can fail when another process has opened it.
-        if "already accessed by another instance of Qdrant client" in message:
+        lowered = message.lower()
+        is_lock = "already accessed by another instance of qdrant client" in lowered
+        is_connection = any(
+            needle in lowered
+            for needle in (
+                "connection refused",
+                "failed to establish a new connection",
+                "max retries exceeded",
+                "connection error",
+                "connectionerror",
+                "timed out",
+                "timeout",
+                "name or service not known",
+                "temporary failure in name resolution",
+            )
+        )
+        if is_lock or is_connection:
             retriever = RunnableLambda(lambda q: _fallback_keyword_retrieve(q, k=6))
         else:
             raise AskConfigError(f"Vector store initialization failed: {message}") from exc

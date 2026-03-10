@@ -2,10 +2,7 @@
 
 import argparse
 import asyncio
-import json
 import sys
-import urllib.error
-import urllib.request
 
 from maicro.core.config import settings
 from maicro.services.qa_service import AskError, ask_question
@@ -107,29 +104,5 @@ def ingest_main() -> None:
         count = ingest_from_json(args.path)
         print(f"Ingestion complete. Documents ingested: {count}")
     except Exception as exc:
-        message = str(exc)
-        if "already accessed by another instance of Qdrant client" in message:
-            # If the API server already owns the local Qdrant lock, delegate ingestion to it.
-            try:
-                req = urllib.request.Request(
-                    "http://localhost:8000/api/v1/ingest",
-                    data=json.dumps({"path": "data/announcements.json"}).encode("utf-8"),
-                    headers={"Content-Type": "application/json"},
-                    method="POST",
-                )
-                with urllib.request.urlopen(req, timeout=60) as response:
-                    payload = json.loads(response.read().decode("utf-8"))
-                print(
-                    "Ingestion complete via API fallback. "
-                    f"Documents ingested: {payload.get('documents_ingested', 0)}"
-                )
-                return
-            except urllib.error.URLError:
-                print(
-                    "Error: local Qdrant storage is locked by another process and API fallback failed. "
-                    "Start the API server (`uv run uvicorn maicro.main:app --reload`) or stop the other process."
-                )
-                raise SystemExit(2) from exc
-
         print(f"Error: {exc}")
         raise SystemExit(2) from exc

@@ -1,6 +1,5 @@
 import atexit
 from functools import lru_cache
-from pathlib import Path
 
 from qdrant_client import QdrantClient
 from qdrant_client.http import models as qdrant_models
@@ -11,15 +10,13 @@ from maicro.core.llm_provider import get_embeddings
 
 @lru_cache(maxsize=1)
 def get_qdrant_client() -> QdrantClient:
-    """Return a singleton local Qdrant client for this process."""
-    path = Path(settings.QDRANT_PATH)
-    path.mkdir(parents=True, exist_ok=True)
-    return QdrantClient(path=str(path))
+    """Return a singleton Qdrant client for this process."""
+    return QdrantClient(url=settings.QDRANT_URL, api_key=settings.QDRANT_API_KEY)
 
 
 @lru_cache(maxsize=1)
 def get_vector_store() -> QdrantVectorStore:
-    """Return a vector store backed by the singleton local Qdrant client."""
+    """Return a vector store backed by the singleton Qdrant client."""
     return QdrantVectorStore(
         client=get_qdrant_client(),
         collection_name=settings.COLLECTION_NAME,

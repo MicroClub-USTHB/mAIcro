@@ -4,6 +4,14 @@
 
 This project uses `uv` as the single dependency manager.
 
+Start a Qdrant server (required):
+
+```bash
+docker run --rm -p 6333:6333 qdrant/qdrant
+```
+
+Configure `.env` (copy from `.env.example`) and set at least `GOOGLE_API_KEY` and `QDRANT_URL`.
+
 ```bash
 uv sync
 uv run uvicorn maicro.main:app --reload
@@ -19,7 +27,7 @@ To publish this project as true open source:
 
 1. Add a `LICENSE` file (no license means others cannot legally reuse the code).
 2. Keep secrets out of git: never commit `.env` (use `.env.example` instead).
-3. Keep runtime state out of git: do not commit local vector DB files (for example `var/` or `local_qdrant/`).
+3. Keep runtime state out of git: do not commit runtime state directories (for example `var/`).
 4. Publish the repo (for example on GitHub) as public and accept contributions via PRs.
 
 ## API Usage
