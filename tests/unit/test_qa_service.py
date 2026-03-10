@@ -1,5 +1,8 @@
 from types import SimpleNamespace
 
+from langchain_core.documents import Document
+from langchain_core.runnables import RunnableLambda
+
 from maicro.services import qa_service
 
 
@@ -157,3 +160,104 @@ def test_today_updates_without_today_messages_falls_back_to_latest(monkeypatch):
 
     answer = qa_service.ask_question("what do we have today")
     assert answer == "Fallback latest summary"
+
+
+def test_collect_discord_messages_sorted_handles_pagination(monkeypatch):
+    pages = [
+        (
+            [
+                SimpleNamespace(payload={"metadata": {"timestamp": "not-a-timestamp"}}),
+                SimpleNamespace(
+                    payload={
+                        "page_content": "older",
+                        "metadata": {"timestamp": "2026-03-09T08:00:00+00:00", "author": "older"},
+                    }
+                ),
+            ],
+            "page-2",
+        ),
+        (
+            [
+                SimpleNamespace(
+                    payload={
+                        "page_content": "newer",
+                        "metadata": {"timestamp": "2026-03-10T09:30:00+00:00", "author": "newer"},
+                    }
+                )
+            ],
+            None,
+        ),
+    ]
+
+    class FakeClient:
+        def __init__(self):
+            self.offsets = []
+
+        def scroll(self, **kwargs):
+            self.offsets.append(kwargs["offset"])
+            return pages.pop(0)
+
+    fake_vector_store = SimpleNamespace(
+        client=FakeClient(),
+        collection_name="microclub_knowledge",
+    )
+    monkeypatch.setattr(qa_service, "get_vector_store", lambda: fake_vector_store)
+
+    result = qa_service._collect_discord_messages_sorted()
+
+    assert fake_vector_store.client.offsets == [None, "page-2"]
+    assert [payload["page_content"] for _, payload in result] == ["newer", "older"]
+
+
+def test_ask_question_recency_query_returns_latest_message_when_llm_fails(monkeypatch):
+    latest_message = "Latest Discord message:\n- content: fallback"
+
+    monkeypatch.setattr(qa_service, "_latest_discord_message", lambda: latest_message)
+    monkeypatch.setattr(
+        qa_service,
+        "get_llm",
+        lambda: (_ for _ in ()).throw(RuntimeError("gemini unavailable")),
+    )
+
+    answer = qa_service.ask_question("what is the last message")
+
+    assert answer == latest_message
+
+
+def test_ask_question_uses_keyword_fallback_when_qdrant_is_locked(monkeypatch):
+    fallback_calls = []
+    docs = [
+        Document(
+            page_content="Roadmap sync at 3pm",
+            metadata={"source": "data/announcements.json", "date": "2026-03-10"},
+        )
+    ]
+
+    monkeypatch.setattr(qa_service, "get_llm", lambda: RunnableLambda(lambda _prompt: "keyword fallback answer"))
+    monkeypatch.setattr(
+        qa_service,
+        "get_vector_store",
+        lambda: (_ for _ in ()).throw(
+            RuntimeError("Storage already accessed by another instance of Qdrant client")
+        ),
+    )
+    monkeypatch.setattr(
+        qa_service,
+        "_fallback_keyword_retrieve",
+        lambda question, k=6: fallback_calls.append((question, k)) or docs,
+    )
+    monkeypatch.setattr(
+        qa_service,
+        "build_rag_prompt_template",
+        lambda: RunnableLambda(lambda data: f"{data['question']}\n{data['context']}"),
+    )
+    monkeypatch.setattr(
+        qa_service,
+        "_invoke_with_timeout",
+        lambda chain, question, timeout_seconds=30: chain.invoke(question),
+    )
+
+    answer = qa_service.ask_question("roadmap sync")
+
+    assert answer == "keyword fallback answer"
+    assert fallback_calls == [("roadmap sync", 6)]
