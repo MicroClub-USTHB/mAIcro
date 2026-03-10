@@ -13,6 +13,15 @@ Do not use `pip install -r requirements.txt`.
 
 This build is **Gemini-only**: set `LLM_PROVIDER=google` and configure `GOOGLE_API_KEY`.
 
+## Open-Source Release Checklist
+
+To publish this project as true open source:
+
+1. Add a `LICENSE` file (no license means others cannot legally reuse the code).
+2. Keep secrets out of git: never commit `.env` (use `.env.example` instead).
+3. Keep runtime state out of git: do not commit local vector DB files (for example `var/` or `local_qdrant/`).
+4. Publish the repo (for example on GitHub) as public and accept contributions via PRs.
+
 ## API Usage
 
 After starting the server, the API is available under `/api/v1`:

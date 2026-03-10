@@ -19,6 +19,7 @@ lib64/
 parts/
 sdist/
 var/
+local_qdrant/
 wheels/
 share/python-wheels/
 *.egg-info/
