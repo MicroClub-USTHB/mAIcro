@@ -1,15 +1,23 @@
-from fastapi.testclient import TestClient
+import asyncio
+
+import httpx
 
 import maicro.api.routes as routes
 from maicro.services.qa_service import AskError
 from maicro.main import app
 
 
-client = TestClient(app)
+def request(method: str, path: str, **kwargs):
+    async def _send():
+        transport = httpx.ASGITransport(app=app)
+        async with httpx.AsyncClient(transport=transport, base_url="http://testserver") as client:
+            return await client.request(method, path, **kwargs)
+
+    return asyncio.run(_send())
 
 
 def test_health_endpoint_returns_ok():
-    res = client.get("/api/v1/health")
+    res = request("GET", "/api/v1/health")
 
     assert res.status_code == 200
     body = res.json()
@@ -18,7 +26,7 @@ def test_health_endpoint_returns_ok():
 
 
 def test_ask_rejects_empty_question():
-    res = client.post("/api/v1/ask", json={"question": "   "})
+    res = request("POST", "/api/v1/ask", json={"question": "   "})
 
     assert res.status_code == 400
     assert "cannot be empty" in res.json()["detail"].lower()
@@ -27,7 +35,7 @@ def test_ask_rejects_empty_question():
 def test_ask_success(monkeypatch):
     monkeypatch.setattr(routes, "ask_question", lambda q: "answer: " + q)
 
-    res = client.post("/api/v1/ask", json={"question": "hello"})
+    res = request("POST", "/api/v1/ask", json={"question": "hello"})
 
     assert res.status_code == 200
     assert res.json() == {"question": "hello", "answer": "answer: hello"}
@@ -39,7 +47,7 @@ def test_ask_error_is_mapped_to_502(monkeypatch):
 
     monkeypatch.setattr(routes, "ask_question", _raise)
 
-    res = client.post("/api/v1/ask", json={"question": "hello"})
+    res = request("POST", "/api/v1/ask", json={"question": "hello"})
 
     assert res.status_code == 502
     assert "upstream failed" in res.json()["detail"]
@@ -49,7 +57,7 @@ def test_ingest_discord_requires_token(monkeypatch):
     monkeypatch.setattr(routes.settings, "DISCORD_BOT_TOKEN", None)
     monkeypatch.setattr(routes.settings, "DISCORD_CHANNEL_IDS", "123")
 
-    res = client.post("/api/v1/ingest/discord")
+    res = request("POST", "/api/v1/ingest/discord")
 
     assert res.status_code == 400
     assert "DISCORD_BOT_TOKEN" in res.json()["detail"]
@@ -70,7 +78,7 @@ def test_ingest_discord_partial_response(monkeypatch):
 
     monkeypatch.setattr(ingestion, "ingest_from_discord", _fake_ingest)
 
-    res = client.post("/api/v1/ingest/discord")
+    res = request("POST", "/api/v1/ingest/discord")
 
     assert res.status_code == 200
     body = res.json()
