@@ -11,7 +11,9 @@ from maicro.core.llm_provider import get_embeddings
 @lru_cache(maxsize=1)
 def get_qdrant_client() -> QdrantClient:
     """Return a singleton Qdrant client for this process."""
-    return QdrantClient(url=settings.QDRANT_URL, api_key=settings.QDRANT_API_KEY)
+    if settings.QDRANT_API_KEY:
+        return QdrantClient(url=settings.QDRANT_URL, api_key=settings.QDRANT_API_KEY)
+    return QdrantClient(url=settings.QDRANT_URL)
 
 
 @lru_cache(maxsize=1)

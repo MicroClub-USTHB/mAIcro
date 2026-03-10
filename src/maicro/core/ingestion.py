@@ -12,6 +12,7 @@ import os
 
 from langchain_core.documents import Document
 from qdrant_client.http import models as qdrant_models
+from qdrant_client.http.exceptions import UnexpectedResponse
 
 from maicro.core.config import settings
 from maicro.core.llm_provider import get_embeddings
@@ -111,6 +112,12 @@ def ingest_documents(documents: list[Document]) -> int:
     try:
         vector_store = get_vector_store()
         vector_store.add_documents(documents)
+    except UnexpectedResponse as exc:
+        if exc.status_code == 401:
+            raise ValueError(
+                "Qdrant unauthorized (401). Check QDRANT_URL and QDRANT_API_KEY in your .env."
+            ) from exc
+        raise
     except Exception as exc:
         # First-run behavior: create the collection automatically if missing.
         message = str(exc).lower()
