@@ -11,6 +11,7 @@ from langchain_core.documents import Document
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnableLambda, RunnablePassthrough
 
+from maicro.core.config import settings
 from maicro.core.llm_provider import ConfigurationError, get_llm
 from maicro.core.prompt_template import build_rag_prompt_template
 from maicro.core.vector_store import get_vector_store
@@ -40,6 +41,16 @@ _QUESTION_REWRITES: list[tuple[re.Pattern[str], str]] = [
     (re.compile(r"\bthe\s+we\s+have\b", re.IGNORECASE), "do we have"),
 ]
 _TEMPORAL_KEYWORDS_PATTERN = re.compile(r"\b(today|tomorrow|yesterday|this week|next week)\b", re.IGNORECASE)
+
+
+def _is_missing_collection_error(message: str) -> bool:
+    if not message:
+        return False
+    lowered = message.lower()
+    collection = settings.COLLECTION_NAME.lower()
+    if collection not in lowered:
+        return False
+    return any(needle in lowered for needle in ("doesn't exist", "does not exist", "not found"))
 
 
 def _invoke_with_timeout(chain, question: str, timeout_seconds: int = _ASK_TIMEOUT_SECONDS) -> str:
@@ -461,4 +472,11 @@ def ask_question(question: str) -> str:
     try:
         return _invoke_with_timeout(chain, question)
     except Exception as exc:
+        if _is_missing_collection_error(str(exc)):
+            raise AskConfigError(
+                "Vector store is not initialized yet. "
+                f"Qdrant collection `{settings.COLLECTION_NAME}` does not exist. "
+                "Ingest data first (POST /api/v1/ingest with "
+                '{"path":"data/announcements.json"}).'
+            ) from exc
         raise AskError(_format_llm_error(exc)) from exc
