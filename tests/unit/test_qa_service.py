@@ -1,5 +1,6 @@
 from types import SimpleNamespace
 
+import pytest
 from langchain_core.documents import Document
 from langchain_core.runnables import RunnableLambda
 
@@ -261,3 +262,31 @@ def test_ask_question_uses_keyword_fallback_when_qdrant_is_locked(monkeypatch):
 
     assert answer == "keyword fallback answer"
     assert fallback_calls == [("roadmap sync", 6)]
+
+
+def test_ask_question_missing_collection_raises_config_error(monkeypatch):
+    class FakeRetriever:
+        def invoke(self, _query):
+            raise RuntimeError("Collection microclub_knowledge not found")
+
+    class FakeVectorStore:
+        def as_retriever(self, **_kwargs):
+            return FakeRetriever()
+
+    monkeypatch.setattr(qa_service, "get_llm", lambda: RunnableLambda(lambda _prompt: "ignored"))
+    monkeypatch.setattr(qa_service, "get_vector_store", lambda: FakeVectorStore())
+    monkeypatch.setattr(
+        qa_service,
+        "build_rag_prompt_template",
+        lambda: RunnableLambda(lambda data: data["question"]),
+    )
+    monkeypatch.setattr(
+        qa_service,
+        "_invoke_with_timeout",
+        lambda chain, question, timeout_seconds=30: chain.invoke(question),
+    )
+
+    with pytest.raises(qa_service.AskConfigError) as excinfo:
+        qa_service.ask_question("when is the next event?")
+
+    assert "does not exist" in str(excinfo.value).lower()
