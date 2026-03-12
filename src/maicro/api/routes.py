@@ -42,7 +42,10 @@ async def ingest_file(req: IngestFileRequest):
     """Ingest documents from a local JSON file."""
     from maicro.core.ingestion import ingest_from_json
 
-    count = ingest_from_json(req.path)
+    try:
+        count = ingest_from_json(req.path)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
 
     return IngestResponse(status="ok", documents_ingested=count)
 

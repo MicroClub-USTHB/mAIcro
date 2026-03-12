@@ -12,6 +12,7 @@ import os
 
 from langchain_core.documents import Document
 from qdrant_client.http import models as qdrant_models
+from qdrant_client.http.exceptions import UnexpectedResponse
 
 from maicro.core.config import settings
 from maicro.core.llm_provider import get_embeddings
@@ -21,6 +22,25 @@ from maicro.core.vector_store import get_qdrant_client, get_vector_store
 # ---------------------------------------------------------------------------
 # Document converters
 # ---------------------------------------------------------------------------
+
+def _is_missing_collection_error(message: str) -> bool:
+    """Return True when an exception message indicates the Qdrant collection is missing."""
+    if not message:
+        return False
+    lowered = message.lower()
+    collection = settings.COLLECTION_NAME.lower()
+    if collection not in lowered:
+        return False
+    return any(needle in lowered for needle in ("doesn't exist", "does not exist", "not found"))
+
+
+def _bootstrap_collection() -> None:
+    """Create the Qdrant collection (if missing) and clear vector-store cache."""
+    embedding = get_embeddings()
+    vector_size = len(embedding.embed_query("collection bootstrap"))
+    _ensure_collection_exists(vector_size)
+    get_vector_store.cache_clear()
+
 
 def _docs_from_json_file(file_path: str) -> list[Document]:
     """Load documents from a JSON file with [{title, content, date}, ...]."""
@@ -111,14 +131,23 @@ def ingest_documents(documents: list[Document]) -> int:
     try:
         vector_store = get_vector_store()
         vector_store.add_documents(documents)
+    except UnexpectedResponse as exc:
+        if exc.status_code == 401:
+            raise ValueError(
+                "Qdrant unauthorized (401). Check QDRANT_URL and QDRANT_API_KEY in your .env."
+            ) from exc
+        if exc.status_code == 404 and _is_missing_collection_error(
+            exc.content.decode("utf-8", errors="ignore")
+        ):
+            _bootstrap_collection()
+            vector_store = get_vector_store()
+            vector_store.add_documents(documents)
+        else:
+            raise
     except Exception as exc:
         # First-run behavior: create the collection automatically if missing.
-        message = str(exc).lower()
-        if "not found" in message and settings.COLLECTION_NAME.lower() in message:
-            embedding = get_embeddings()
-            vector_size = len(embedding.embed_query("collection bootstrap"))
-            _ensure_collection_exists(vector_size)
-            get_vector_store.cache_clear()
+        if _is_missing_collection_error(str(exc)):
+            _bootstrap_collection()
             vector_store = get_vector_store()
             vector_store.add_documents(documents)
         else:

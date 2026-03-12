@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     LLM_PROVIDER: str = "google"
     GOOGLE_API_KEY: Optional[str] = None
     MODEL_NAME: Optional[str] = None
-    GOOGLE_MODEL_NAME: str = "gemini-2.0-flash-lite"
+    GOOGLE_MODEL_NAME: str = "gemini-2.5-flash"
 
     # Discord ingestion
     DISCORD_BOT_TOKEN: Optional[str] = None
@@ -24,7 +24,6 @@ class Settings(BaseSettings):
     QDRANT_URL: str = "http://localhost:6333"
     QDRANT_API_KEY: Optional[str] = None
     COLLECTION_NAME: str = "microclub_knowledge"
-    QDRANT_PATH: str = "var/qdrant"
 
     model_config = SettingsConfigDict(
         case_sensitive=True,
