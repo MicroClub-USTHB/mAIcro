@@ -1,11 +1,8 @@
 """Question-answering service built on top of retrieval-augmented generation."""
 
-import json
 import re
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeoutError
 from datetime import datetime, timezone
-from functools import lru_cache
-from pathlib import Path
 
 from langchain_core.documents import Document
 from langchain_core.output_parsers import StrOutputParser
@@ -70,66 +67,6 @@ def _invoke_with_timeout(chain, question: str, timeout_seconds: int = _ASK_TIMEO
         ) from exc
     finally:
         executor.shutdown(wait=False, cancel_futures=True)
-
-
-@lru_cache(maxsize=1)
-def _load_local_announcements_docs() -> list[Document]:
-    """Load local announcements as a fallback knowledge source."""
-    data_path = Path(__file__).resolve().parents[2] / "data" / "announcements.json"
-    if not data_path.exists():
-        raise AskConfigError(f"Fallback data file not found: {data_path}")
-
-    try:
-        raw = json.loads(data_path.read_text(encoding="utf-8"))
-    except json.JSONDecodeError as exc:
-        raise AskConfigError(f"Invalid JSON in fallback data file: {data_path}") from exc
-
-    docs: list[Document] = []
-    for item in raw:
-        if not isinstance(item, dict):
-            continue
-        title = str(item.get("title") or "Untitled")
-        content = str(item.get("content") or "")
-        date = str(item.get("date") or "unknown")
-
-        docs.append(
-            Document(
-                page_content=f"{title}\n{content}".strip(),
-                metadata={
-                    "source": "data/announcements.json",
-                    "date": date,
-                    "title": title,
-                },
-            )
-        )
-
-    if not docs:
-        raise AskConfigError("Fallback data file contains no usable documents.")
-
-    return docs
-
-
-def _tokenize(text: str) -> set[str]:
-    return set(re.findall(r"[a-z0-9]+", text.lower()))
-
-
-def _fallback_keyword_retrieve(question: str, k: int = 3) -> list[Document]:
-    """Very small lexical retriever used when vector embeddings are unavailable."""
-    docs = _load_local_announcements_docs()
-    q_tokens = _tokenize(question)
-
-    scored: list[tuple[int, Document]] = []
-    for doc in docs:
-        doc_tokens = _tokenize(doc.page_content)
-        score = len(q_tokens & doc_tokens)
-        scored.append((score, doc))
-
-    scored.sort(key=lambda x: x[0], reverse=True)
-    top = [doc for score, doc in scored if score > 0][:k]
-    if top:
-        return top
-
-    return [doc for _, doc in scored[:k]]
 
 
 def _format_llm_error(exc: Exception) -> str:
@@ -423,11 +360,7 @@ def ask_question(question: str) -> str:
         vector_store = get_vector_store()
         retriever = vector_store.as_retriever(search_kwargs={"k": 6})
     except ConfigurationError as exc:
-        # Allow non-Google LLM setups to run using local lexical retrieval.
-        if "GOOGLE_API_KEY" in str(exc):
-            retriever = RunnableLambda(lambda q: _fallback_keyword_retrieve(q, k=6))
-        else:
-            raise AskConfigError(str(exc)) from exc
+        raise AskConfigError(str(exc)) from exc
     except Exception as exc:
         message = str(exc)
         lowered = message.lower()
@@ -447,9 +380,10 @@ def ask_question(question: str) -> str:
             )
         )
         if is_lock or is_connection:
-            retriever = RunnableLambda(lambda q: _fallback_keyword_retrieve(q, k=6))
-        else:
-            raise AskConfigError(f"Vector store initialization failed: {message}") from exc
+            raise AskConfigError(
+                "Vector store is unavailable. Start Qdrant and ingest Discord data first."
+            ) from exc
+        raise AskConfigError(f"Vector store initialization failed: {message}") from exc
 
     prompt = build_rag_prompt_template()
     normalized_question = _normalize_question(question)
@@ -476,7 +410,6 @@ def ask_question(question: str) -> str:
             raise AskConfigError(
                 "Vector store is not initialized yet. "
                 f"Qdrant collection `{settings.COLLECTION_NAME}` does not exist. "
-                "Ingest data first (POST /api/v1/ingest with "
-                '{"path":"data/announcements.json"}).'
+                "Ingest Discord data first (POST /api/v1/ingest/discord)."
             ) from exc
         raise AskError(_format_llm_error(exc)) from exc

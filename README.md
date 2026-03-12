@@ -41,10 +41,6 @@ curl -X POST http://localhost:8000/api/v1/ask \
   -H "Content-Type: application/json" \
   -d '{"question":"When is the next event?"}'
 
-curl -X POST http://localhost:8000/api/v1/ingest \
-  -H "Content-Type: application/json" \
-  -d '{"path":"data/announcements.json"}'
-
 curl -X POST http://localhost:8000/api/v1/ingest/discord
 ```
 
@@ -89,7 +85,7 @@ The main goals of **mAIcro** are:
 │       ├── api/           # HTTP routes, schemas, error handlers
 │       ├── core/          # Config, logging, ingestion, providers, vector store
 │       └── services/      # Business logic (Q&A service)
-├── data/                  # Local data sources used for ingestion
+├── data/                  # Legacy sample data (not used by default)
 ├── tests/
 │   ├── api/               # API route tests
 │   └── unit/              # Unit tests
@@ -223,3 +219,4 @@ Future integrations may include:
 * Web dashboards
 * APIs for other tools
 * Knowledge management platforms
+

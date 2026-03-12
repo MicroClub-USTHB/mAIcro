@@ -2,13 +2,9 @@
 Ingestion pipeline — converts raw data into LangChain Documents
 and pushes them into the Qdrant vector store.
 
-Supports two sources:
-  1. JSON file  (existing announcements.json format)
-  2. Discord messages (from the discord_fetcher)
+Supports one source:
+  1. Discord messages (from the discord_fetcher)
 """
-
-import json
-import os
 
 from langchain_core.documents import Document
 from qdrant_client.http import models as qdrant_models
@@ -40,27 +36,6 @@ def _bootstrap_collection() -> None:
     vector_size = len(embedding.embed_query("collection bootstrap"))
     _ensure_collection_exists(vector_size)
     get_vector_store.cache_clear()
-
-
-def _docs_from_json_file(file_path: str) -> list[Document]:
-    """Load documents from a JSON file with [{title, content, date}, ...]."""
-    if not os.path.exists(file_path):
-        raise FileNotFoundError(f"Data file not found: {file_path}")
-
-    with open(file_path, "r") as f:
-        data = json.load(f)
-
-    docs: list[Document] = []
-    for item in data:
-        content = f"{item['title']}\n{item['content']}"
-        metadata = {
-            "source": "json_file",
-            "file": file_path,
-            "date": item.get("date", ""),
-            "title": item["title"],
-        }
-        docs.append(Document(page_content=content, metadata=metadata))
-    return docs
 
 
 def _docs_from_discord_messages(
@@ -153,12 +128,6 @@ def ingest_documents(documents: list[Document]) -> int:
         else:
             raise
     return len(documents)
-
-
-def ingest_from_json(file_path: str) -> int:
-    """Ingest documents from a JSON file."""
-    docs = _docs_from_json_file(file_path)
-    return ingest_documents(docs)
 
 
 async def ingest_from_discord(limit_per_channel: int = 200) -> dict:

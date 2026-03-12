@@ -14,11 +14,6 @@ class AskResponse(BaseModel):
     answer: str
 
 
-class IngestFileRequest(BaseModel):
-    source: str = "file"
-    path: str = "data/announcements.json"
-
-
 class IngestResponse(BaseModel):
     status: str
     documents_ingested: int
