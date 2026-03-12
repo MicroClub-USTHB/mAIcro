@@ -1,7 +1,6 @@
 from types import SimpleNamespace
 
 import pytest
-from langchain_core.documents import Document
 from langchain_core.runnables import RunnableLambda
 
 from maicro.services import qa_service
@@ -225,16 +224,8 @@ def test_ask_question_recency_query_returns_latest_message_when_llm_fails(monkey
     assert answer == latest_message
 
 
-def test_ask_question_uses_keyword_fallback_when_qdrant_is_locked(monkeypatch):
-    fallback_calls = []
-    docs = [
-        Document(
-            page_content="Roadmap sync at 3pm",
-            metadata={"source": "data/announcements.json", "date": "2026-03-10"},
-        )
-    ]
-
-    monkeypatch.setattr(qa_service, "get_llm", lambda: RunnableLambda(lambda _prompt: "keyword fallback answer"))
+def test_ask_question_errors_when_qdrant_is_locked(monkeypatch):
+    monkeypatch.setattr(qa_service, "get_llm", lambda: RunnableLambda(lambda _prompt: "ignored"))
     monkeypatch.setattr(
         qa_service,
         "get_vector_store",
@@ -242,26 +233,11 @@ def test_ask_question_uses_keyword_fallback_when_qdrant_is_locked(monkeypatch):
             RuntimeError("Storage already accessed by another instance of Qdrant client")
         ),
     )
-    monkeypatch.setattr(
-        qa_service,
-        "_fallback_keyword_retrieve",
-        lambda question, k=6: fallback_calls.append((question, k)) or docs,
-    )
-    monkeypatch.setattr(
-        qa_service,
-        "build_rag_prompt_template",
-        lambda: RunnableLambda(lambda data: f"{data['question']}\n{data['context']}"),
-    )
-    monkeypatch.setattr(
-        qa_service,
-        "_invoke_with_timeout",
-        lambda chain, question, timeout_seconds=30: chain.invoke(question),
-    )
 
-    answer = qa_service.ask_question("roadmap sync")
+    with pytest.raises(qa_service.AskConfigError) as excinfo:
+        qa_service.ask_question("roadmap sync")
 
-    assert answer == "keyword fallback answer"
-    assert fallback_calls == [("roadmap sync", 6)]
+    assert "vector store is unavailable" in str(excinfo.value).lower()
 
 
 def test_ask_question_missing_collection_raises_config_error(monkeypatch):
