@@ -21,6 +21,22 @@ Do not use `pip install -r requirements.txt`.
 
 This build is **Gemini-only**: set `LLM_PROVIDER=google` and configure `GOOGLE_API_KEY`.
 
+## Contributing
+
+Contributions are welcome — bug reports, docs improvements, and pull requests.
+
+- Start here: `CONTRIBUTING.md`
+- Security issues: `SECURITY.md`
+- Quick dev loop:
+
+```bash
+cp .env.example .env
+docker run --rm -p 6333:6333 qdrant/qdrant
+uv sync --dev
+uv run pytest
+uv run uvicorn maicro.main:app --reload
+```
+
 ## Open-Source Release Checklist
 
 To publish this project as true open source:
@@ -219,4 +235,3 @@ Future integrations may include:
 * Web dashboards
 * APIs for other tools
 * Knowledge management platforms
-

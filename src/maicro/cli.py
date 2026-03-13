@@ -1,5 +1,3 @@
-"""CLI entrypoints for mAIcro."""
-
 import argparse
 import asyncio
 import sys
