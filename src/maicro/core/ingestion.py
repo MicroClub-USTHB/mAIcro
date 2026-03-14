@@ -151,15 +151,14 @@ async def ingest_from_discord(limit_per_channel: int = 200) -> dict:
         try:
             last_message_id = get_last_ingested_message_id(channel_id)
             
-            
-            if last_message_id is not None:
-                summary[channel_id] = 0
-                continue
-            
+            # Bootstrap (no cursor): fetch the entire channel history.
+            # Catch-up (has cursor): fetch all messages strictly newer than the cursor.
+            # In both cases limit=None — the `after` cursor is the only boundary.
             messages = await fetch_channel_messages(
                 bot_token=settings.DISCORD_BOT_TOKEN,
                 channel_id=channel_id,
-                limit=limit_per_channel,
+                limit=None,
+                after=last_message_id,
             )
             
             if not messages:
@@ -173,7 +172,9 @@ async def ingest_from_discord(limit_per_channel: int = 200) -> dict:
             
            
             if messages:
-                newest_message = messages[0]
+                # Bootstrap (no prior cursor): Discord returns newest-first → messages[0] is newest.
+                # Catch-up (after was set): Discord returns oldest-first → messages[-1] is newest.
+                newest_message = messages[-1] if last_message_id else messages[0]
                 update_last_ingested_message_id(channel_id, newest_message["id"])
                 
         except DiscordFetchError as exc:

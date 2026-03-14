@@ -17,7 +17,7 @@ class DiscordFetchError(RuntimeError):
 async def fetch_channel_messages(
     bot_token: str,
     channel_id: str,
-    limit: int = 100,
+    limit: Optional[int] = None,
     after: Optional[str] = None,
 ) -> list[dict]:
     headers = {"Authorization": f"Bot {bot_token}"}
@@ -25,8 +25,8 @@ async def fetch_channel_messages(
     before: Optional[str] = None
 
     async with aiohttp.ClientSession() as session:
-        while len(all_messages) < limit:
-            batch_size = min(100, limit - len(all_messages))
+        while limit is None or len(all_messages) < limit:
+            batch_size = 100 if limit is None else min(100, limit - len(all_messages))
             url = f"{DISCORD_API}/channels/{channel_id}/messages?limit={batch_size}"
             if after:
                 url += f"&after={after}"
@@ -49,7 +49,10 @@ async def fetch_channel_messages(
                 break
 
             all_messages.extend(batch)
-            before = batch[-1]["id"]
+            if after:
+                after = batch[-1]["id"]  # ascending (oldest→newest): advance forward
+            else:
+                before = batch[-1]["id"]  # descending (bootstrap): go further back
 
             if len(batch) < batch_size:
                 break
@@ -60,7 +63,7 @@ async def fetch_channel_messages(
 async def fetch_all_channels(
     bot_token: str,
     channel_ids: list[str],
-    limit_per_channel: int = 100,
+    limit_per_channel: Optional[int] = None,
     after: Optional[str] = None,
 ) -> dict[str, list[dict]]:
     results: dict[str, list[dict]] = {}
