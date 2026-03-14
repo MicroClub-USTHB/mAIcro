@@ -12,6 +12,7 @@ from qdrant_client.http.exceptions import UnexpectedResponse
 
 from maicro.core.config import settings
 from maicro.core.llm_provider import get_embeddings
+from maicro.core.state import get_last_ingested_message_id, update_last_ingested_message_id
 from maicro.core.vector_store import get_qdrant_client, get_vector_store
 
 
@@ -148,15 +149,33 @@ async def ingest_from_discord(limit_per_channel: int = 200) -> dict:
 
     for channel_id in settings.discord_channel_id_list:
         try:
+            last_message_id = get_last_ingested_message_id(channel_id)
+            
+            
+            if last_message_id is not None:
+                summary[channel_id] = 0
+                continue
+            
             messages = await fetch_channel_messages(
                 bot_token=settings.DISCORD_BOT_TOKEN,
                 channel_id=channel_id,
                 limit=limit_per_channel,
             )
+            
+            if not messages:
+                summary[channel_id] = 0
+                continue
+                
             docs = _docs_from_discord_messages(messages, channel_id)
             count = ingest_documents(docs)
             summary[channel_id] = count
             total += count
+            
+           
+            if messages:
+                newest_message = messages[0]
+                update_last_ingested_message_id(channel_id, newest_message["id"])
+                
         except DiscordFetchError as exc:
             if exc.status_code == 403:
                 errors[channel_id] = (

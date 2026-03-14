@@ -18,6 +18,7 @@ async def fetch_channel_messages(
     bot_token: str,
     channel_id: str,
     limit: int = 100,
+    after: Optional[str] = None,
 ) -> list[dict]:
     headers = {"Authorization": f"Bot {bot_token}"}
     all_messages: list[dict] = []
@@ -27,7 +28,9 @@ async def fetch_channel_messages(
         while len(all_messages) < limit:
             batch_size = min(100, limit - len(all_messages))
             url = f"{DISCORD_API}/channels/{channel_id}/messages?limit={batch_size}"
-            if before:
+            if after:
+                url += f"&after={after}"
+            elif before:
                 url += f"&before={before}"
 
             async with session.get(url, headers=headers) as resp:
@@ -58,8 +61,11 @@ async def fetch_all_channels(
     bot_token: str,
     channel_ids: list[str],
     limit_per_channel: int = 100,
+    after: Optional[str] = None,
 ) -> dict[str, list[dict]]:
     results: dict[str, list[dict]] = {}
     for cid in channel_ids:
-        results[cid] = await fetch_channel_messages(bot_token, cid, limit_per_channel)
+        results[cid] = await fetch_channel_messages(
+            bot_token, cid, limit_per_channel, after=after
+        )
     return results
