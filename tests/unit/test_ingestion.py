@@ -149,9 +149,19 @@ def test_ingest_from_discord_collects_successes_and_permission_errors(monkeypatc
     monkeypatch.setattr(ingestion.settings, "DISCORD_BOT_TOKEN", "discord-token")
     monkeypatch.setattr(ingestion.settings, "DISCORD_CHANNEL_IDS", "denied,open")
 
-    async def fake_fetch_channel_messages(bot_token: str, channel_id: str, limit: int = 100):
+    # Simulate first run: no prior cursor for any channel
+    monkeypatch.setattr(ingestion, "get_last_ingested_message_id", lambda channel_id: None)
+    monkeypatch.setattr(ingestion, "update_last_ingested_message_id", lambda channel_id, msg_id: None)
+
+    async def fake_fetch_channel_messages(
+        bot_token: str,
+        channel_id: str,
+        limit=None,
+        after=None,
+    ):
         assert bot_token == "discord-token"
-        assert limit == 25
+        assert limit is None   # bootstrap always passes limit=None now
+        assert after is None   # no cursor on first run
         if channel_id == "denied":
             raise DiscordFetchError(channel_id=channel_id, status_code=403, message="forbidden")
         return [
@@ -163,10 +173,10 @@ def test_ingest_from_discord_collects_successes_and_permission_errors(monkeypatc
             }
         ]
 
-    monkeypatch.setattr("maicro.core.discord_fetcher.fetch_channel_messages", fake_fetch_channel_messages)
+    monkeypatch.setattr(ingestion, "fetch_channel_messages", fake_fetch_channel_messages)
     monkeypatch.setattr(ingestion, "ingest_documents", lambda docs: len(docs))
 
-    result = asyncio.run(ingestion.ingest_from_discord(limit_per_channel=25))
+    result = asyncio.run(ingestion.ingest_from_discord())
 
     assert result["channels"] == {"open": 1}
     assert "Missing access to channel" in result["errors"]["denied"]

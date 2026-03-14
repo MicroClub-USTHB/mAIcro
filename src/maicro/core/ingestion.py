@@ -11,6 +11,7 @@ from qdrant_client.http import models as qdrant_models
 from qdrant_client.http.exceptions import UnexpectedResponse
 
 from maicro.core.config import settings
+from maicro.core.discord_fetcher import DiscordFetchError, fetch_channel_messages
 from maicro.core.llm_provider import get_embeddings
 from maicro.core.state import get_last_ingested_message_id, update_last_ingested_message_id
 from maicro.core.vector_store import get_qdrant_client, get_vector_store
@@ -136,8 +137,6 @@ async def ingest_from_discord(limit_per_channel: int = 200) -> dict:
     Fetch messages from all configured Discord channels and ingest them.
     Returns a summary dict with per-channel counts.
     """
-    from maicro.core.discord_fetcher import DiscordFetchError, fetch_channel_messages
-
     if not settings.DISCORD_BOT_TOKEN:
         raise ValueError("DISCORD_BOT_TOKEN not set in environment.")
     if not settings.discord_channel_id_list:
