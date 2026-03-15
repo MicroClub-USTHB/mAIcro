@@ -209,12 +209,59 @@ async def run_discord_listener(bot_token: str, channel_ids: list[str]) -> None:
             except Exception:
                 pass
             await asyncio.sleep(delay)
-            # Re-create the client for a clean reconnect
+            # Re-create the client for a clean reconnect and re-register all events
             client = discord.Client(intents=intents)
-            client.event(on_ready)
-            client.event(on_message)
-            client.event(on_raw_message_delete)
-            client.event(on_raw_message_edit)
+
+            @client.event
+            async def on_ready() -> None:
+                logger.info(
+                    "[listener] READY — logged in as %s (id=%s)", client.user, client.user.id
+                )
+
+            @client.event
+            async def on_message(msg: discord.Message) -> None:
+                if msg.author.bot:
+                    return
+                channel_id = str(msg.channel.id)
+                logger.debug(
+                    "[listener] MESSAGE_CREATE channel=%s content=%r",
+                    channel_id,
+                    (msg.content or "")[:80],
+                )
+                await handle_message_create(_message_to_dict(msg), watched)
+
+            @client.event
+            async def on_raw_message_delete(payload: discord.RawMessageDeleteEvent) -> None:
+                channel_id = str(payload.channel_id)
+                message_id = str(payload.message_id)
+                logger.debug(
+                    "[listener] MESSAGE_DELETE channel=%s message_id=%s", channel_id, message_id
+                )
+                await handle_message_delete(
+                    {"channel_id": channel_id, "id": message_id}, watched
+                )
+
+            @client.event
+            async def on_raw_message_edit(payload: discord.RawMessageUpdateEvent) -> None:
+                data: dict = payload.data
+                channel_id = str(payload.channel_id)
+                message_id = str(payload.message_id)
+                logger.debug(
+                    "[listener] MESSAGE_UPDATE channel=%s message_id=%s", channel_id, message_id
+                )
+                # Build a normalised dict compatible with handle_message_update.
+                msg_dict = {
+                    "id": message_id,
+                    "channel_id": channel_id,
+                    "content": data.get("content", ""),
+                    "author": data.get("author", {"username": "unknown"}),
+                    "timestamp": data.get("edited_timestamp") or data.get("timestamp", ""),
+                    "embeds": [
+                        {"title": e.get("title", ""), "description": e.get("description", "")}
+                        for e in data.get("embeds", [])
+                    ],
+                }
+                await handle_message_update(msg_dict, watched)
     else:
         logger.error(
             "[listener] Exhausted %d reconnect attempts — giving up.", MAX_RETRIES

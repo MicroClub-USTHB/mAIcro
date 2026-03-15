@@ -19,10 +19,10 @@ async def fetch_channel_messages(
     channel_id: str,
     limit: Optional[int] = None,
     after: Optional[str] = None,
+    before: Optional[str] = None,
 ) -> list[dict]:
     headers = {"Authorization": f"Bot {bot_token}"}
     all_messages: list[dict] = []
-    before: Optional[str] = None
 
     async with aiohttp.ClientSession() as session:
         while limit is None or len(all_messages) < limit:
@@ -58,6 +58,30 @@ async def fetch_channel_messages(
                 break
 
     return all_messages
+
+
+async def fetch_message_by_id(
+    bot_token: str,
+    channel_id: str,
+    message_id: str,
+) -> Optional[dict]:
+    """Fetch a single message by its ID. Returns None if not found (deleted)."""
+    headers = {"Authorization": f"Bot {bot_token}"}
+    url = f"{DISCORD_API}/channels/{channel_id}/messages/{message_id}"
+    
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url, headers=headers) as resp:
+            if resp.status == 404:
+                # Message not found - it was deleted
+                return None
+            if resp.status != 200:
+                body = await resp.text()
+                raise DiscordFetchError(
+                    channel_id=channel_id,
+                    status_code=resp.status,
+                    message=f"Discord API error {resp.status} for message {message_id}: {body}",
+                )
+            return await resp.json()
 
 
 async def fetch_all_channels(

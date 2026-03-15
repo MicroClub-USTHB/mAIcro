@@ -40,7 +40,19 @@ def save_state(state: dict[str, str], file_path: Path = STATE_FILE_PATH) -> None
 def get_last_ingested_message_id(channel_id: str, file_path: Path = STATE_FILE_PATH) -> Optional[str]:
     """Get the last ingested message ID for a specific channel. Returns None if not found."""
     state = load_state(file_path)
-    return state.get(channel_id)
+    result = state.get(channel_id)
+    if result is None:
+        logger.debug(f"[state] No last message ID found for channel {channel_id}, channel may be new or never ingested")
+    return result
+
+
+def ensure_channel_in_state(channel_id: str, file_path: Path = STATE_FILE_PATH) -> None:
+    """Ensure a channel exists in the state file. Creates an entry if missing."""
+    state = load_state(file_path)
+    if channel_id not in state:
+        logger.info(f"[state] Initializing new channel {channel_id} in state file")
+        state[channel_id] = ""  # Empty string indicates channel seen but no messages ingested yet
+        save_state(state, file_path)
 
 
 def update_last_ingested_message_id(channel_id: str, message_id: str, file_path: Path = STATE_FILE_PATH) -> None:

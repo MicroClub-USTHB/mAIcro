@@ -108,13 +108,24 @@ def _ensure_collection_exists(vector_size: int) -> None:
         )
 
 
-def ingest_documents(documents: list[Document]) -> int:
+def ingest_documents(documents: list[Document], filter_duplicates: bool = True) -> int:
     """
     Push a list of LangChain Documents into the Qdrant vector store.
     Returns the number of documents ingested.
+    
+    Args:
+        documents: List of LangChain Documents to ingest.
+        filter_duplicates: If True, skip documents that already exist based on message_id.
     """
     if not documents:
         return 0
+
+    # Filter out duplicates if enabled
+    if filter_duplicates:
+        documents, duplicate_count = _filter_duplicate_documents(documents)
+        if not documents:
+            logger.debug("[ingestion] All documents were duplicates, nothing to ingest")
+            return 0
 
     try:
         vector_store = get_vector_store()
@@ -161,6 +172,66 @@ def _filter_by_message(channel_id: str, message_id: str) -> qdrant_models.Filter
             ),
         ]
     )
+
+
+def _check_duplicate_message_ids(documents: list[Document]) -> set[str]:
+    """
+    Check which message IDs already exist in the vector store.
+    Returns a set of message IDs that are already present.
+    """
+    client = get_qdrant_client()
+    existing_ids: set[str] = set()
+
+    # Group documents by channel_id for efficient querying
+    channel_msg_ids: dict[str, list[str]] = {}
+    for doc in documents:
+        channel_id = doc.metadata.get("channel_id", "")
+        message_id = doc.metadata.get("message_id", "")
+        if channel_id and message_id:
+            if channel_id not in channel_msg_ids:
+                channel_msg_ids[channel_id] = []
+            channel_msg_ids[channel_id].append(message_id)
+
+    # Check each channel for existing message IDs
+    for channel_id, message_ids in channel_msg_ids.items():
+        for msg_id in message_ids:
+            count_result = client.count(
+                collection_name=settings.COLLECTION_NAME,
+                count_filter=_filter_by_message(channel_id, msg_id),
+                exact=True,
+            )
+            if count_result.count > 0:
+                existing_ids.add(msg_id)
+
+    return existing_ids
+
+
+def _filter_duplicate_documents(documents: list[Document]) -> tuple[list[Document], int]:
+    """
+    Filter out documents that already exist in the vector store based on message_id.
+    Returns a tuple of (filtered_documents, duplicate_count).
+    """
+    if not documents:
+        return documents, 0
+
+    existing_ids = _check_duplicate_message_ids(documents)
+    if not existing_ids:
+        return documents, 0
+
+    filtered = []
+    duplicate_count = 0
+    for doc in documents:
+        msg_id = doc.metadata.get("message_id", "")
+        if msg_id in existing_ids:
+            duplicate_count += 1
+            logger.debug("[ingestion] Skipping duplicate message_id=%s", msg_id)
+        else:
+            filtered.append(doc)
+
+    if duplicate_count > 0:
+        logger.info("[ingestion] Filtered %d duplicate message(s)", duplicate_count)
+
+    return filtered, duplicate_count
 
 
 def delete_message_from_store(channel_id: str, message_id: str) -> int:
