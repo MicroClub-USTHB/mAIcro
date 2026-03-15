@@ -4,7 +4,11 @@ and pushes them into the Qdrant vector store.
 
 Supports one source:
   1. Discord messages (from the discord_fetcher)
+
+For startup audit (offline edit/delete reconciliation), see `maicro.core.audit`.
 """
+
+import logging
 
 from langchain_core.documents import Document
 from qdrant_client.http import models as qdrant_models
@@ -15,6 +19,13 @@ from maicro.core.discord_fetcher import DiscordFetchError, fetch_channel_message
 from maicro.core.llm_provider import get_embeddings
 from maicro.core.state import get_last_ingested_message_id, update_last_ingested_message_id
 from maicro.core.vector_store import get_qdrant_client, get_vector_store
+
+# Re-export run_startup_audit for backward compatibility
+from maicro.core.audit import run_startup_audit
+
+__all__ = ["ingest_documents", "ingest_from_discord", "run_startup_audit"]
+
+logger = logging.getLogger(__name__)
 
 
 # ---------------------------------------------------------------------------
@@ -130,6 +141,65 @@ def ingest_documents(documents: list[Document]) -> int:
         else:
             raise
     return len(documents)
+
+
+# ---------------------------------------------------------------------------
+# Delete / update helpers
+# ---------------------------------------------------------------------------
+
+def _filter_by_message(channel_id: str, message_id: str) -> qdrant_models.Filter:
+    """Build a Qdrant payload filter matching a specific (channel_id, message_id) pair."""
+    return qdrant_models.Filter(
+        must=[
+            qdrant_models.FieldCondition(
+                key="metadata.channel_id",
+                match=qdrant_models.MatchValue(value=channel_id),
+            ),
+            qdrant_models.FieldCondition(
+                key="metadata.message_id",
+                match=qdrant_models.MatchValue(value=message_id),
+            ),
+        ]
+    )
+
+
+def delete_message_from_store(channel_id: str, message_id: str) -> int:
+    """
+    Remove all Qdrant points whose payload matches (channel_id, message_id).
+    Returns the number of points deleted (0 if none existed).
+    """
+    client = get_qdrant_client()
+    # Count first so we can report how many were removed.
+    count_result = client.count(
+        collection_name=settings.COLLECTION_NAME,
+        count_filter=_filter_by_message(channel_id, message_id),
+        exact=True,
+    )
+    n = count_result.count
+    if n:
+        client.delete(
+            collection_name=settings.COLLECTION_NAME,
+            points_selector=qdrant_models.FilterSelector(
+                filter=_filter_by_message(channel_id, message_id)
+            ),
+        )
+        logger.debug(
+            "[ingestion] deleted %d point(s) for message_id=%s channel=%s",
+            n, message_id, channel_id,
+        )
+    return n
+
+
+def update_message_in_store(message: dict, channel_id: str) -> int:
+    """
+    Update a message in the vector store:
+    """
+    message_id = message.get("id", "")
+    delete_message_from_store(channel_id, message_id)
+    docs = _docs_from_discord_messages([message], channel_id)
+    if not docs:
+        return 0
+    return ingest_documents(docs)
 
 
 async def ingest_from_discord(limit_per_channel: int = 200) -> dict:

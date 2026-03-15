@@ -9,17 +9,30 @@ from maicro.api.error_handlers import register_exception_handlers
 from maicro.api.routes import router
 from maicro.core.config import settings
 from maicro.core.discord_listener import run_discord_listener
-from maicro.core.ingestion import ingest_from_discord
-from maicro.core.logging import configure_logging
+from maicro.core.ingestion import ingest_from_discord, run_startup_audit
+import logging
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
+)
 
-configure_logging()
+logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     if settings.DISCORD_BOT_TOKEN and settings.discord_channel_id_list:
-        # Phase 1 — init / catch-up: fetch all messages missed since last run
+        audit_task = asyncio.create_task(
+            run_startup_audit(settings.discord_channel_id_list, window=200)
+        )
+        try:
+            audit_summary = await audit_task
+            logger.info("[startup] Audit completed: %s", audit_summary)
+        except Exception as exc:
+            logger.error("[startup] Audit failed: %s", exc)
+
+        # Phase 1 — catch-up: fetch all messages missed since last run
         asyncio.create_task(ingest_from_discord(limit_per_channel=None))
         # Phase 2 — real-time: listen for new messages via Discord Gateway
         asyncio.create_task(
