@@ -20,7 +20,7 @@ configure_logging()
 async def lifespan(app: FastAPI):
     if settings.DISCORD_BOT_TOKEN and settings.discord_channel_id_list:
         # Phase 1 — init / catch-up: fetch all messages missed since last run
-        asyncio.create_task(ingest_from_discord(limit_per_channel=200))
+        asyncio.create_task(ingest_from_discord(limit_per_channel=None))
         # Phase 2 — real-time: listen for new messages via Discord Gateway
         asyncio.create_task(
             run_discord_listener(

@@ -81,7 +81,7 @@ async def run_discord_listener(bot_token: str, channel_ids: list[str]) -> None:
 
     watched: set[str] = set(channel_ids)
 
-    intents = discord.Intents(guild_messages=True, message_content=True)
+    intents = discord.Intents(guilds=True, guild_messages=True, message_content=True)
     client = discord.Client(intents=intents)
 
     @client.event
@@ -102,12 +102,37 @@ async def run_discord_listener(bot_token: str, channel_ids: list[str]) -> None:
         )
         await handle_message_create(_message_to_dict(msg), watched)
 
-    try:
-        await client.start(bot_token)
-    except discord.LoginFailure:
+    
+    MAX_RETRIES = 10
+    BASE_DELAY = 5.0   # seconds
+    MAX_DELAY = 60.0   # seconds
+
+    for attempt in range(1, MAX_RETRIES + 1):
+        try:
+            await client.start(bot_token)
+            break  # clean exit (shouldn't normally happen)
+        except discord.LoginFailure:
+            logger.error(
+                "[listener] Invalid Discord bot token (LoginFailure) — will not retry"
+            )
+            return
+        except Exception as exc:
+            delay = min(BASE_DELAY * 2 ** (attempt - 1), MAX_DELAY)
+            logger.warning(
+                "[listener] Disconnected (attempt %d/%d): %s. Retrying in %.0fs…",
+                attempt, MAX_RETRIES, exc, delay,
+            )
+            # Close the old client before reconnecting
+            try:
+                await client.close()
+            except Exception:
+                pass
+            await asyncio.sleep(delay)
+            # Re-create the client for a clean reconnect
+            client = discord.Client(intents=intents)
+            client.event(on_ready)
+            client.event(on_message)
+    else:
         logger.error(
-            "[listener] Invalid Discord bot token (LoginFailure) — listener will not restart"
+            "[listener] Exhausted %d reconnect attempts — giving up.", MAX_RETRIES
         )
-    except Exception as exc:
-        logger.error("[listener] Unexpected error in Discord listener: %s", exc)
-        raise
