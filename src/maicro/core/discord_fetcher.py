@@ -17,17 +17,20 @@ class DiscordFetchError(RuntimeError):
 async def fetch_channel_messages(
     bot_token: str,
     channel_id: str,
-    limit: int = 100,
+    limit: Optional[int] = None,
+    after: Optional[str] = None,
+    before: Optional[str] = None,
 ) -> list[dict]:
     headers = {"Authorization": f"Bot {bot_token}"}
     all_messages: list[dict] = []
-    before: Optional[str] = None
 
     async with aiohttp.ClientSession() as session:
-        while len(all_messages) < limit:
-            batch_size = min(100, limit - len(all_messages))
+        while limit is None or len(all_messages) < limit:
+            batch_size = 100 if limit is None else min(100, limit - len(all_messages))
             url = f"{DISCORD_API}/channels/{channel_id}/messages?limit={batch_size}"
-            if before:
+            if after:
+                url += f"&after={after}"
+            elif before:
                 url += f"&before={before}"
 
             async with session.get(url, headers=headers) as resp:
@@ -46,7 +49,10 @@ async def fetch_channel_messages(
                 break
 
             all_messages.extend(batch)
-            before = batch[-1]["id"]
+            if after:
+                after = batch[-1]["id"]  # ascending (oldest→newest): advance forward
+            else:
+                before = batch[-1]["id"]  # descending (bootstrap): go further back
 
             if len(batch) < batch_size:
                 break
@@ -54,12 +60,39 @@ async def fetch_channel_messages(
     return all_messages
 
 
+async def fetch_message_by_id(
+    bot_token: str,
+    channel_id: str,
+    message_id: str,
+) -> Optional[dict]:
+    """Fetch a single message by its ID. Returns None if not found (deleted)."""
+    headers = {"Authorization": f"Bot {bot_token}"}
+    url = f"{DISCORD_API}/channels/{channel_id}/messages/{message_id}"
+    
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url, headers=headers) as resp:
+            if resp.status == 404:
+                # Message not found - it was deleted
+                return None
+            if resp.status != 200:
+                body = await resp.text()
+                raise DiscordFetchError(
+                    channel_id=channel_id,
+                    status_code=resp.status,
+                    message=f"Discord API error {resp.status} for message {message_id}: {body}",
+                )
+            return await resp.json()
+
+
 async def fetch_all_channels(
     bot_token: str,
     channel_ids: list[str],
-    limit_per_channel: int = 100,
+    limit_per_channel: Optional[int] = None,
+    after: Optional[str] = None,
 ) -> dict[str, list[dict]]:
     results: dict[str, list[dict]] = {}
     for cid in channel_ids:
-        results[cid] = await fetch_channel_messages(bot_token, cid, limit_per_channel)
+        results[cid] = await fetch_channel_messages(
+            bot_token, cid, limit_per_channel, after=after
+        )
     return results

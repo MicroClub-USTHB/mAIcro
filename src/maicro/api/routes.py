@@ -2,6 +2,8 @@
 mAIcro REST API routes.
 """
 
+import asyncio
+
 from fastapi import APIRouter, HTTPException
 
 from maicro.api.schemas import AskRequest, AskResponse, IngestResponse
@@ -32,7 +34,8 @@ async def ask(req: AskRequest):
     if not req.question.strip():
         raise HTTPException(status_code=400, detail="Question cannot be empty.")
 
-    answer = ask_question(req.question)
+    loop = asyncio.get_running_loop()
+    answer = await loop.run_in_executor(None, ask_question, req.question)
 
     return AskResponse(question=req.question, answer=answer)
 

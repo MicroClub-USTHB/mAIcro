@@ -4,15 +4,28 @@ and pushes them into the Qdrant vector store.
 
 Supports one source:
   1. Discord messages (from the discord_fetcher)
+
+For startup audit (offline edit/delete reconciliation), see `maicro.core.audit`.
 """
+
+import logging
 
 from langchain_core.documents import Document
 from qdrant_client.http import models as qdrant_models
 from qdrant_client.http.exceptions import UnexpectedResponse
 
 from maicro.core.config import settings
+from maicro.core.discord_fetcher import DiscordFetchError, fetch_channel_messages
 from maicro.core.llm_provider import get_embeddings
+from maicro.core.state import get_last_ingested_message_id, update_last_ingested_message_id
 from maicro.core.vector_store import get_qdrant_client, get_vector_store
+
+# Re-export run_startup_audit for backward compatibility
+from maicro.core.audit import run_startup_audit
+
+__all__ = ["ingest_documents", "ingest_from_discord", "run_startup_audit"]
+
+logger = logging.getLogger(__name__)
 
 
 # ---------------------------------------------------------------------------
@@ -95,13 +108,24 @@ def _ensure_collection_exists(vector_size: int) -> None:
         )
 
 
-def ingest_documents(documents: list[Document]) -> int:
+def ingest_documents(documents: list[Document], filter_duplicates: bool = True) -> int:
     """
     Push a list of LangChain Documents into the Qdrant vector store.
     Returns the number of documents ingested.
+    
+    Args:
+        documents: List of LangChain Documents to ingest.
+        filter_duplicates: If True, skip documents that already exist based on message_id.
     """
     if not documents:
         return 0
+
+    # Filter out duplicates if enabled
+    if filter_duplicates:
+        documents, duplicate_count = _filter_duplicate_documents(documents)
+        if not documents:
+            logger.debug("[ingestion] All documents were duplicates, nothing to ingest")
+            return 0
 
     try:
         vector_store = get_vector_store()
@@ -130,13 +154,130 @@ def ingest_documents(documents: list[Document]) -> int:
     return len(documents)
 
 
+# ---------------------------------------------------------------------------
+# Delete / update helpers
+# ---------------------------------------------------------------------------
+
+def _filter_by_message(channel_id: str, message_id: str) -> qdrant_models.Filter:
+    """Build a Qdrant payload filter matching a specific (channel_id, message_id) pair."""
+    return qdrant_models.Filter(
+        must=[
+            qdrant_models.FieldCondition(
+                key="metadata.channel_id",
+                match=qdrant_models.MatchValue(value=channel_id),
+            ),
+            qdrant_models.FieldCondition(
+                key="metadata.message_id",
+                match=qdrant_models.MatchValue(value=message_id),
+            ),
+        ]
+    )
+
+
+def _check_duplicate_message_ids(documents: list[Document]) -> set[str]:
+    """
+    Check which message IDs already exist in the vector store.
+    Returns a set of message IDs that are already present.
+    """
+    client = get_qdrant_client()
+    existing_ids: set[str] = set()
+
+    # Group documents by channel_id for efficient querying
+    channel_msg_ids: dict[str, list[str]] = {}
+    for doc in documents:
+        channel_id = doc.metadata.get("channel_id", "")
+        message_id = doc.metadata.get("message_id", "")
+        if channel_id and message_id:
+            if channel_id not in channel_msg_ids:
+                channel_msg_ids[channel_id] = []
+            channel_msg_ids[channel_id].append(message_id)
+
+    # Check each channel for existing message IDs
+    for channel_id, message_ids in channel_msg_ids.items():
+        for msg_id in message_ids:
+            count_result = client.count(
+                collection_name=settings.COLLECTION_NAME,
+                count_filter=_filter_by_message(channel_id, msg_id),
+                exact=True,
+            )
+            if count_result.count > 0:
+                existing_ids.add(msg_id)
+
+    return existing_ids
+
+
+def _filter_duplicate_documents(documents: list[Document]) -> tuple[list[Document], int]:
+    """
+    Filter out documents that already exist in the vector store based on message_id.
+    Returns a tuple of (filtered_documents, duplicate_count).
+    """
+    if not documents:
+        return documents, 0
+
+    existing_ids = _check_duplicate_message_ids(documents)
+    if not existing_ids:
+        return documents, 0
+
+    filtered = []
+    duplicate_count = 0
+    for doc in documents:
+        msg_id = doc.metadata.get("message_id", "")
+        if msg_id in existing_ids:
+            duplicate_count += 1
+            logger.debug("[ingestion] Skipping duplicate message_id=%s", msg_id)
+        else:
+            filtered.append(doc)
+
+    if duplicate_count > 0:
+        logger.info("[ingestion] Filtered %d duplicate message(s)", duplicate_count)
+
+    return filtered, duplicate_count
+
+
+def delete_message_from_store(channel_id: str, message_id: str) -> int:
+    """
+    Remove all Qdrant points whose payload matches (channel_id, message_id).
+    Returns the number of points deleted (0 if none existed).
+    """
+    client = get_qdrant_client()
+    # Count first so we can report how many were removed.
+    count_result = client.count(
+        collection_name=settings.COLLECTION_NAME,
+        count_filter=_filter_by_message(channel_id, message_id),
+        exact=True,
+    )
+    n = count_result.count
+    if n:
+        client.delete(
+            collection_name=settings.COLLECTION_NAME,
+            points_selector=qdrant_models.FilterSelector(
+                filter=_filter_by_message(channel_id, message_id)
+            ),
+        )
+        logger.debug(
+            "[ingestion] deleted %d point(s) for message_id=%s channel=%s",
+            n, message_id, channel_id,
+        )
+    return n
+
+
+def update_message_in_store(message: dict, channel_id: str) -> int:
+    """
+    Update a message in the vector store:
+    """
+    message_id = message.get("id", "")
+    delete_message_from_store(channel_id, message_id)
+    docs = _docs_from_discord_messages([message], channel_id)
+    if not docs:
+        return 0
+    return ingest_documents(docs)
+
+
 async def ingest_from_discord(limit_per_channel: int = 200) -> dict:
     """
     Fetch messages from all configured Discord channels and ingest them.
     Returns a summary dict with per-channel counts.
     """
-    from maicro.core.discord_fetcher import DiscordFetchError, fetch_channel_messages
-
     if not settings.DISCORD_BOT_TOKEN:
         raise ValueError("DISCORD_BOT_TOKEN not set in environment.")
     if not settings.discord_channel_id_list:
@@ -148,15 +289,34 @@ async def ingest_from_discord(limit_per_channel: int = 200) -> dict:
 
     for channel_id in settings.discord_channel_id_list:
         try:
+            last_message_id = get_last_ingested_message_id(channel_id)
+            
+            # Bootstrap (no cursor): fetch the entire channel history.
+            # Catch-up (has cursor): fetch all messages strictly newer than the cursor.
+            # In both cases limit=None — the `after` cursor is the only boundary.
             messages = await fetch_channel_messages(
                 bot_token=settings.DISCORD_BOT_TOKEN,
                 channel_id=channel_id,
-                limit=limit_per_channel,
+                limit=None,
+                after=last_message_id,
             )
+            
+            if not messages:
+                summary[channel_id] = 0
+                continue
+                
             docs = _docs_from_discord_messages(messages, channel_id)
             count = ingest_documents(docs)
             summary[channel_id] = count
             total += count
+            
+           
+            if messages:
+                # Bootstrap (no prior cursor): Discord returns newest-first → messages[0] is newest.
+                # Catch-up (after was set): Discord returns oldest-first → messages[-1] is newest.
+                newest_message = messages[-1] if last_message_id else messages[0]
+                update_last_ingested_message_id(channel_id, newest_message["id"])
+                
         except DiscordFetchError as exc:
             if exc.status_code == 403:
                 errors[channel_id] = (
