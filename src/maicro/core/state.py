@@ -5,7 +5,6 @@ from typing import Optional
 
 logger = logging.getLogger(__name__)
 
-# Default path for the state file
 STATE_FILE_PATH = Path("data/ingestion_state.json")
 
 
@@ -27,9 +26,8 @@ def load_state(file_path: Path = STATE_FILE_PATH) -> dict[str, str]:
 
 def save_state(state: dict[str, str], file_path: Path = STATE_FILE_PATH) -> None:
     """Save the ingestion state to a JSON file."""
-    # Ensure the directory exists
     file_path.parent.mkdir(parents=True, exist_ok=True)
-    
+
     try:
         with open(file_path, "w", encoding="utf-8") as f:
             json.dump(state, f, indent=4)

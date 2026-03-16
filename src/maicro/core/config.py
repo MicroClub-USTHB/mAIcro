@@ -10,17 +10,14 @@ class Settings(BaseSettings):
     ORG_DESCRIPTION: Optional[str] = "A generic organization using mAIcro"
     CORE_RULES: Optional[List[str]] = None
 
-    # AI Settings
     LLM_PROVIDER: str = "google"
     GOOGLE_API_KEY: Optional[str] = None
     MODEL_NAME: Optional[str] = None
     GOOGLE_MODEL_NAME: str = "gemini-2.5-flash"
 
-    # Discord ingestion
     DISCORD_BOT_TOKEN: Optional[str] = None
     DISCORD_CHANNEL_IDS: Optional[str] = None
 
-    # Vector Store
     QDRANT_URL: str = "http://localhost:6333"
     QDRANT_API_KEY: Optional[str] = None
     COLLECTION_NAME: str = "microclub_knowledge"

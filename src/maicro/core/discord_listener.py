@@ -170,7 +170,6 @@ async def run_discord_listener(bot_token: str, channel_ids: list[str]) -> None:
         logger.debug(
             "[listener] MESSAGE_UPDATE channel=%s message_id=%s", channel_id, message_id
         )
-        # Build a normalised dict compatible with handle_message_update.
         msg_dict = {
             "id": message_id,
             "channel_id": channel_id,
@@ -185,8 +184,8 @@ async def run_discord_listener(bot_token: str, channel_ids: list[str]) -> None:
         await handle_message_update(msg_dict, watched)
 
     MAX_RETRIES = 10
-    BASE_DELAY = 5.0   
-    MAX_DELAY = 60.0   
+    BASE_DELAY = 5.0
+    MAX_DELAY = 60.0
 
     for attempt in range(1, MAX_RETRIES + 1):
         try:

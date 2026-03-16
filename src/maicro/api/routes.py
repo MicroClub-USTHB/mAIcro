@@ -13,10 +13,6 @@ from maicro.services.qa_service import ask_question
 router = APIRouter(prefix=settings.API_V1_STR)
 
 
-# ---------------------------------------------------------------------------
-# Endpoints
-# ---------------------------------------------------------------------------
-
 @router.get("/health")
 async def health():
     return {
