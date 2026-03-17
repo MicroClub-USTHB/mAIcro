@@ -1,5 +1,3 @@
-"""Compatibility wrapper for the canonical entrypoint in maicro.main."""
-
 from pathlib import Path
 import sys
 

@@ -1,5 +1,3 @@
-"""Compatibility wrapper for `python ingest.py` in a src-layout project."""
-
 from pathlib import Path
 import sys
 

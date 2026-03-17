@@ -40,6 +40,15 @@ def _is_missing_collection_error(message: str) -> bool:
     return any(needle in lowered for needle in ("doesn't exist", "does not exist", "not found"))
 
 
+def _is_missing_collection_exception(exc: Exception) -> bool:
+    """Return True when an exception indicates the Qdrant collection is missing."""
+    if isinstance(exc, UnexpectedResponse):
+        if exc.status_code != 404:
+            return False
+        return _is_missing_collection_error(exc.content.decode("utf-8", errors="ignore"))
+    return _is_missing_collection_error(str(exc))
+
+
 def _bootstrap_collection() -> None:
     """Create the Qdrant collection (if missing) and clear vector-store cache."""
     embedding = get_embeddings()
@@ -181,11 +190,16 @@ def _check_duplicate_message_ids(documents: list[Document]) -> set[str]:
 
     for channel_id, message_ids in channel_msg_ids.items():
         for msg_id in message_ids:
-            count_result = client.count(
-                collection_name=settings.COLLECTION_NAME,
-                count_filter=_filter_by_message(channel_id, msg_id),
-                exact=True,
-            )
+            try:
+                count_result = client.count(
+                    collection_name=settings.COLLECTION_NAME,
+                    count_filter=_filter_by_message(channel_id, msg_id),
+                    exact=True,
+                )
+            except Exception as exc:
+                if _is_missing_collection_exception(exc):
+                    return set()
+                raise
             if count_result.count > 0:
                 existing_ids.add(msg_id)
 
@@ -226,11 +240,16 @@ def delete_message_from_store(channel_id: str, message_id: str) -> int:
     Returns the number of points deleted (0 if none existed).
     """
     client = get_qdrant_client()
-    count_result = client.count(
-        collection_name=settings.COLLECTION_NAME,
-        count_filter=_filter_by_message(channel_id, message_id),
-        exact=True,
-    )
+    try:
+        count_result = client.count(
+            collection_name=settings.COLLECTION_NAME,
+            count_filter=_filter_by_message(channel_id, message_id),
+            exact=True,
+        )
+    except Exception as exc:
+        if _is_missing_collection_exception(exc):
+            return 0
+        raise
     n = count_result.count
     if n:
         client.delete(
