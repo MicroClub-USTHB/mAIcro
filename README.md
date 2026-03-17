@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="617" height="265" alt="image" src="https://github.com/user-attachments/assets/8dce5210-a16c-4ff8-98e4-c3050e3c4f77" />
+  <img width="969" height="547" alt="image" src="https://github.com/user-attachments/assets/93708b00-4dbb-4005-a9b2-629bd82080aa" />
 </p>
 
 # mAIcro: Open Source Knowledge Service
