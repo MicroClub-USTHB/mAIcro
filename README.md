@@ -1,5 +1,5 @@
 <p align="center">
-  
+  <img width="617" height="265" alt="image" src="https://github.com/user-attachments/assets/8dce5210-a16c-4ff8-98e4-c3050e3c4f77" />
 </p>
 
 # mAIcro: Open Source Knowledge Service
@@ -8,7 +8,7 @@
 
 ---
 
-## 🏛 System Architecture
+## System Architecture
 
 mAIcro follows a modern, stateless architecture optimized for cloud deployment.
 
@@ -36,7 +36,7 @@ graph TD
 
 ---
 
-## 🔄 Stateless Data Flow
+## Stateless Data Flow
 
 mAIcro ensures zero-loss ingestion without local state by syncing cursors to the cloud.
 
@@ -57,7 +57,7 @@ sequenceDiagram
 
 ---
 
-## 🚀 Quickstart
+## Quickstart
 
 Setting up mAIcro takes less than 5 minutes.
 
@@ -97,7 +97,7 @@ curl -X POST http://localhost:8000/api/v1/ask \
 
 ---
 
-## 🛠 Features
+## Features
 
 - **Stateless Architecture**: No local database required. Ingestion cursors and embeddings are stored in Qdrant Cloud.
 - **Discord Integration**: Automatically syncs announcements and messages from specified channels.
@@ -106,7 +106,7 @@ curl -X POST http://localhost:8000/api/v1/ask \
 
 ---
 
-## 🤖 Discord Bot Setup Tips
+## Discord Bot Setup Tips
 
 1. **Intents**: Enable **Message Content Intent** in the Discord Developer Portal.
 2. **Permissions**: The bot needs `View Channels` and `Read Message History`.
@@ -114,7 +114,7 @@ curl -X POST http://localhost:8000/api/v1/ask \
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```text
 .
