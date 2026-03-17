@@ -1,23 +1,54 @@
 # mAIcro: Open Source AI Service
 
-## Setup (uv Only)
+## Quickstart
 
-This project uses `uv` as the single dependency manager.
+> **Prerequisites:** [Python 3.10+](https://python.org) and [uv](https://docs.astral.sh/uv/) installed.
 
-Sign up for the free **Qdrant Cloud** tier (1 GB) at [cloud.qdrant.io](https://cloud.qdrant.io) and create a cluster. Copy your **Cluster URL** and **API Key**.
-
-> **Local alternative:** `docker run --rm -p 6333:6333 qdrant/qdrant` — set `QDRANT_URL=http://localhost:6333` and leave `QDRANT_API_KEY` empty.
-
-Configure `.env` (copy from `.env.example`) and set at least `GOOGLE_API_KEY`, `QDRANT_URL`, and `QDRANT_API_KEY`.
+#### 1. Clone & install dependencies
 
 ```bash
+git clone https://github.com/MicroClub-USTHB/mAIcro.git
+cd mAIcro
 uv sync
+```
+
+#### 2. Set up your `.env`
+
+```bash
+cp .env.example .env
+```
+
+Open `.env` and fill in the three required services:
+
+| Variable | Where to get it |
+|---|---|
+| `GOOGLE_API_KEY` | [Google AI Studio](https://aistudio.google.com/app/apikey) — create an API key |
+| `DISCORD_BOT_TOKEN` | [Discord Developer Portal](https://discord.com/developers/applications) — create a bot, copy its token |
+| `DISCORD_CHANNEL_IDS` | Right-click a Discord channel → *Copy Channel ID* (comma-separated for multiple) |
+| `QDRANT_URL` | [Qdrant Cloud](https://cloud.qdrant.io) — create a free cluster (1 GB), copy the URL |
+| `QDRANT_API_KEY` | Qdrant Cloud dashboard → *API Keys* → create a key |
+
+> **Local alternative:** run `docker run --rm -p 6333:6333 qdrant/qdrant`, set `QDRANT_URL=http://localhost:6333`, and leave `QDRANT_API_KEY` empty.
+
+#### 3. Run the server
+
+```bash
 uv run uvicorn maicro.main:app --reload
 ```
 
-Do not use `pip install -r requirements.txt`.
+#### 4. Ingest & ask
 
-This build is **Gemini-only**: set `LLM_PROVIDER=google` and configure `GOOGLE_API_KEY`.
+```bash
+# Trigger Discord ingestion
+curl -X POST http://localhost:8000/api/v1/ingest/discord
+
+# Ask a question
+curl -X POST http://localhost:8000/api/v1/ask \
+  -H "Content-Type: application/json" \
+  -d '{"question":"When is the next event?"}'
+```
+
+> **Note:** This build is **Gemini-only** — set `LLM_PROVIDER=google` (the default).
 
 ## Contributing
 
