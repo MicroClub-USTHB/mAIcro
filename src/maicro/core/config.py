@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     DISCORD_BOT_TOKEN: Optional[str] = None
     DISCORD_CHANNEL_IDS: Optional[str] = None
 
-    QDRANT_URL: str = "http://localhost:6333"
+    QDRANT_URL: Optional[str] = None
     QDRANT_API_KEY: Optional[str] = None
     COLLECTION_NAME: str = "microclub_knowledge"
 

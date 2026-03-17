@@ -28,8 +28,6 @@ Open `.env` and fill in the three required services:
 | `QDRANT_URL` | [Qdrant Cloud](https://cloud.qdrant.io) — create a free cluster (1 GB), copy the URL |
 | `QDRANT_API_KEY` | Qdrant Cloud dashboard → *API Keys* → create a key |
 
-> **Local alternative:** run `docker run --rm -p 6333:6333 qdrant/qdrant`, set `QDRANT_URL=http://localhost:6333`, and leave `QDRANT_API_KEY` empty.
-
 #### 3. Run the server
 
 ```bash
@@ -59,7 +57,7 @@ If ingestion returns empty or 0 messages, check:
 - **Bot Presence:** Ensure the bot is actually invited to the server.
 
 ### 2. Qdrant Cloud "400 Bad Request"
-This project auto-creates **Payload Indexes**. If you get a 400 error about missing indexes, the server will attempt to fix it on startup. If it persists, ensure your QDRANT_API_KEY has "Manage" or "Admin" permissions.
+This project auto-creates **Payload Indexes**. If you get a 400 error about missing indexes, the server will attempt to fix it on startup. Ensure your QDRANT_API_KEY has "Manage" or "Admin" permissions.
 
 ### 3. Google Gemini Quota
 If you get `429 Resource Exhausted`, you have hit the free tier rate limit. Wait 60 seconds and retry.

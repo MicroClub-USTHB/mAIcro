@@ -10,10 +10,16 @@ from maicro.core.llm_provider import get_embeddings
 
 @lru_cache(maxsize=1)
 def get_qdrant_client() -> QdrantClient:
-    """Return a singleton Qdrant client for this process."""
-    if settings.QDRANT_API_KEY:
-        return QdrantClient(url=settings.QDRANT_URL, api_key=settings.QDRANT_API_KEY)
-    return QdrantClient(url=settings.QDRANT_URL)
+    """Return a singleton Qdrant client for this process.
+    
+    Now strictly Cloud-only: requires QDRANT_URL and QDRANT_API_KEY.
+    """
+    if not settings.QDRANT_URL or not settings.QDRANT_API_KEY:
+        raise ValueError(
+            "mAIcro is now Cloud-only. Please set QDRANT_URL and QDRANT_API_KEY in your .env file. "
+            "See README.md for instructions on setting up a free Qdrant Cloud cluster."
+        )
+    return QdrantClient(url=settings.QDRANT_URL, api_key=settings.QDRANT_API_KEY)
 
 
 @lru_cache(maxsize=1)
