@@ -4,13 +4,11 @@
 
 This project uses `uv` as the single dependency manager.
 
-Start a Qdrant server (required):
+Sign up for the free **Qdrant Cloud** tier (1 GB) at [cloud.qdrant.io](https://cloud.qdrant.io) and create a cluster. Copy your **Cluster URL** and **API Key**.
 
-```bash
-docker run --rm -p 6333:6333 qdrant/qdrant
-```
+> **Local alternative:** `docker run --rm -p 6333:6333 qdrant/qdrant` — set `QDRANT_URL=http://localhost:6333` and leave `QDRANT_API_KEY` empty.
 
-Configure `.env` (copy from `.env.example`) and set at least `GOOGLE_API_KEY` and `QDRANT_URL`.
+Configure `.env` (copy from `.env.example`) and set at least `GOOGLE_API_KEY`, `QDRANT_URL`, and `QDRANT_API_KEY`.
 
 ```bash
 uv sync
@@ -31,7 +29,8 @@ Contributions are welcome — bug reports, docs improvements, and pull requests.
 
 ```bash
 cp .env.example .env
-docker run --rm -p 6333:6333 qdrant/qdrant
+# Set QDRANT_URL and QDRANT_API_KEY from Qdrant Cloud, or run locally:
+# docker run --rm -p 6333:6333 qdrant/qdrant
 uv sync --dev
 uv run pytest
 uv run uvicorn maicro.main:app --reload
