@@ -97,7 +97,11 @@ def _docs_from_discord_messages(
 
 
 def _ensure_collection_exists(vector_size: int) -> None:
-    """Create local collection if missing, without relying on cached vector store."""
+    """Create collection (if missing) and ensure payload indexes exist.
+
+    Qdrant Cloud requires explicit payload indexes for filtered queries.
+    Local Qdrant auto-indexes, so these calls are safe no-ops there.
+    """
     client = get_qdrant_client()
     if not client.collection_exists(settings.COLLECTION_NAME):
         client.create_collection(
@@ -107,6 +111,17 @@ def _ensure_collection_exists(vector_size: int) -> None:
                 distance=qdrant_models.Distance.COSINE,
             ),
         )
+
+    # Ensure payload indexes exist (required by Qdrant Cloud for filtered queries)
+    for field in ("metadata.channel_id", "metadata.message_id", "metadata.source"):
+        try:
+            client.create_payload_index(
+                collection_name=settings.COLLECTION_NAME,
+                field_name=field,
+                field_schema=qdrant_models.PayloadSchemaType.KEYWORD,
+            )
+        except Exception:
+            pass  # Index already exists or collection just created
 
 
 def ingest_documents(documents: list[Document], filter_duplicates: bool = True) -> int:

@@ -59,9 +59,7 @@ Contributions are welcome — bug reports, docs improvements, and pull requests.
 - Quick dev loop:
 
 ```bash
-cp .env.example .env
-# Set QDRANT_URL and QDRANT_API_KEY from Qdrant Cloud, or run locally:
-# docker run --rm -p 6333:6333 qdrant/qdrant
+cp .env.example .env          # fill in your credentials (see Quickstart above)
 uv sync --dev
 uv run pytest
 uv run uvicorn maicro.main:app --reload
@@ -76,19 +74,13 @@ To publish this project as true open source:
 3. Keep runtime state out of git: do not commit runtime state directories (for example `var/`).
 4. Publish the repo (for example on GitHub) as public and accept contributions via PRs.
 
-## API Usage
+## API Reference
 
-After starting the server, the API is available under `/api/v1`:
-
-```bash
-curl http://localhost:8000/api/v1/health
-
-curl -X POST http://localhost:8000/api/v1/ask \
-  -H "Content-Type: application/json" \
-  -d '{"question":"When is the next event?"}'
-
-curl -X POST http://localhost:8000/api/v1/ingest/discord
-```
+| Endpoint | Method | Description |
+|---|---|---|
+| `/api/v1/health` | GET | Health check |
+| `/api/v1/ask` | POST | Ask a question (`{"question": "..."}`) |
+| `/api/v1/ingest/discord` | POST | Trigger Discord ingestion |
 
 ## Package Publishing Notes
 
