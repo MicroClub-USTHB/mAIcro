@@ -48,6 +48,40 @@ curl -X POST http://localhost:8000/api/v1/ask \
   -d '{"question":"When is the next event?"}'
 ```
 
+---
+
+## 🛠 Troubleshooting & Tips
+
+### 1. Discord Bot permissions
+If ingestion returns empty or 0 messages, check:
+- **Intents:** Go to [Discord Developer Portal](https://discord.com/developers/applications) → Bot → **Message Content Intent** (must be ON).
+- **Permissions:** The bot needs `View Channels` + `Read Message History` in the specific channels.
+- **Bot Presence:** Ensure the bot is actually invited to the server.
+
+### 2. Qdrant Cloud "400 Bad Request"
+This project auto-creates **Payload Indexes**. If you get a 400 error about missing indexes, the server will attempt to fix it on startup. If it persists, ensure your QDRANT_API_KEY has "Manage" or "Admin" permissions.
+
+### 3. Google Gemini Quota
+If you get `429 Resource Exhausted`, you have hit the free tier rate limit. Wait 60 seconds and retry.
+
+---
+
+## 🤖 Discord Bot Setup Guide (Detailed)
+
+1. Create an application at [Discord Developers](https://discord.com/developers/applications).
+2. Go to the **Bot** tab:
+   - Click "Reset Token" to get your `DISCORD_BOT_TOKEN`.
+   - Scroll down to **Privileged Gateway Intents** → Enable **Message Content Intent**.
+3. Go to **OAuth2** → **URL Generator**:
+   - Scopes: `bot`.
+   - Bot Permissions: `Read Messages/View Channels`, `Read Message History`.
+   - Copy the generated URL and open it in your browser to invite the bot.
+4. To get `DISCORD_CHANNEL_IDS`:
+   - Enable "Developer Mode" in Discord Settings → Advanced.
+   - Right-click any channel → **Copy Channel ID**.
+
+---
+
 > **Note:** This build is **Gemini-only** — set `LLM_PROVIDER=google` (the default).
 
 ## Contributing
