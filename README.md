@@ -28,22 +28,28 @@ Open `.env` and fill in the three required services:
 | `QDRANT_URL` | [Qdrant Cloud](https://cloud.qdrant.io) — create a free cluster (1 GB), copy the URL |
 | `QDRANT_API_KEY` | Qdrant Cloud dashboard → *API Keys* → create a key |
 
-#### 3. Run the server
+#### 4. Run & Test
 
+**Option A: Standard (local)**
 ```bash
-uv run uvicorn maicro.main:app --reload
+uv run uvicorn maicro.main:app --host 0.0.0.0 --port 8000
 ```
 
-#### 4. Ingest & ask
+**Option B: Docker (recommended)**
+```bash
+docker compose up -d
+```
+
+#### 5. Ingest & ask
 
 ```bash
-# Trigger Discord ingestion
+# Trigger Discord ingestion (Stateless - cursors saved to Cloud)
 curl -X POST http://localhost:8000/api/v1/ingest/discord
 
 # Ask a question
 curl -X POST http://localhost:8000/api/v1/ask \
   -H "Content-Type: application/json" \
-  -d '{"question":"When is the next event?"}'
+  -d '{"question":"What projects are the dev team working on?"}'
 ```
 
 ---
