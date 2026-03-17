@@ -1,6 +1,59 @@
+<p align="center">
+  
+</p>
+
 # mAIcro: Open Source Knowledge Service
 
 **mAIcro** is a professional, stateless AI service designed to centralize organizational knowledge and answer questions via RAG (Retrieval-Augmented Generation).
+
+---
+
+## 🏛 System Architecture
+
+mAIcro follows a modern, stateless architecture optimized for cloud deployment.
+
+```mermaid
+graph TD
+    User([User]) <--> API[FastAPI Service]
+    API <--> Qdrant[(Qdrant Cloud)]
+    API <--> Gemini[[Google Gemini AI]]
+    Cron[Cron/Trigger] --> Ingest[Ingestion Pipeline]
+    Ingest --> Discord[Discord API]
+    Discord --> Messages[Discord Messages]
+    Messages --> Embed[Embeddings]
+    Embed --> Qdrant
+    
+    subgraph "Stateless Backend"
+        API
+        Ingest
+    end
+    
+    subgraph "Cloud Services"
+        Qdrant
+        Gemini
+    end
+```
+
+---
+
+## 🔄 Stateless Data Flow
+
+mAIcro ensures zero-loss ingestion without local state by syncing cursors to the cloud.
+
+```mermaid
+sequenceDiagram
+    participant D as Discord API
+    participant I as Ingestion Pipeline
+    participant Q as Qdrant Cloud
+    
+    I->>Q: Fetch last Message ID (Cursor)
+    Q-->>I: Cursor point
+    I->>D: Fetch messages AFTER Cursor ID
+    D-->>I: New Messages
+    I->>I: Generate Embeddings
+    I->>Q: Upsert Documents (Vector + Metadata)
+    I->>Q: Update Cursor ID (Newest Message)
+```
 
 ---
 
@@ -8,26 +61,27 @@
 
 Setting up mAIcro takes less than 5 minutes.
 
-#### 1. Clone & Initialize
+#### 1. Zero-Clone Deployment (New)
+You don't even need to clone this repo to run mAIcro. Just download these two files:
 ```bash
-git clone https://github.com/MicroClub-USTHB/mAIcro.git
-cd mAIcro
+curl -O https://raw.githubusercontent.com/MicroClub-USTHB/mAIcro/main/docker-compose.yml
+curl -O https://raw.githubusercontent.com/MicroClub-USTHB/mAIcro/main/.env.example
 cp .env.example .env
 ```
 
 #### 2. Configure Credentials
-Open `.env` and provide credentials for these three free services:
-
+Open `.env` and fill in:
 | Service | Purpose | Where to get it |
 |---|---|---|
 | **Google Gemini** | LLM & Embeddings | [Google AI Studio](https://aistudio.google.com/app/apikey) |
 | **Discord Bot** | Data Source | [Discord Developer Portal](https://discord.com/developers/applications) |
 | **Qdrant Cloud** | Stateless Memory | [Qdrant Cloud](https://cloud.qdrant.io) (Free 1GB tier) |
 
-#### 3. Run with Docker (Recommended)
+#### 3. Run
 ```bash
 docker compose up -d
 ```
+*Docker will automatically pull the image from GHCR and start the service.*
 *The service is now alive at `http://localhost:8000`.*
 
 #### 4. Ingest & Ask

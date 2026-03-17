@@ -1,6 +1,7 @@
 services:
   maicro:
-    build: .
+    image: ghcr.io/microclub-usthb/maicro:latest
+    # build: . # Uncomment to build from local source
     container_name: maicro
     ports:
       - "8000:8000"
