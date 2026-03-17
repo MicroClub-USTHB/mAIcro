@@ -1,49 +1,38 @@
-# mAIcro: Open Source AI Service
+# mAIcro: Open Source Knowledge Service
 
-## Quickstart
+**mAIcro** is a professional, stateless AI service designed to centralize organizational knowledge and answer questions via RAG (Retrieval-Augmented Generation).
 
-> **Prerequisites:** [Python 3.10+](https://python.org) and [uv](https://docs.astral.sh/uv/) installed.
+---
 
-#### 1. Clone & install dependencies
+## 🚀 Quickstart
 
+Setting up mAIcro takes less than 5 minutes.
+
+#### 1. Clone & Initialize
 ```bash
 git clone https://github.com/MicroClub-USTHB/mAIcro.git
 cd mAIcro
-uv sync
-```
-
-#### 2. Set up your `.env`
-
-```bash
 cp .env.example .env
 ```
 
-Open `.env` and fill in the three required services:
+#### 2. Configure Credentials
+Open `.env` and provide credentials for these three free services:
 
-| Variable | Where to get it |
-|---|---|
-| `GOOGLE_API_KEY` | [Google AI Studio](https://aistudio.google.com/app/apikey) — create an API key |
-| `DISCORD_BOT_TOKEN` | [Discord Developer Portal](https://discord.com/developers/applications) — create a bot, copy its token |
-| `DISCORD_CHANNEL_IDS` | Right-click a Discord channel → *Copy Channel ID* (comma-separated for multiple) |
-| `QDRANT_URL` | [Qdrant Cloud](https://cloud.qdrant.io) — create a free cluster (1 GB), copy the URL |
-| `QDRANT_API_KEY` | Qdrant Cloud dashboard → *API Keys* → create a key |
+| Service | Purpose | Where to get it |
+|---|---|---|
+| **Google Gemini** | LLM & Embeddings | [Google AI Studio](https://aistudio.google.com/app/apikey) |
+| **Discord Bot** | Data Source | [Discord Developer Portal](https://discord.com/developers/applications) |
+| **Qdrant Cloud** | Stateless Memory | [Qdrant Cloud](https://cloud.qdrant.io) (Free 1GB tier) |
 
-#### 4. Run & Test
-
-**Option A: Standard (local)**
-```bash
-uv run uvicorn maicro.main:app --host 0.0.0.0 --port 8000
-```
-
-**Option B: Docker (recommended)**
+#### 3. Run with Docker (Recommended)
 ```bash
 docker compose up -d
 ```
+*The service is now alive at `http://localhost:8000`.*
 
-#### 5. Ingest & ask
-
+#### 4. Ingest & Ask
 ```bash
-# Trigger Discord ingestion (Stateless - cursors saved to Cloud)
+# Sync Discord history to the cloud
 curl -X POST http://localhost:8000/api/v1/ingest/discord
 
 # Ask a question
@@ -54,121 +43,47 @@ curl -X POST http://localhost:8000/api/v1/ask \
 
 ---
 
-## 🛠 Troubleshooting & Tips
+## 🛠 Features
 
-### 1. Discord Bot permissions
-If ingestion returns empty or 0 messages, check:
-- **Intents:** Go to [Discord Developer Portal](https://discord.com/developers/applications) → Bot → **Message Content Intent** (must be ON).
-- **Permissions:** The bot needs `View Channels` + `Read Message History` in the specific channels.
-- **Bot Presence:** Ensure the bot is actually invited to the server.
-
-### 2. Qdrant Cloud "400 Bad Request"
-This project auto-creates **Payload Indexes**. If you get a 400 error about missing indexes, the server will attempt to fix it on startup. Ensure your QDRANT_API_KEY has "Manage" or "Admin" permissions.
-
-### 3. Google Gemini Quota
-If you get `429 Resource Exhausted`, you have hit the free tier rate limit. Wait 60 seconds and retry.
+- **Stateless Architecture**: No local database required. Ingestion cursors and embeddings are stored in Qdrant Cloud.
+- **Discord Integration**: Automatically syncs announcements and messages from specified channels.
+- **Production-Ready**: Multi-stage Docker builds and built-in health checks.
+- **RAG-Powered**: Uses Gemini 1.5 Flash for fast, accurate organizational QA.
 
 ---
 
-## 🤖 Discord Bot Setup Guide (Detailed)
+## 🤖 Discord Bot Setup Tips
 
-1. Create an application at [Discord Developers](https://discord.com/developers/applications).
-2. Go to the **Bot** tab:
-   - Click "Reset Token" to get your `DISCORD_BOT_TOKEN`.
-   - Scroll down to **Privileged Gateway Intents** → Enable **Message Content Intent**.
-3. Go to **OAuth2** → **URL Generator**:
-   - Scopes: `bot`.
-   - Bot Permissions: `Read Messages/View Channels`, `Read Message History`.
-   - Copy the generated URL and open it in your browser to invite the bot.
-4. To get `DISCORD_CHANNEL_IDS`:
-   - Enable "Developer Mode" in Discord Settings → Advanced.
-   - Right-click any channel → **Copy Channel ID**.
+1. **Intents**: Enable **Message Content Intent** in the Discord Developer Portal.
+2. **Permissions**: The bot needs `View Channels` and `Read Message History`.
+3. **Channel IDs**: Enable Discord Developer Mode and right-click any channel to copy its ID.
 
 ---
 
-> **Note:** This build is **Gemini-only** — set `LLM_PROVIDER=google` (the default).
-
-## Contributing
-
-Contributions are welcome — bug reports, docs improvements, and pull requests.
-
-- Start here: `CONTRIBUTING.md`
-- Security issues: `SECURITY.md`
-- Quick dev loop:
-
-```bash
-cp .env.example .env          # fill in your credentials (see Quickstart above)
-uv sync --dev
-uv run pytest
-uv run uvicorn maicro.main:app --reload
-```
-
-## Open-Source Release Checklist
-
-To publish this project as true open source:
-
-1. Add a `LICENSE` file (no license means others cannot legally reuse the code).
-2. Keep secrets out of git: never commit `.env` (use `.env.example` instead).
-3. Keep runtime state out of git: do not commit runtime state directories (for example `var/`).
-4. Publish the repo (for example on GitHub) as public and accept contributions via PRs.
-
-## API Reference
-
-| Endpoint | Method | Description |
-|---|---|---|
-| `/api/v1/health` | GET | Health check |
-| `/api/v1/ask` | POST | Ask a question (`{"question": "..."}`) |
-| `/api/v1/ingest/discord` | POST | Trigger Discord ingestion |
-
-## Package Publishing Notes
-
-This repository is structured for packaging from `pyproject.toml`.
-
-```bash
-uv build
-```
-
-## Overview
-
-**mAIcro** is an open-source AI service designed to help organizations centralize information and answer questions based on their internal data.
-
-It is not a simple chatbot or a Discord bot.
-Instead, **mAIcro acts as an AI-powered knowledge service** that understands structured information and uses it to provide accurate answers to users.
-
-The system can process organizational data such as announcements, documentation, and structured datasets, then make that information easily accessible through natural language queries.
-
-While the first deployment of mAIcro is within **Micro Club**, the system itself is designed as **reusable infrastructure** that can be adapted to any community or organization.
-
-# Goals
-
-The main goals of **mAIcro** are:
-
-* Centralize important information in one accessible system
-* Allow members to query information using natural language
-* Reduce repetitive questions asked to staff or moderators
-* Provide reliable answers based on official sources
-* Create reusable AI infrastructure for communities
-
----
-
-# Project Structure
+## 📁 Project Structure
 
 ```text
 .
-├── src/
-│   └── maicro/
-│       ├── main.py        # Canonical FastAPI app entrypoint
-│       ├── api/           # HTTP routes, schemas, error handlers
-│       ├── core/          # Config, logging, ingestion, providers, vector store
-│       └── services/      # Business logic (Q&A service)
-├── data/                  # Legacy sample data (not used by default)
-├── tests/
-│   ├── api/               # API route tests
-│   └── unit/              # Unit tests
-├── var/                   # Runtime state (local vector DB path)
-├── main.py                # Backward-compatible wrapper entrypoint
-└── pyproject.toml         # Packaging and project metadata
+├── src/maicro/
+│   ├── api/           # HTTP routes & schemas
+│   ├── core/          # Configuration & Ingestion logic
+│   └── services/      # Business logic (QA system)
+├── Dockerfile         # Optimized multi-stage build
+├── docker-compose.yml # Service definitions
+└── pyproject.toml     # Metadata & dependencies
 ```
+
+---
+
+> **Note:** This service is **Gemini-only** by default. Set `LLM_PROVIDER=google` in your `.env`.
+
+## Contributing
+
+We welcome professional contributions. Please see `CONTRIBUTING.md` for our development standards and `SECURITY.md` for reporting vulnerabilities.
+
+---
+© 2026 Micro Club. Released under the MIT License.
+
 
 For new setups, prefer `maicro.main:app`.
 
