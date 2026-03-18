@@ -11,32 +11,16 @@ Thanks for your interest in contributing to **mAIcro**.
 
 If you’ve found a security issue, please follow `SECURITY.md` instead of opening a public issue.
 
-## Development setup
-
-### Prerequisites
-
-- Python 3.10+ (CI runs 3.10–3.12)
-- `uv` (dependency management + runner)
-- Docker (recommended) to run Qdrant locally
-
-### Install + configure
+Start the local dev service:
 
 ```bash
-cp .env.example .env
 uv sync --dev
+cp .env.example .env
+# Edit .env and set at least:
+# LLM_PROVIDER=google
+# GEMINI_API_KEY=...
+# QDRANT_URL=http://localhost:6333
 ```
-
-Start Qdrant (required for running the service locally):
-
-```bash
-docker run --rm -p 6333:6333 qdrant/qdrant
-```
-
-Edit `.env` and set at least:
-
-- `LLM_PROVIDER=google`
-- `GOOGLE_API_KEY=...`
-- `QDRANT_URL=http://localhost:6333`
 
 ## Common commands
 
@@ -49,14 +33,7 @@ uv run pytest
 Start the API locally:
 
 ```bash
-uv run uvicorn maicro.main:app --reload
-```
-
-CLI wrappers (optional):
-
-```bash
-uv run python ask.py "When is the next event?"
-uv run python ingest.py --limit 200
+uv run uvicorn maicro.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 ## Pull requests

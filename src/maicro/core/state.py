@@ -1,62 +1,72 @@
-import json
 import logging
-from pathlib import Path
+import uuid
 from typing import Optional
+
+from qdrant_client.http import models as qdrant_models
+
+from maicro.core.config import settings
+from maicro.core.vector_store import get_qdrant_client
 
 logger = logging.getLogger(__name__)
 
-# Default path for the state file
-STATE_FILE_PATH = Path("data/ingestion_state.json")
+# Use a deterministic namespace for cursor UUIDs
+CURSOR_NAMESPACE = uuid.UUID("6ba7b810-9dad-11d1-80b4-00c04fd430c8")
 
 
-def load_state(file_path: Path = STATE_FILE_PATH) -> dict[str, str]:
-    """Load the ingestion state from a JSON file. Returns an empty dict if the file doesn't exist."""
-    if not file_path.exists() or file_path.stat().st_size == 0:
-        return {}
+def _get_cursor_id(channel_id: str) -> str:
+    """Generate a deterministic UUID for a channel's cursor point."""
+    return str(uuid.uuid5(CURSOR_NAMESPACE, f"cursor_{channel_id}"))
+
+
+def get_last_ingested_message_id(channel_id: str) -> Optional[str]:
+    """Get the last ingested message ID from Qdrant Cloud."""
+    client = get_qdrant_client()
+    point_id = _get_cursor_id(channel_id)
     
     try:
-        with open(file_path, "r", encoding="utf-8") as f:
-            return json.load(f)
-    except json.JSONDecodeError:
-        logger.warning(f"Failed to parse state file at {file_path}. Returning empty state.")
-        return {}
+        results = client.retrieve(
+            collection_name=settings.COLLECTION_NAME,
+            ids=[point_id],
+            with_payload=True,
+            with_vectors=False,
+        )
+        if results:
+            return results[0].payload.get("message_id")
     except Exception as e:
-        logger.error(f"Error reading state file: {e}")
-        return {}
-
-
-def save_state(state: dict[str, str], file_path: Path = STATE_FILE_PATH) -> None:
-    """Save the ingestion state to a JSON file."""
-    # Ensure the directory exists
-    file_path.parent.mkdir(parents=True, exist_ok=True)
+        logger.debug(f"[state] Failed to retrieve cursor for {channel_id}: {e}")
     
-    try:
-        with open(file_path, "w", encoding="utf-8") as f:
-            json.dump(state, f, indent=4)
-    except Exception as e:
-        logger.error(f"Error saving state file: {e}")
+    return None
 
 
-def get_last_ingested_message_id(channel_id: str, file_path: Path = STATE_FILE_PATH) -> Optional[str]:
-    """Get the last ingested message ID for a specific channel. Returns None if not found."""
-    state = load_state(file_path)
-    result = state.get(channel_id)
-    if result is None:
-        logger.debug(f"[state] No last message ID found for channel {channel_id}, channel may be new or never ingested")
-    return result
+def ensure_channel_in_state(channel_id: str) -> None:
+    """Ensures channel exists (No-op in Qdrant implementation)."""
+    pass
 
 
-def ensure_channel_in_state(channel_id: str, file_path: Path = STATE_FILE_PATH) -> None:
-    """Ensure a channel exists in the state file. Creates an entry if missing."""
-    state = load_state(file_path)
-    if channel_id not in state:
-        logger.info(f"[state] Initializing new channel {channel_id} in state file")
-        state[channel_id] = ""  # Empty string indicates channel seen but no messages ingested yet
-        save_state(state, file_path)
-
-
-def update_last_ingested_message_id(channel_id: str, message_id: str, file_path: Path = STATE_FILE_PATH) -> None:
-    """Update the last ingested message ID for a specific channel."""
-    state = load_state(file_path)
-    state[channel_id] = message_id
-    save_state(state, file_path)
+def update_last_ingested_message_id(channel_id: str, message_id: str) -> None:
+    """Update or create the last ingested message ID in Qdrant Cloud."""
+    client = get_qdrant_client()
+    point_id = _get_cursor_id(channel_id)
+    
+    # We store cursors as special points with no vectors (or zero vectors)
+    # and a 'source=ingestion_cursor' tag to easily filter them out if needed.
+    client.upsert(
+        collection_name=settings.COLLECTION_NAME,
+        points=[
+            qdrant_models.PointStruct(
+                id=point_id,
+                vector={},  # Empty dict for collections with named vectors? 
+                           # For our standard COSINE collection, we might need a dummy vector
+                           # or just use payload.
+                payload={
+                    "metadata": {
+                        "channel_id": channel_id,
+                        "source": "ingestion_cursor",
+                    },
+                    "message_id": message_id,
+                    "page_content": f"Ingestion cursor for channel {channel_id}",
+                },
+            )
+        ],
+    )
+    logger.debug(f"[state] Updated cursor for {channel_id} to {message_id}")

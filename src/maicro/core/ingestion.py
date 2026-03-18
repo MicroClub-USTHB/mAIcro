@@ -28,9 +28,6 @@ __all__ = ["ingest_documents", "ingest_from_discord", "run_startup_audit"]
 logger = logging.getLogger(__name__)
 
 
-# ---------------------------------------------------------------------------
-# Document converters
-# ---------------------------------------------------------------------------
 
 def _is_missing_collection_error(message: str) -> bool:
     """Return True when an exception message indicates the Qdrant collection is missing."""
@@ -41,6 +38,15 @@ def _is_missing_collection_error(message: str) -> bool:
     if collection not in lowered:
         return False
     return any(needle in lowered for needle in ("doesn't exist", "does not exist", "not found"))
+
+
+def _is_missing_collection_exception(exc: Exception) -> bool:
+    """Return True when an exception indicates the Qdrant collection is missing."""
+    if isinstance(exc, UnexpectedResponse):
+        if exc.status_code != 404:
+            return False
+        return _is_missing_collection_error(exc.content.decode("utf-8", errors="ignore"))
+    return _is_missing_collection_error(str(exc))
 
 
 def _bootstrap_collection() -> None:
@@ -69,10 +75,8 @@ def _docs_from_discord_messages(
         author_name = author.get("username", "unknown")
         timestamp = msg.get("timestamp", "")
 
-        # Build a readable page_content
         page_content = f"[{author_name}] {content}"
 
-        # Attach embeds text if present
         for embed in msg.get("embeds", []):
             if embed.get("title"):
                 page_content += f"\n{embed['title']}"
@@ -91,12 +95,13 @@ def _docs_from_discord_messages(
     return docs
 
 
-# ---------------------------------------------------------------------------
-# Ingestion entry points
-# ---------------------------------------------------------------------------
 
 def _ensure_collection_exists(vector_size: int) -> None:
-    """Create local collection if missing, without relying on cached vector store."""
+    """Create collection (if missing) and ensure payload indexes exist.
+
+    Qdrant Cloud requires explicit payload indexes for filtered queries.
+    Local Qdrant auto-indexes, so these calls are safe no-ops there.
+    """
     client = get_qdrant_client()
     if not client.collection_exists(settings.COLLECTION_NAME):
         client.create_collection(
@@ -106,6 +111,17 @@ def _ensure_collection_exists(vector_size: int) -> None:
                 distance=qdrant_models.Distance.COSINE,
             ),
         )
+
+    # Ensure payload indexes exist (required by Qdrant Cloud for filtered queries)
+    for field in ("metadata.channel_id", "metadata.message_id", "metadata.source"):
+        try:
+            client.create_payload_index(
+                collection_name=settings.COLLECTION_NAME,
+                field_name=field,
+                field_schema=qdrant_models.PayloadSchemaType.KEYWORD,
+            )
+        except Exception:
+            pass  # Index already exists or collection just created
 
 
 def ingest_documents(documents: list[Document], filter_duplicates: bool = True) -> int:
@@ -120,7 +136,6 @@ def ingest_documents(documents: list[Document], filter_duplicates: bool = True) 
     if not documents:
         return 0
 
-    # Filter out duplicates if enabled
     if filter_duplicates:
         documents, duplicate_count = _filter_duplicate_documents(documents)
         if not documents:
@@ -154,9 +169,6 @@ def ingest_documents(documents: list[Document], filter_duplicates: bool = True) 
     return len(documents)
 
 
-# ---------------------------------------------------------------------------
-# Delete / update helpers
-# ---------------------------------------------------------------------------
 
 def _filter_by_message(channel_id: str, message_id: str) -> qdrant_models.Filter:
     """Build a Qdrant payload filter matching a specific (channel_id, message_id) pair."""
@@ -182,7 +194,6 @@ def _check_duplicate_message_ids(documents: list[Document]) -> set[str]:
     client = get_qdrant_client()
     existing_ids: set[str] = set()
 
-    # Group documents by channel_id for efficient querying
     channel_msg_ids: dict[str, list[str]] = {}
     for doc in documents:
         channel_id = doc.metadata.get("channel_id", "")
@@ -192,14 +203,18 @@ def _check_duplicate_message_ids(documents: list[Document]) -> set[str]:
                 channel_msg_ids[channel_id] = []
             channel_msg_ids[channel_id].append(message_id)
 
-    # Check each channel for existing message IDs
     for channel_id, message_ids in channel_msg_ids.items():
         for msg_id in message_ids:
-            count_result = client.count(
-                collection_name=settings.COLLECTION_NAME,
-                count_filter=_filter_by_message(channel_id, msg_id),
-                exact=True,
-            )
+            try:
+                count_result = client.count(
+                    collection_name=settings.COLLECTION_NAME,
+                    count_filter=_filter_by_message(channel_id, msg_id),
+                    exact=True,
+                )
+            except Exception as exc:
+                if _is_missing_collection_exception(exc):
+                    return set()
+                raise
             if count_result.count > 0:
                 existing_ids.add(msg_id)
 
@@ -240,12 +255,16 @@ def delete_message_from_store(channel_id: str, message_id: str) -> int:
     Returns the number of points deleted (0 if none existed).
     """
     client = get_qdrant_client()
-    # Count first so we can report how many were removed.
-    count_result = client.count(
-        collection_name=settings.COLLECTION_NAME,
-        count_filter=_filter_by_message(channel_id, message_id),
-        exact=True,
-    )
+    try:
+        count_result = client.count(
+            collection_name=settings.COLLECTION_NAME,
+            count_filter=_filter_by_message(channel_id, message_id),
+            exact=True,
+        )
+    except Exception as exc:
+        if _is_missing_collection_exception(exc):
+            return 0
+        raise
     n = count_result.count
     if n:
         client.delete(
@@ -290,10 +309,6 @@ async def ingest_from_discord(limit_per_channel: int = 200) -> dict:
     for channel_id in settings.discord_channel_id_list:
         try:
             last_message_id = get_last_ingested_message_id(channel_id)
-            
-            # Bootstrap (no cursor): fetch the entire channel history.
-            # Catch-up (has cursor): fetch all messages strictly newer than the cursor.
-            # In both cases limit=None — the `after` cursor is the only boundary.
             messages = await fetch_channel_messages(
                 bot_token=settings.DISCORD_BOT_TOKEN,
                 channel_id=channel_id,
@@ -312,8 +327,6 @@ async def ingest_from_discord(limit_per_channel: int = 200) -> dict:
             
            
             if messages:
-                # Bootstrap (no prior cursor): Discord returns newest-first → messages[0] is newest.
-                # Catch-up (after was set): Discord returns oldest-first → messages[-1] is newest.
                 newest_message = messages[-1] if last_message_id else messages[0]
                 update_last_ingested_message_id(channel_id, newest_message["id"])
                 

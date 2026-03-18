@@ -11,19 +11,14 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-DISCORD_API = "https://discord.com/api/v10"
-
-
 async def run_startup_audit(
     channel_ids: list[str],
     window: int = 1000,
 ) -> dict:
- 
 
 
     from qdrant_client.http import models as qdrant_models
 
-    # Lazy imports to avoid circular dependency
     from maicro.core.ingestion import (
         _bootstrap_collection,
         _docs_from_discord_messages,
@@ -38,18 +33,15 @@ async def run_startup_audit(
     summary: dict[str, dict] = {}
 
     for channel_id in channel_ids:
-        # Ensure channel exists in state before auditing
         ensure_channel_in_state(channel_id)
-        
+
         deleted = 0
         updated = 0
         errors_list: list[str] = []
 
         try:
-            # Step 1 — get cursor from state (last ingested message ID)
             last_message_id = get_last_ingested_message_id(channel_id)
 
-            # Skip audit for new channels (no cursor or empty cursor = nothing to check)
             if not last_message_id:
                 logger.info(
                     "[audit] Channel %s: no cursor found or channel never ingested, skipping audit",
@@ -58,20 +50,17 @@ async def run_startup_audit(
                 summary[channel_id] = {"deleted": 0, "updated": 0, "skipped": "new_channel"}
                 continue
 
-            # First, check if the cursor message still exists in Discord (it might have been deleted)
             cursor_msg = await fetch_message_by_id(
                 bot_token=settings.DISCORD_BOT_TOKEN,
                 channel_id=channel_id,
                 message_id=last_message_id,
             )
-            
-            # If cursor message was deleted, we need to find a new cursor
+
             if cursor_msg is None:
                 logger.info(
                     "[audit] Channel %s: cursor message %s was deleted, searching for new cursor",
                     channel_id, last_message_id,
                 )
-                # Fetch the most recent message to use as new cursor
                 recent_messages: list[dict] = await fetch_channel_messages(
                     bot_token=settings.DISCORD_BOT_TOKEN,
                     channel_id=channel_id,
@@ -87,7 +76,6 @@ async def run_startup_audit(
                     last_message_id = new_cursor
                     cursor_msg = recent_messages[0]
                 else:
-                    # No messages in channel at all
                     logger.warning(
                         "[audit] Channel %s: no messages found in channel at all",
                         channel_id,
@@ -124,8 +112,7 @@ async def run_startup_audit(
             
             cursor_docs = _docs_from_discord_messages([cursor_msg], channel_id)
             cursor_content = cursor_docs[0].page_content if cursor_docs else ""
-            
-            # If cursor was edited, update it immediately
+
             if cursor_stored_content and cursor_content != cursor_stored_content:
                 logger.info(
                     "[audit] Cursor message %s was edited, updating in Qdrant",
@@ -134,16 +121,14 @@ async def run_startup_audit(
                 update_message_in_store(cursor_msg, channel_id)
                 updated += 1
             
-            # Now fetch messages before the cursor for audit
             recent: list[dict] = await fetch_channel_messages(
                 bot_token=settings.DISCORD_BOT_TOKEN,
                 channel_id=channel_id,
-                limit=window,  # limit to avoid excessive API calls
+                limit=window,
                 before=last_message_id,
             )
             
             discord_index: dict[str, str] = {}
-            # Add cursor message to discord_index for editing check
             cursor_id_str = str(cursor_msg["id"])
             discord_index[cursor_id_str] = cursor_content
             
@@ -179,7 +164,6 @@ async def run_startup_audit(
                 "[audit] Channel %s: checking %d Qdrant points against %d messages before cursor",
                 channel_id, total_count_result.count, len(discord_index),
             )
-            discord_index_sample = list(discord_index.keys())[:5]
             all_points_filter = qdrant_models.Filter(
                 must=[
                     qdrant_models.FieldCondition(
@@ -220,7 +204,6 @@ async def run_startup_audit(
                                 msg_id_str, channel_id,
                             )
                         else:
-                           
                             logger.debug(
                                 "[audit] message_id=%s not in discord_index but no Qdrant points to delete",
                                 msg_id_str,

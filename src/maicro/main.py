@@ -32,9 +32,7 @@ async def lifespan(app: FastAPI):
         except Exception as exc:
             logger.error("[startup] Audit failed: %s", exc)
 
-        # Phase 1 — catch-up: fetch all messages missed since last run
         asyncio.create_task(ingest_from_discord(limit_per_channel=None))
-        # Phase 2 — real-time: listen for new messages via Discord Gateway
         asyncio.create_task(
             run_discord_listener(
                 bot_token=settings.DISCORD_BOT_TOKEN,
@@ -43,7 +41,6 @@ async def lifespan(app: FastAPI):
         )
 
     yield
-    
 
 
 app = FastAPI(
@@ -55,6 +52,12 @@ app = FastAPI(
         "Ingest data from Discord or JSON files, then ask questions."
     ),
 )
+
+@app.get("/health")
+async def health_check():
+    """Simple health check endpoint."""
+    return {"status": "ok"}
+
 
 app.include_router(router)
 register_exception_handlers(app)
