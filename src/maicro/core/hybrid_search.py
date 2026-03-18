@@ -5,6 +5,7 @@ and Reciprocal Rank Fusion (RRF) for merging results.
 """
 
 import logging
+import re
 
 from qdrant_client import QdrantClient
 from qdrant_client.http import models as qdrant_models
@@ -14,7 +15,6 @@ from langchain_core.retrievers import RetrieverLike
 from maicro.core.config import settings
 from maicro.core.llm_provider import get_embeddings
 
-# Import get_qdrant_client lazily to avoid circular import
 def _get_qdrant_client():
     from maicro.core.vector_store import get_qdrant_client
     return get_qdrant_client()
@@ -53,6 +53,10 @@ def _reciprocal_rank_fusion(
     return sorted_results
 
 
+# Discord message ID pattern - matches 3+ digit IDs
+_MESSAGE_ID_PATTERN = re.compile(r'^\d{3,}$')
+
+
 def hybrid_search(
     query: str,
     alpha: float | None = None,
@@ -64,57 +68,62 @@ def hybrid_search(
     Uses Qdrant's Prefetch API to execute both searches and merges results
     using Reciprocal Rank Fusion (RRF).
     
-    Args:
-        query: Search query string
-        alpha: Weight for semantic search (1-alpha for keyword). 
-               If None, uses settings.HYBRID_SEARCH_ALPHA (default 0.7)
-        k: Number of results to return
-        filter_condition: Optional Qdrant filter
-    
     Returns:
         List of Documents sorted by RRF score
     """
     if alpha is None:
         alpha = getattr(settings, 'HYBRID_SEARCH_ALPHA', 0.7)
     
+    message_id = None
+    cleaned = query.strip()
+    if _MESSAGE_ID_PATTERN.match(cleaned):
+        message_id = cleaned
+    
+    if message_id:
+        message_id_filter = qdrant_models.Filter(
+            must=[
+                qdrant_models.FieldCondition(
+                    key="metadata.message_id",
+                    match=qdrant_models.MatchValue(value=message_id),
+                )
+            ]
+        )
+        if filter_condition is None:
+            filter_condition = message_id_filter
+        else:
+            filter_condition = qdrant_models.Filter(
+                must=[filter_condition, message_id_filter]
+            )
+    
     client = _get_qdrant_client()
     collection_name = settings.COLLECTION_NAME
     embedding = get_embeddings()
     
-    # Get query vector for semantic search
     query_vector = embedding.embed_query(query)
     
-    # Prepare prefetch requests
     prefetches = []
     
-    # 1. Semantic (vector) search via prefetch
     prefetches.append(
         qdrant_models.Prefetch(
             query=query_vector,
-            using="cosine",  # Using cosine distance as configured
+            using="cosine",  
             limit=k * 2,  # Fetch more for better fusion
             filter=filter_condition,
         )
     )
     
-    # 2. Keyword (BM25) search via prefetch
     prefetches.append(
         qdrant_models.Prefetch(
-            query=qdrant_models.TextQuery(
-                text=query,
-                field="page_content",
-            ),
+            query=query,  
             limit=k * 2,
             filter=filter_condition,
         )
     )
     
-    # Execute hybrid search using query with prefetch
     try:
-        # Use the raw Qdrant client for hybrid search
         search_results = client.search(
             collection_name=collection_name,
-            query_vector=query_vector,  # Primary query vector
+            query_vector=query_vector,  
             prefetch=prefetches,
             query_filter=filter_condition,
             limit=k,
@@ -122,10 +131,8 @@ def hybrid_search(
             with_vectors=False,
         )
         
-        # Convert results to Documents
         documents = []
         for hit in search_results:
-            # Extract content from payload
             payload = hit.payload or {}
             page_content = payload.get("page_content", "")
             metadata = payload.get("metadata", {})
@@ -175,11 +182,7 @@ def get_hybrid_retriever(
 ) -> RetrieverLike:
     """Return a hybrid search retriever interface.
     
-    Args:
-        alpha: Weight for semantic search (1-alpha for keyword).
-               If None, uses settings.HYBRID_SEARCH_ALPHA (default 0.7)
-        k: Number of results to retrieve
-    
+   
     Returns:
         A retriever with .invoke() method
     """
