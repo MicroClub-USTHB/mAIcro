@@ -50,7 +50,7 @@ async def fetch_channel_messages(
 
             all_messages.extend(batch)
             if after:
-                after = batch[-1]["id"]  # ascending (oldest→newest): advance forward
+                after = batch[-1]["id"]  # ascending (oldest->newest): advance forward
             else:
                 before = batch[-1]["id"]  # descending (bootstrap): go further back
 
@@ -68,7 +68,7 @@ async def fetch_message_by_id(
     """Fetch a single message by its ID. Returns None if not found (deleted)."""
     headers = {"Authorization": f"Bot {bot_token}"}
     url = f"{DISCORD_API}/channels/{channel_id}/messages/{message_id}"
-    
+
     async with aiohttp.ClientSession() as session:
         async with session.get(url, headers=headers) as resp:
             if resp.status == 404:
