@@ -32,7 +32,7 @@ async def lifespan(app: FastAPI):
         except Exception as exc:
             logger.error("[startup] Audit failed: %s", exc)
 
-        asyncio.create_task(ingest_from_discord(limit_per_channel=None))
+        asyncio.create_task(ingest_from_discord())
         asyncio.create_task(
             run_discord_listener(
                 bot_token=settings.DISCORD_BOT_TOKEN,
@@ -51,6 +51,8 @@ app = FastAPI(
         f"AI knowledge service for {settings.ORG_NAME}. "
         "Ingest data from Discord or JSON files, then ask questions."
     ),
+    docs_url=f"{settings.API_V1_STR}/docs",
+    redoc_url=f"{settings.API_V1_STR}/redoc",
 )
 
 

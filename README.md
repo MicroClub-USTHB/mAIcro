@@ -1,98 +1,112 @@
-# mAIcro: Open Source Knowledge Service
+<div align="center">
+  <img src="assets/maicro.png" alt="mAIcro Logo" width="500">
+</div>
+<br />
 
-<img width="1536" height="344" alt="mAIcro" src="https://github.com/user-attachments/assets/6db58ac9-4dd8-460c-8d2d-cbee6c5362a6" />
+# mAIcro: Open Source Knowledge Service
 
 **mAIcro** is an open-source AI service designed to centralize organizational knowledge and answer questions via RAG (Retrieval-Augmented Generation). It features a stateless architecture optimized for cloud deployment, automatic Discord integration, and production-ready performance.
 
 ## Table of Contents
 
-- [Quick Start](#quick-start)
 - [Features](#features)
-- [How It Works](#how-it-works)
-- [Architecture](#architecture)
+- [Quick Start](#quick-start)
+- [Configuration](#configuration)
 - [Discord Bot Setup](#discord-bot-setup)
-- [Project Structure](#project-structure)
+- [Architecture](#architecture)
+- [API Reference](#api-reference)
+- [Deployment](#deployment)
 - [Use Cases](#use-cases)
 - [Future Extensions](#future-extensions)
 - [Contributing](#contributing)
 
 ---
 
+## Features
+
+- **RAG-Powered Q&A** — Google Gemini with hybrid search (semantic vector + keyword BM25) and Reciprocal Rank Fusion
+- **Real-Time Discord Sync** — Gateway WebSocket listener handles message CREATE, EDIT, and DELETE instantly
+- **Temporal Query Intelligence** — Understands "what happened today?" and "what was the last message?"
+- **Question Normalization** — Rewrites slang ("whats", "wanna", "gonna"), augments time-aware queries
+- **Startup Audit** — Reconciles offline Discord edits and deletes on every restart
+- **Stateless Architecture** — All cursors and vectors live in Qdrant Cloud — no local database
+- **Rate Limit Resilience** — Exponential backoff with jitter + optional secondary LLM fallback
+- **Production-Ready** — Multi-stage Docker, health checks, graceful reconnection
+
+---
+
 ## Quick Start
 
-Setting up mAIcro takes less than 5 minutes.
-
-### 1. Configure Credentials
-
-Open `.env` and fill in:
-
-| Service | Purpose | Environment Variable |
-|---|---|---|
-| **Google Gemini** | LLM & Embeddings | `GEMINI_API_KEY` |
-| **Discord Bot** | Data Source | `DISCORD_BOT_TOKEN` |
-| **Qdrant Cloud** | Vector Database | `QDRANT_URL`, `QDRANT_API_KEY` |
-| **Discord Channels IDS** | IDs of important channels in your discord | `DISCORD_CHANNEL_IDS` |
-
-### 2. Run
-
-You can run mAIcro in two ways:
-
-**Method A: Clone the repository and run with Docker Compose**
+### 1. Clone and configure
 
 ```bash
 git clone https://github.com/MicroClub-USTHB/mAIcro.git
 cd mAIcro
+cp .env.example .env
+```
+
+Fill in `.env` — see the [Configuration](#configuration) section below.
+
+### 2. Run
+
+```bash
 docker compose up -d
 ```
 
-This starts the app from the repository using the Compose service.
+The API is available at `http://localhost:8000`. Interactive docs at `http://localhost:8000/api/v1/docs`.
 
-**Method B: Pull the GHCR image directly and run it as a service**
-
-Both methods expose the API at `http://localhost:8000`.
-
-### 3. Ingest & Ask
+### 3. Ingest and query
 
 ```bash
-# Sync Discord history to Qdrant
+# Sync Discord message history to Qdrant
 curl -X POST http://localhost:8000/api/v1/ingest/discord
 
 # Ask a question
 curl -X POST http://localhost:8000/api/v1/ask \
   -H "Content-Type: application/json" \
-  -d '{"question":"What projects are the dev team working on?"}'
+  -d '{"question":"When is the next event?"}'
 ```
 
 ---
 
-## Features
+## Configuration
 
-- **Stateless Architecture** — No local database required. Cursors and embeddings stored in Qdrant Cloud.
-- **Discord Integration** — Automatically syncs announcements and messages from specified channels.
-- **Production-Ready** — Multi-stage Docker builds with built-in health checks.
-- **RAG-Powered** — Uses Google Gemini for fast, accurate organizational QA.
-- **Structured Data Understanding** — Reasons about internal data instead of generic internet knowledge.
-- **Information Centralization** — Unifies Discord, Docs, Notion, spreadsheets, and announcements into one AI system.
+All settings are environment variables loaded from `.env` via `pydantic-settings`.
+
+### Required
+
+| Variable              | Description                                                      |
+| --------------------- | ---------------------------------------------------------------- |
+| `GEMINI_API_KEY`      | Google Gemini API key (used for LLM + embeddings)                |
+| `QDRANT_URL`          | Qdrant Cloud instance URL (e.g. `https://xxxxx.cloud.qdrant.io`) |
+| `QDRANT_API_KEY`      | Qdrant Cloud API key                                             |
+| `DISCORD_BOT_TOKEN`   | Discord bot token (from the Developer Portal)                    |
+| `DISCORD_CHANNEL_IDS` | Comma-separated Discord channel IDs to watch                     |
+
+### Optional
+
+| Variable                   | Default                               | Description                                                        |
+| -------------------------- | ------------------------------------- | ------------------------------------------------------------------ |
+| `ORG_NAME`                 | `MicroClub`                           | Organization name embedded in the AI system prompt                 |
+| `ORG_DESCRIPTION`          | `A generic organization using mAIcro` | Organization description                                           |
+| `GOOGLE_MODEL_NAME`        | `gemini-2.5-flash`                    | Gemini model used for answering                                    |
+| `SECONDARY_GEMINI_API_KEY` | —                                     | Fallback Gemini key when the primary is rate-limited               |
+| `LLM_FALLBACK_ENABLED`     | `false`                               | Set to `true` to enable automatic fallback to the secondary key    |
+| `COLLECTION_NAME`          | `microclub_knowledge`                 | Name of the Qdrant collection                                      |
+| `HYBRID_SEARCH_ALPHA`      | `0.7`                                 | Blend weight between vector and keyword search (1.0 = vector only) |
+| `HYBRID_SEARCH_RRF_K`      | `60`                                  | RRF constant used in result fusion                                 |
 
 ---
 
-## How It Works
+## Discord Bot Setup
 
-At its core, mAIcro is an AI service that understands your organization's data and answers questions based on it.
-
-**Data sources** may include:
-- Official announcements
-- Event information
-- Internal documentation
-- FAQs
-- Structured activity logs
-
-**Example questions members can ask:**
-- When is the next event?
-- Where can I apply for the AI team?
-- What are the rules for joining a workshop?
-
-The system processes this information and responds with answers derived directly from your organization's data, not generic AI knowledge.
+1. Go to the [Discord Developer Portal](https://discord.com/developers/applications) and create an application
+2. Navigate to **Bot** → enable **Message Content Intent** under Privileged Gateway Intents
+3. Under **OAuth2 > URL Generator**, select `bot` scope and permissions: `Read Messages/View Channels` + `Read Message History`
+4. Use the generated URL to invite the bot to your server
+5. Copy the bot token (from the Bot page) into `DISCORD_BOT_TOKEN`
+6. Enable **Developer Mode** in Discord (User Settings → Advanced → Developer Mode)
+7. Right-click the channels you want to watch → **Copy Channel ID** → paste into `DISCORD_CHANNEL_IDS` (comma-separated)
 
 ---
 
@@ -100,128 +114,170 @@ The system processes this information and responds with answers derived directly
 
 ### System Overview
 
-mAIcro follows a modern, stateless architecture optimized for cloud deployment:
-
 ```mermaid
-graph TD
-    User([User]) <--> API[FastAPI Service]
-    API <--> Qdrant[(Qdrant Cloud)]
-    API <--> Gemini[[Google Gemini AI]]
-    Cron[Cron/Trigger] --> Ingest[Ingestion Pipeline]
-    Ingest --> Discord[Discord API]
-    Discord --> Messages[Discord Messages]
-    Messages --> Embed[Embeddings]
-    Embed --> Qdrant
-    
-    subgraph "Stateless Backend"
-        API
-        Ingest
+flowchart TB
+    USER([User]) --> API[FastAPI Service<br/>/api/v1]
+
+    subgraph STARTUP["Startup Phase (Lifespan)"]
+        AUDIT[Startup Audit<br/>run_startup_audit]
+        HIST[Historical Ingestion<br/>ingest_from_discord]
+        LISTEN[Discord Listener<br/>run_discord_listener]
     end
-    
-    subgraph "Cloud Services"
-        Qdrant
-        Gemini
+
+    subgraph RUNTIME["Runtime Services"]
+        QA[QA Service<br/>ask_question]
+        SEARCH[Hybrid Search<br/>Vector + BM25 + RRF]
+        INGEST[Ingestion Pipeline<br/>ingest_documents]
     end
+
+    subgraph EXTERNAL["External Systems"]
+        QDRANT[(Qdrant Cloud)]
+        GEMINI[[Google Gemini]]
+        DISCORD[Discord<br/>REST + Gateway]
+        EMBED[Embedding Service]
+    end
+
+    API --> QA
+    API --> HIST
+
+    QA --> SEARCH
+    SEARCH --> QDRANT
+    QA --> GEMINI
+
+    LISTEN --> INGEST
+    INGEST --> EMBED
+    INGEST --> QDRANT
+
+    AUDIT --> QDRANT
+    AUDIT --> DISCORD
+    HIST --> DISCORD
+
+    QDRANT <--> DISCORD
 ```
 
-### Stateless Data Flow
-
-mAIcro ensures zero-loss ingestion without local state by syncing cursors to the cloud:
+### Question Answering Flow
 
 ```mermaid
 sequenceDiagram
-    participant D as Discord API
-    participant I as Ingestion Pipeline
-    participant Q as Qdrant Cloud
-    
-    I->>Q: Fetch last Message ID (Cursor)
-    Q-->>I: Cursor point
-    I->>D: Fetch messages AFTER Cursor ID
-    D-->>I: New Messages
-    I->>I: Generate Embeddings
-    I->>Q: Upsert Documents (Vector + Metadata)
-    I->>Q: Update Cursor ID (Newest Message)
+    participant U as User
+    participant API as FastAPI
+    participant QA as qa_service
+    participant HS as Hybrid Search
+    participant QD as Qdrant
+    participant LLM as Gemini
+
+    U->>API: POST /ask {question}
+    API->>QA: ask_question(question)
+
+    rect rgb(30, 50, 60)
+        Note over QA: Special query detection
+        alt "today" or "last message"
+            QA->>QD: scroll(order_by timestamp DESC)
+            QD-->>QA: filtered messages
+            QA->>LLM: answer from messages
+        else Normal query
+            QA->>QA: normalize (whats→what is)
+            QA->>HS: hybrid_search(query, k=6)
+            HS->>QD: vector similarity
+            HS->>QD: BM25 keyword match
+            HS->>QD: Reciprocal Rank Fusion
+            QD-->>HS: ranked documents
+            HS-->>QA: top-k documents
+            QA->>QA: format context (≤6000 chars)
+            QA->>LLM: invoke(prompt + context)
+        end
+    end
+
+    LLM-->>QA: answer
+    QA-->>API: answer
+    API-->>U: {question, answer}
+```
+
+### How Discord Sync Works
+
+On startup, the app runs three tasks in parallel:
+
+1. **Audit** (`run_startup_audit`) — Fetches the last 200 messages before the cursor from each channel. Compares them against Qdrant. Deletes any points that no longer exist in Discord (offline deletes) and updates content that was edited offline.
+
+2. **Historical Ingest** (`ingest_from_discord`) — Fetches all messages _after_ each channel's cursor via the Discord REST API. Converts them to LangChain Documents, generates embeddings, and upserts them into Qdrant.
+
+3. **Real-Time Listener** (`run_discord_listener`) — Connects to the Discord Gateway via WebSocket. Listens for `MESSAGE_CREATE`, `MESSAGE_DELETE`, and `MESSAGE_UPDATE` events. Ingests, deletes, or updates Qdrant points accordingly. Automatically reconnects with exponential backoff on disconnect.
+
+---
+
+## API Reference
+
+| Method | Path                     | Description                          |
+| ------ | ------------------------ | ------------------------------------ |
+| `GET`  | `/api/v1/health`         | Service health check                 |
+| `POST` | `/api/v1/ask`            | Answer a question via RAG            |
+| `POST` | `/api/v1/ingest/discord` | Trigger Discord historical ingestion |
+
+### Examples
+
+```bash
+# Health check
+curl http://localhost:8000/api/v1/health
+# {"status":"ok","service":"mAIcro","version":"0.1.0","org":"MicroClub","llm_provider":"google"}
+
+# Ask a question
+curl -X POST http://localhost:8000/api/v1/ask \
+  -H "Content-Type: application/json" \
+  -d '{"question":"What are the rules for joining a workshop?"}'
+# {"question":"What are the rules for joining a workshop?","answer":"..."}
+
+# Trigger ingestion
+curl -X POST http://localhost:8000/api/v1/ingest/discord
+# {"status":"ok","documents_ingested":42,"details":{"channels":{"123456789":42},"errors":{}}}
 ```
 
 ---
 
-## Discord Bot Setup
+## Deployment
 
-### Enable Intents & Permissions
+### Development
 
-1. Open the [Discord Developer Portal](https://discord.com/developers/applications)
-2. Navigate to your application and enable **Message Content Intent**
-3. Grant the bot these permissions:
-   - `View Channels`
-   - `Read Message History`
-
-### Add Bot to Your Server
-
-4. Copy the bot token to `DISCORD_BOT_TOKEN` in `.env`
-5. In **OAuth2 > URL Generator**, select `bot` scope and `Read Messages/View Channels` + `Read Message History` permissions
-6. Use the generated URL to invite the bot to your Discord server
-
-### Configure Channels
-
-7. Enable Discord Developer Mode (User Settings > Advanced > Developer Mode)
-8. Right-click any channel and copy its ID
-9. Add channel IDs to your configuration
-
----
-
-## Project Structure
-
-```text
-.
-├── src/
-│   ├── api/           # HTTP routes & schemas
-│   ├── core/          # Configuration & ingestion logic
-│   ├── services/      # Business logic (QA system)
-│   └── main.py        # Application entrypoint
-├── tests/             # Unit & integration tests
-├── Dockerfile         # Optimized multi-stage build
-├── docker-compose.yml # Service definitions
-└── pyproject.toml     # Dependencies & metadata
+```bash
+docker compose -f docker-compose.dev.yml up -d
 ```
 
-> **Note:** This service uses **Google Gemini** by default. Set `LLM_PROVIDER=google` in your `.env`.
+Includes mAIcro and a local Qdrant instance for testing without cloud credentials.
+
+### Production
+
+```bash
+docker compose up -d
+```
+
+Set `QDRANT_URL` and `QDRANT_API_KEY` to your Qdrant Cloud instance. The multi-stage Dockerfile produces a lean production image with health checks.
 
 ---
 
 ## Use Cases
 
-mAIcro is designed to be **adaptable to different organizations** without rebuilding from scratch. Possible deployments include:
-
-- **Student Clubs** Centralize event info, team opportunities, and FAQs
-- **Online Communities** Consolidate announcements and member documentation
-- **Companies** Unify internal policies, documentation, and knowledge bases
-- **NGOs** Provide instant access to mission-critical information
-- **Developer Communities** Answer technical questions based on shared resources
+- **Student Clubs** — Event info, team opportunities, FAQs, and workshop announcements
+- **Online Communities** — Consolidated announcements and member documentation
+- **Companies** — Internal policies, documentation, and knowledge bases
+- **NGOs** — Instant access to mission-critical organizational information
+- **Developer Communities** — Technical Q&A grounded in shared resources and past discussions
 
 ---
 
 ## Future Extensions
 
-mAIcro can evolve beyond question-answering. Planned features include:
-
-### Agentic AI
-- Automate workflows
-- Summarize announcements
-- Notify members about relevant events
-- Manage knowledge updates autonomously
-
-### Multi-Platform Integration
-- Web dashboards
-- APIs for third-party tools
-- Notion, Google Docs, Slack integrations
-- Knowledge management platforms
+- **Agentic AI** — Automate workflows, summarize announcements, notify members about events
+- **Multi-Platform Integration** — Notion, Slack, Google Docs, and other knowledge platforms
+- **Web Dashboard** — Visual knowledge browser and query analytics
+- **Third-Party API** — Public API for external tool integrations
 
 ---
 
 ## Contributing
 
-We welcome professional contributions. Please see [CONTRIBUTING.md](CONTRIBUTING.md) for development standards and [SECURITY.md](SECURITY.md) for reporting vulnerabilities.
+Contributions are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) before submitting PRs.
 
 ---
 
-© 2026 Micro Club. Released under the MIT License.
+## License
+
+MIT License. © 2026 Micro Club.
