@@ -1,5 +1,6 @@
 """Question-answering service built on top of retrieval-augmented generation."""
 
+import logging
 import re
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeoutError
 from datetime import datetime, timezone
@@ -13,6 +14,8 @@ from maicro.core.hybrid_search import get_hybrid_retriever
 from maicro.core.llm_provider import ConfigurationError, get_llm
 from maicro.core.prompt_template import build_rag_prompt_template
 from maicro.core.vector_store import get_vector_store
+
+logger = logging.getLogger(__name__)
 
 
 class AskError(Exception):
@@ -391,9 +394,16 @@ def ask_question(question: str) -> str:
     effective_question = _augment_temporal_question(normalized_question)
 
     def _build_chain(model):
+        def _debug_retrieve(q):
+            docs = _retrieve_with_rewrites(q, retriever, k=6)
+            logger.info(f"[DEBUG] Retrieved {len(docs)} documents for question: {q}")
+            for i, doc in enumerate(docs):
+                logger.info(f"[DEBUG] Doc {i}: {doc.page_content[:200]}... | metadata: {doc.metadata}")
+            return docs
+        
         return (
             {
-                "context": RunnableLambda(lambda q: _retrieve_with_rewrites(q, retriever, k=6))
+                "context": RunnableLambda(lambda q: _debug_retrieve(q))
                 | RunnableLambda(_format_context),
                 "question": RunnableLambda(lambda _q: effective_question),
             }
@@ -414,3 +424,4 @@ def ask_question(question: str) -> str:
                 "Ingest Discord data first (POST /api/v1/ingest/discord)."
             ) from exc
         raise AskError(_format_llm_error(exc)) from exc
+

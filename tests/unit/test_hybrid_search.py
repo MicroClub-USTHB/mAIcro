@@ -83,8 +83,12 @@ def test_hybrid_search_returns_specific_message_as_top_hit():
         }
     }
     
+    # Mock query_points response - returns an object with .points attribute
+    mock_result = MagicMock()
+    mock_result.points = [mock_hit1, mock_hit2, mock_hit3]
+    
     mock_client = MagicMock()
-    mock_client.search.return_value = [mock_hit1, mock_hit2, mock_hit3]
+    mock_client.query_points.return_value = mock_result
     
     mock_embeddings = MagicMock()
     mock_embeddings.embed_query.return_value = [0.1] * 3072
@@ -114,8 +118,12 @@ def test_hybrid_search_with_keyword_match():
         }
     }
     
+    # Mock query_points response
+    mock_result = MagicMock()
+    mock_result.points = [mock_hit]
+    
     mock_client = MagicMock()
-    mock_client.search.return_value = [mock_hit]
+    mock_client.query_points.return_value = mock_result
     
     mock_embeddings = MagicMock()
     mock_embeddings.embed_query.return_value = [0.1] * 3072

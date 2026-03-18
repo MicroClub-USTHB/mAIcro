@@ -5,7 +5,6 @@ and Reciprocal Rank Fusion (RRF) for merging results.
 """
 
 import logging
-import re
 
 from qdrant_client import QdrantClient
 from qdrant_client.http import models as qdrant_models
@@ -53,8 +52,9 @@ def _reciprocal_rank_fusion(
     return sorted_results
 
 
-# Discord message ID pattern - matches 3+ digit IDs
-_MESSAGE_ID_PATTERN = re.compile(r'^\d{3,}$')
+def _is_message_id(query: str) -> bool:
+    """Check if query looks like a Discord message ID (numeric string)."""
+    return query.isdigit() and len(query) >= 17
 
 
 def hybrid_search(
@@ -65,35 +65,12 @@ def hybrid_search(
 ) -> list[Document]:
     """Execute hybrid search combining semantic (vector) and keyword (BM25) search.
     
-    Uses Qdrant's Prefetch API to execute both searches and merges results
-    using Reciprocal Rank Fusion (RRF).
-    
+ 
     Returns:
         List of Documents sorted by RRF score
     """
     if alpha is None:
         alpha = getattr(settings, 'HYBRID_SEARCH_ALPHA', 0.7)
-    
-    message_id = None
-    cleaned = query.strip()
-    if _MESSAGE_ID_PATTERN.match(cleaned):
-        message_id = cleaned
-    
-    if message_id:
-        message_id_filter = qdrant_models.Filter(
-            must=[
-                qdrant_models.FieldCondition(
-                    key="metadata.message_id",
-                    match=qdrant_models.MatchValue(value=message_id),
-                )
-            ]
-        )
-        if filter_condition is None:
-            filter_condition = message_id_filter
-        else:
-            filter_condition = qdrant_models.Filter(
-                must=[filter_condition, message_id_filter]
-            )
     
     client = _get_qdrant_client()
     collection_name = settings.COLLECTION_NAME
@@ -101,61 +78,118 @@ def hybrid_search(
     
     query_vector = embedding.embed_query(query)
     
-    prefetches = []
-    
-    prefetches.append(
-        qdrant_models.Prefetch(
-            query=query_vector,
-            using="cosine",  
-            limit=k * 2,  # Fetch more for better fusion
-            filter=filter_condition,
-        )
+    vector_results = client.query_points(
+        collection_name=collection_name,
+        query=query_vector,
+        query_filter=filter_condition,
+        limit=k * 2,
+        with_payload=True,
+        with_vectors=False,
     )
     
-    prefetches.append(
-        qdrant_models.Prefetch(
-            query=query,  
-            limit=k * 2,
-            filter=filter_condition,
-        )
+   
+    text_match_condition = qdrant_models.FieldCondition(
+        key="page_content",
+        match=qdrant_models.MatchText(text=query),
     )
     
-    try:
-        search_results = client.search(
+    if filter_condition:
+        text_filter = qdrant_models.Filter(
+            must=[filter_condition, text_match_condition]
+        )
+    else:
+        text_filter = qdrant_models.Filter(must=[text_match_condition])
+    
+    text_results = client.scroll(
+        collection_name=collection_name,
+        scroll_filter=text_filter,
+        limit=k * 2,
+        with_payload=True,
+        with_vectors=False,
+    )
+    
+    message_id_docs = []
+    if _is_message_id(query):
+        message_id_condition = qdrant_models.FieldCondition(
+            key="metadata.message_id",
+            match=qdrant_models.MatchValue(value=query),
+        )
+        
+        if filter_condition:
+            message_id_filter = qdrant_models.Filter(
+                must=[filter_condition, message_id_condition]
+            )
+        else:
+            message_id_filter = qdrant_models.Filter(must=[message_id_condition])
+        
+        message_id_results = client.scroll(
             collection_name=collection_name,
-            query_vector=query_vector,  
-            prefetch=prefetches,
-            query_filter=filter_condition,
-            limit=k,
+            scroll_filter=message_id_filter,
+            limit=k * 2,
             with_payload=True,
             with_vectors=False,
         )
         
-        documents = []
-        for hit in search_results:
+        for hit in message_id_results[0]:
             payload = hit.payload or {}
+            doc_id = hit.id
+            score = 2.0
+            message_id_docs.append((doc_id, score, payload))
+    
+    vector_docs = []
+    for hit in vector_results.points:
+        payload = hit.payload or {}
+        doc_id = hit.id
+        score = hit.score if hasattr(hit, 'score') else 1.0
+        vector_docs.append((doc_id, score, payload))
+    
+    text_docs = []
+    for hit in text_results[0]:  
+        payload = hit.payload or {}
+        doc_id = hit.id
+        score = 1.0
+        text_docs.append((doc_id, score, payload))
+    
+    rrf_k = getattr(settings, 'HYBRID_SEARCH_RRF_K', 60)
+    
+    results_by_source = {}
+    
+    vector_ranked = [(doc_id, score) for doc_id, score, _ in vector_docs]
+    results_by_source['vector'] = vector_ranked
+    
+    text_ranked = [(doc_id, 1.0) for doc_id, _, _ in text_docs]
+    results_by_source['text'] = text_ranked
+    
+    if message_id_docs:
+        message_id_ranked = [(doc_id, score) for doc_id, score, _ in message_id_docs]
+        results_by_source['message_id'] = message_id_ranked
+    
+    rrf_scores = _reciprocal_rank_fusion(results_by_source, k=rrf_k)
+    
+    doc_map = {}
+    for doc_id, score, payload in vector_docs:
+        doc_map[doc_id] = payload
+    for doc_id, score, payload in text_docs:
+        if doc_id not in doc_map:
+            doc_map[doc_id] = payload
+    for doc_id, score, payload in message_id_docs:
+        if doc_id not in doc_map:
+            doc_map[doc_id] = payload
+    
+    documents = []
+    for doc_id, rrf_score in rrf_scores:
+        if doc_id in doc_map:
+            payload = doc_map[doc_id]
             page_content = payload.get("page_content", "")
             metadata = payload.get("metadata", {})
-            
             documents.append(
                 Document(
                     page_content=page_content,
                     metadata=metadata,
                 )
             )
-        
-        return documents
-        
-    except Exception as e:
-        logger.warning(f"Hybrid search failed, falling back to vector search: {e}")
-        # Fallback to standard vector search
-        from maicro.core.vector_store import get_vector_store
-        vector_store = get_vector_store()
-        return vector_store.similarity_search(
-            query=query,
-            k=k,
-            filter=filter_condition,
-        )
+    
+    return documents[:k]
 
 
 class _HybridRetriever:
