@@ -67,7 +67,7 @@ def _invoke_with_timeout(chain, question: str, timeout_seconds: int = _ASK_TIMEO
         future.cancel()
         raise AskError(
             "LLM request timed out after "
-            f"{timeout_seconds}s. Please retry and check Gemini API quota/connectivity."
+            f"{timeout_seconds}s. Please retry and check your LLM provider quota/connectivity."
         ) from exc
     finally:
         executor.shutdown(wait=False, cancel_futures=True)
@@ -87,7 +87,7 @@ def _format_llm_error(exc: Exception) -> str:
     if "api key" in lowered or "permission denied" in lowered or "unauthorized" in lowered:
         return (
             "Invalid API credentials. "
-            "Verify GOOGLE_API_KEY in your .env file."
+            "Verify your provider API key(s) in the .env file."
         )
 
     return f"Request failed: {message}"
@@ -299,7 +299,7 @@ def _answer_from_latest_message_with_llm(question: str, latest_message: str, llm
         f"User question: {question}\n\n"
         f"{latest_message}\n"
     )
-    chain = RunnableLambda(lambda p: llm.invoke(p).content)
+    chain = RunnableLambda(lambda p: _extract_llm_content(llm.invoke(p)))
     return _invoke_with_timeout(chain, prompt)
 
 
@@ -319,8 +319,12 @@ def _answer_today_updates_with_llm(question: str, messages: list[dict], llm, ref
         "Messages:\n"
         + "\n".join(rows)
     )
-    chain = RunnableLambda(lambda p: llm.invoke(p).content)
+    chain = RunnableLambda(lambda p: _extract_llm_content(llm.invoke(p)))
     return _invoke_with_timeout(chain, prompt)
+
+
+def _extract_llm_content(result) -> str:
+    return result.content if hasattr(result, "content") else str(result)
 
 
 def ask_question(question: str) -> str:

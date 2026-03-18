@@ -12,9 +12,16 @@ class Settings(BaseSettings):
     CORE_RULES: Optional[List[str]] = None
 
     LLM_PROVIDER: str = "google"
+    SECONDARY_LLM_PROVIDER: Optional[str] = None
     GEMINI_API_KEY: Optional[str] = None
+    SECONDARY_GEMINI_API_KEY: Optional[str] = None
     MODEL_NAME: Optional[str] = None
+    SECONDARY_MODEL_NAME: Optional[str] = None
     GOOGLE_MODEL_NAME: str = "gemini-2.5-flash"
+    LLM_FALLBACK_ENABLED: bool = False
+    LLM_MAX_PRIMARY_ATTEMPTS: int = 3
+    LLM_BACKOFF_BASE_DELAY_SECONDS: float = 1.0
+    LLM_BACKOFF_MAX_DELAY_SECONDS: float = 8.0
 
     DISCORD_BOT_TOKEN: Optional[str] = None
     DISCORD_CHANNEL_IDS: Optional[str] = None
