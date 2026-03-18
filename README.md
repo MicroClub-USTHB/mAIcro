@@ -2,13 +2,94 @@
 
 <img width="1536" height="344" alt="mAIcro" src="https://github.com/user-attachments/assets/6db58ac9-4dd8-460c-8d2d-cbee6c5362a6" />
 
-**mAIcro** is a professional, stateless AI service designed to centralize organizational knowledge and answer questions via RAG (Retrieval-Augmented Generation).
+**mAIcro** is an open-source AI service designed to centralize organizational knowledge and answer questions via RAG (Retrieval-Augmented Generation). It features a stateless architecture optimized for cloud deployment, automatic Discord integration, and production-ready performance.
+
+## Table of Contents
+
+- [Quick Start](#quick-start)
+- [Features](#features)
+- [How It Works](#how-it-works)
+- [Architecture](#architecture)
+- [Discord Bot Setup](#discord-bot-setup)
+- [Project Structure](#project-structure)
+- [Use Cases](#use-cases)
+- [Future Extensions](#future-extensions)
+- [Contributing](#contributing)
 
 ---
 
-## System Architecture
+## Quick Start
 
-mAIcro follows a modern, stateless architecture optimized for cloud deployment.
+Setting up mAIcro takes less than 5 minutes.
+
+### 1. Configure Credentials
+
+Open `.env` and fill in:
+
+| Service | Purpose | Environment Variable |
+|---|---|---|
+| **Google Gemini** | LLM & Embeddings | `GEMINI_API_KEY` |
+| **Discord Bot** | Data Source | `DISCORD_BOT_TOKEN` |
+| **Qdrant Cloud** | Vector Database | `QDRANT_URL`, `QDRANT_API_KEY` |
+
+### 2. Run
+
+```bash
+docker compose up -d
+```
+
+Docker automatically pulls the image from GHCR and starts the service at `http://localhost:8000`.
+
+### 3. Ingest & Ask
+
+```bash
+# Sync Discord history to Qdrant
+curl -X POST http://localhost:8000/api/v1/ingest/discord
+
+# Ask a question
+curl -X POST http://localhost:8000/api/v1/ask \
+  -H "Content-Type: application/json" \
+  -d '{"question":"What projects are the dev team working on?"}'
+```
+
+---
+
+## Features
+
+- **Stateless Architecture** — No local database required. Cursors and embeddings stored in Qdrant Cloud.
+- **Discord Integration** — Automatically syncs announcements and messages from specified channels.
+- **Production-Ready** — Multi-stage Docker builds with built-in health checks.
+- **RAG-Powered** — Uses Google Gemini for fast, accurate organizational QA.
+- **Structured Data Understanding** — Reasons about internal data instead of generic internet knowledge.
+- **Information Centralization** — Unifies Discord, Docs, Notion, spreadsheets, and announcements into one AI system.
+
+---
+
+## How It Works
+
+At its core, mAIcro is an AI service that understands your organization's data and answers questions based on it.
+
+**Data sources** may include:
+- Official announcements
+- Event information
+- Internal documentation
+- FAQs
+- Structured activity logs
+
+**Example questions members can ask:**
+- When is the next event?
+- Where can I apply for the AI team?
+- What are the rules for joining a workshop?
+
+The system processes this information and responds with answers derived directly from your organization's data, not generic AI knowledge.
+
+---
+
+## Architecture
+
+### System Overview
+
+mAIcro follows a modern, stateless architecture optimized for cloud deployment:
 
 ```mermaid
 graph TD
@@ -32,11 +113,9 @@ graph TD
     end
 ```
 
----
+### Stateless Data Flow
 
-## Stateless Data Flow
-
-mAIcro ensures zero-loss ingestion without local state by syncing cursors to the cloud.
+mAIcro ensures zero-loss ingestion without local state by syncing cursors to the cloud:
 
 ```mermaid
 sequenceDiagram
@@ -55,60 +134,27 @@ sequenceDiagram
 
 ---
 
-## Quickstart
+## Discord Bot Setup
 
-Setting up mAIcro takes less than 5 minutes.
+### Enable Intents & Permissions
 
-#### 1. Zero-Clone Deployment (New)
-You don't even need to clone this repo to run mAIcro. Just download these two files:
-```bash
-curl -O https://raw.githubusercontent.com/MicroClub-USTHB/mAIcro/main/docker-compose.yml
-curl -O https://raw.githubusercontent.com/MicroClub-USTHB/mAIcro/main/.env.example
-cp .env.example .env
-```
+1. Open the [Discord Developer Portal](https://discord.com/developers/applications)
+2. Navigate to your application and enable **Message Content Intent**
+3. Grant the bot these permissions:
+   - `View Channels`
+   - `Read Message History`
 
-#### 2. Configure Credentials
-Open `.env` and fill in:
-| Service | Purpose | Environment Variable |
-|---|---|---|
-| **Google Gemini** | LLM & Embeddings | `GEMINI_API_KEY` |
-| **Discord Bot** | Data Source | `DISCORD_BOT_TOKEN` |
-| **Qdrant Cloud** | Stateless Memory | `QDRANT_URL`, `QDRANT_API_KEY` |
+### Add Bot to Your Server
 
-#### 3. Run
-```bash
-docker compose up -d
-```
-*Docker will automatically pull the image from GHCR and start the service.*
-*The service is now alive at `http://localhost:8000`.*
+4. Copy the bot token to `DISCORD_BOT_TOKEN` in `.env`
+5. In **OAuth2 > URL Generator**, select `bot` scope and `Read Messages/View Channels` + `Read Message History` permissions
+6. Use the generated URL to invite the bot to your Discord server
 
-#### 4. Ingest & Ask
-```bash
-# Sync Discord history to the cloud
-curl -X POST http://localhost:8000/api/v1/ingest/discord
+### Configure Channels
 
-# Ask a question
-curl -X POST http://localhost:8000/api/v1/ask \
-  -H "Content-Type: application/json" \
-  -d '{"question":"What projects are the dev team working on?"}'
-```
-
----
-
-## Features
-
-- **Stateless Architecture**: No local database required. Ingestion cursors and embeddings are stored in Qdrant Cloud.
-- **Discord Integration**: Automatically syncs announcements and messages from specified channels.
-- **Production-Ready**: Multi-stage Docker builds and built-in health checks.
-- **RAG-Powered**: Uses Gemini 1.5 Flash for fast, accurate organizational QA.
-
----
-
-## Discord Bot Setup Tips
-
-1. **Intents**: Enable **Message Content Intent** in the Discord Developer Portal.
-2. **Permissions**: The bot needs `View Channels` and `Read Message History`.
-3. **Channel IDs**: Enable Discord Developer Mode and right-click any channel to copy its ID.
+7. Enable Discord Developer Mode (User Settings > Advanced > Developer Mode)
+8. Right-click any channel and copy its ID
+9. Add channel IDs to your configuration
 
 ---
 
@@ -118,145 +164,53 @@ curl -X POST http://localhost:8000/api/v1/ask \
 .
 ├── src/
 │   ├── api/           # HTTP routes & schemas
-│   ├── core/          # Configuration & Ingestion logic
+│   ├── core/          # Configuration & ingestion logic
 │   ├── services/      # Business logic (QA system)
 │   └── main.py        # Application entrypoint
+├── tests/             # Unit & integration tests
 ├── Dockerfile         # Optimized multi-stage build
 ├── docker-compose.yml # Service definitions
-└── pyproject.toml     # Metadata & dependencies
+└── pyproject.toml     # Dependencies & metadata
 ```
+
+> **Note:** This service uses **Google Gemini** by default. Set `LLM_PROVIDER=google` in your `.env`.
 
 ---
 
-> **Note:** This service is **Gemini-only** by default. Set `LLM_PROVIDER=google` in your `.env`.
+## Use Cases
+
+mAIcro is designed to be **adaptable to different organizations** without rebuilding from scratch. Possible deployments include:
+
+- **Student Clubs** Centralize event info, team opportunities, and FAQs
+- **Online Communities** Consolidate announcements and member documentation
+- **Companies** Unify internal policies, documentation, and knowledge bases
+- **NGOs** Provide instant access to mission-critical information
+- **Developer Communities** Answer technical questions based on shared resources
+
+---
+
+## Future Extensions
+
+mAIcro can evolve beyond question-answering. Planned features include:
+
+### Agentic AI
+- Automate workflows
+- Summarize announcements
+- Notify members about relevant events
+- Manage knowledge updates autonomously
+
+### Multi-Platform Integration
+- Web dashboards
+- APIs for third-party tools
+- Notion, Google Docs, Slack integrations
+- Knowledge management platforms
+
+---
 
 ## Contributing
 
-We welcome professional contributions. Please see `CONTRIBUTING.md` for our development standards and `SECURITY.md` for reporting vulnerabilities.
+We welcome professional contributions. Please see [CONTRIBUTING.md](CONTRIBUTING.md) for development standards and [SECURITY.md](SECURITY.md) for reporting vulnerabilities.
 
 ---
+
 © 2026 Micro Club. Released under the MIT License.
-
----
-
-# Core Concept
-
-At its core, **mAIcro works as an AI service that understands provided data and answers questions based on it**.
-
-Instead of relying on generic internet knowledge, the system operates on **specific datasets provided by the organization**.
-
-These datasets may include:
-
-* Official announcements
-* Event information
-* Internal documentation
-* FAQs
-* Structured data about activities or members
-
-The AI processes this information and uses it to respond to user queries.
-
----
-
-# Key Features
-
-## Structured Data Understanding
-
-mAIcro is designed to ingest and understand structured sources of information.
-This allows it to reason about internal data rather than relying solely on general AI knowledge.
-
----
-
-## Question Answering
-
-Members can ask questions in natural language and receive answers derived directly from the organization's data.
-
-Example questions:
-
-* When is the next event?
-* Where can I apply for the AI team?
-* What are the rules for joining a workshop?
-
----
-
-## Information Centralization
-
-Organizations often have information scattered across multiple platforms:
-
-* Discord
-* Google Docs
-* Notion
-* Spreadsheets
-* Announcements
-
-mAIcro centralizes these sources into a **single AI-accessible knowledge system**.
-
----
-
-## Adaptable Architecture
-
-The system is designed so that it can be **adapted to different organizations** without rebuilding everything.
-
-Possible use cases include:
-
-* Student clubs
-* Online communities
-* Companies
-* NGOs
-* Developer communities
-
----
-
-# Open Source Philosophy
-
-mAIcro is released as an **open-source project**.
-
-This means:
-
-* Anyone can use the system
-* Anyone can adapt it for their own community
-* Anyone can contribute improvements
-
-The goal is to build **shared AI infrastructure** that communities can deploy easily.
-
----
-
-# First Deployment: Micro Club
-
-The first deployment of mAIcro is within **Micro Club**.
-
-In this environment, the system will:
-
-* process official club announcements
-* answer questions from members
-* provide information about events, teams, and opportunities
-
-However, **Micro Club is only the first use case**.
-The architecture is designed to be reused by other communities.
-
----
-
-# Future Extensions
-
-mAIcro can evolve beyond a question-answering service.
-
-Possible future features include:
-
-### Agentic AI Features
-
-The system may incorporate AI agents capable of:
-
-* automating workflows
-* summarizing announcements
-* notifying members about relevant events
-* managing knowledge updates
-
----
-
-### Multi-Platform Integration
-
-Future integrations may include:
-
-* Discord
-* Web dashboards
-* APIs for other tools
-* Knowledge management platforms
