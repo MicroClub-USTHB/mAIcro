@@ -9,6 +9,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnableLambda, RunnablePassthrough
 
 from maicro.core.config import settings
+from maicro.core.hybrid_search import get_hybrid_retriever
 from maicro.core.llm_provider import ConfigurationError, get_llm
 from maicro.core.prompt_template import build_rag_prompt_template
 from maicro.core.vector_store import get_vector_store
@@ -357,8 +358,8 @@ def ask_question(question: str) -> str:
         raise AskConfigError(str(exc)) from exc
 
     try:
-        vector_store = get_vector_store()
-        retriever = vector_store.as_retriever(search_kwargs={"k": 6})
+        # Use hybrid retriever
+        retriever = get_hybrid_retriever(k=6)
     except ConfigurationError as exc:
         raise AskConfigError(str(exc)) from exc
     except Exception as exc:

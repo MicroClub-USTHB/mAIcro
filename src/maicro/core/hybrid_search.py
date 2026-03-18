@@ -13,7 +13,11 @@ from langchain_core.retrievers import RetrieverLike
 
 from maicro.core.config import settings
 from maicro.core.llm_provider import get_embeddings
-from maicro.core.vector_store import get_qdrant_client
+
+# Import get_qdrant_client lazily to avoid circular import
+def _get_qdrant_client():
+    from maicro.core.vector_store import get_qdrant_client
+    return get_qdrant_client()
 
 logger = logging.getLogger(__name__)
 
@@ -73,7 +77,7 @@ def hybrid_search(
     if alpha is None:
         alpha = getattr(settings, 'HYBRID_SEARCH_ALPHA', 0.7)
     
-    client = get_qdrant_client()
+    client = _get_qdrant_client()
     collection_name = settings.COLLECTION_NAME
     embedding = get_embeddings()
     
@@ -147,6 +151,24 @@ def hybrid_search(
         )
 
 
+class _HybridRetriever:
+    """Wrapper class to make hybrid search compatible with LangChain's retriever interface."""
+    
+    def __init__(self, alpha: float | None = None, k: int = 5):
+        self.alpha = alpha
+        self.k = k
+    
+    def invoke(self, query: str) -> list[Document]:
+        return hybrid_search(
+            query=query,
+            alpha=self.alpha,
+            k=self.k,
+        )
+    
+    def __call__(self, query: str) -> list[Document]:
+        return self.invoke(query)
+
+
 def get_hybrid_retriever(
     alpha: float | None = None,
     k: int = 5,
@@ -159,13 +181,6 @@ def get_hybrid_retriever(
         k: Number of results to retrieve
     
     Returns:
-        A retriever-like function that takes a query string and returns documents
+        A retriever with .invoke() method
     """
-    def retriever(query: str) -> list[Document]:
-        return hybrid_search(
-            query=query,
-            alpha=alpha,
-            k=k,
-        )
-    
-    return retriever
+    return _HybridRetriever(alpha=alpha, k=k)

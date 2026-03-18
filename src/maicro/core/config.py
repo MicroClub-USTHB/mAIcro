@@ -22,9 +22,9 @@ class Settings(BaseSettings):
     QDRANT_API_KEY: Optional[str] = None
     COLLECTION_NAME: str = "microclub_knowledge"
     
-    # Hybrid Search: weight between semantic (alpha=1.0) and keyword (alpha=0.0)
-    HYBRID_SEARCH_ALPHA: float = 0.7  # 70% semantic, 30% keyword
-    HYBRID_SEARCH_RRF_K: int = 60  # RRF constant for Reciprocal Rank Fusion
+    
+    HYBRID_SEARCH_ALPHA: float = 0.7  
+    HYBRID_SEARCH_RRF_K: int = 60   
 
     model_config = SettingsConfigDict(
         case_sensitive=True,
