@@ -1,3 +1,3 @@
-from .gemini_provider import GeminiProvider
+from .gemini_provider import GeminiProvider, GenerationResult
 
-__all__ = ["GeminiProvider"]
+__all__ = ["GeminiProvider", "GenerationResult"]

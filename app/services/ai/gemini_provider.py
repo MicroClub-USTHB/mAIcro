@@ -1,10 +1,19 @@
 import logging
-from typing import Any, Iterable, List, Optional, Sequence
+from dataclasses import dataclass
+from typing import Any, Dict, Iterable, List, Optional, Sequence
 
-import google.generativeai as genai
+import google.genai as genai
 
 from app.core.config import settings
 from app.core.llm_provider import LLMProvider
+
+
+@dataclass
+class GenerationResult:
+    text: str
+    model: str
+    used_fallback: bool
+    token_usage: Dict[str, int]
 
 
 class GeminiProvider(LLMProvider):
@@ -12,12 +21,12 @@ class GeminiProvider(LLMProvider):
     Gemini-backed provider used by the query service.
 
     Supports legacy `generate(prompt=...)` and query-service style
-    `generate(query=..., retrieved=..., history=...)`.
+    `generate(query=..., retrieved=..., history=...)`
     """
 
     def __init__(self) -> None:
-        genai.configure(api_key=settings.GEMINI_API_KEY)
-        self.model = genai.GenerativeModel(getattr(settings, "LLM_MODEL", "gemini-2.5-flash"))
+        self._client = genai.Client(api_key=settings.GEMINI_API_KEY)
+        self.model = settings.MODEL_NAME or "gemini-2.5-flash"
         self.is_fallback = False
 
     def _extract_text(self, response: Any) -> str:
@@ -37,6 +46,33 @@ class GeminiProvider(LLMProvider):
                 return joined
 
         return ""
+
+    def _extract_token_usage(self, response: Any) -> Dict[str, int]:
+        usage = getattr(response, "usage_metadata", None) or getattr(response, "usageMetadata", None)
+        if not usage:
+            return {"input": 0, "output": 0, "total": 0}
+
+        input_tokens = int(
+            getattr(usage, "prompt_token_count", None)
+            or getattr(usage, "promptTokenCount", None)
+            or 0
+        )
+        output_tokens = int(
+            getattr(usage, "candidates_token_count", None)
+            or getattr(usage, "candidatesTokenCount", None)
+            or 0
+        )
+        total_tokens = int(
+            getattr(usage, "total_token_count", None)
+            or getattr(usage, "totalTokenCount", None)
+            or (input_tokens + output_tokens)
+        )
+
+        return {
+            "input": input_tokens,
+            "output": output_tokens,
+            "total": total_tokens,
+        }
 
     def _normalize_history(self, history: Optional[Sequence[Any]]) -> str:
         if not history:
@@ -118,14 +154,14 @@ class GeminiProvider(LLMProvider):
             "Please retry in a moment."
         )
 
-    def generate(
+    def generate_with_metadata(
         self,
         prompt: Optional[str] = None,
         *,
         query: Optional[str] = None,
         retrieved: Optional[Iterable[Any]] = None,
         history: Optional[Sequence[Any]] = None,
-    ) -> str:
+    ) -> GenerationResult:
         user_query = (query or prompt or "").strip()
         if not user_query:
             raise ValueError("A non-empty prompt/query is required.")
@@ -134,12 +170,40 @@ class GeminiProvider(LLMProvider):
         full_prompt = self._build_prompt(query=user_query, retrieved=retrieved, history=history)
 
         try:
-            response = self.model.generate_content(full_prompt)
+            response = self._client.models.generate_content(
+                model=self.model,
+                contents=full_prompt,
+            )
             text = self._extract_text(response)
             if not text:
                 raise RuntimeError("Gemini returned an empty response.")
-            return text
+            return GenerationResult(
+                text=text,
+                model=self.model,
+                used_fallback=False,
+                token_usage=self._extract_token_usage(response),
+            )
         except Exception as exc:
             logging.exception("Gemini generation failed: %s", exc)
             self.is_fallback = True
-            return self._fallback_answer(query=user_query, retrieved=retrieved)
+            return GenerationResult(
+                text=self._fallback_answer(query=user_query, retrieved=retrieved),
+                model=self.model,
+                used_fallback=True,
+                token_usage={"input": 0, "output": 0, "total": 0},
+            )
+
+    def generate(
+        self,
+        prompt: Optional[str] = None,
+        *,
+        query: Optional[str] = None,
+        retrieved: Optional[Iterable[Any]] = None,
+        history: Optional[Sequence[Any]] = None,
+    ) -> str:
+        return self.generate_with_metadata(
+            prompt=prompt,
+            query=query,
+            retrieved=retrieved,
+            history=history,
+        ).text

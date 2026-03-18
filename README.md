@@ -29,3 +29,8 @@ mAIcro is a reusable, open-source AI infrastructure designed for communities and
 2. Copy `.env.example` to `.env` and fill in your keys.
 3. Install dependencies: `poetry install`.
 4. Run the app: `uvicorn app.main:app --reload`.
+
+## Observability
+
+- Tracing dashboard setup and usage: `docs/tracing-dashboard.md`
+- Prometheus metrics endpoint: `GET /metrics`

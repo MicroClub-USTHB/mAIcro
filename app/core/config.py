@@ -29,6 +29,12 @@ class Settings(BaseSettings):
     # Database
     DATABASE_URL: Optional[str] = None
 
+    # Observability
+    OTEL_SERVICE_NAME: str = "maicro-api"
+    OTEL_EXPORTER_OTLP_ENDPOINT: Optional[str] = None
+    OTEL_EXPORTER_OTLP_HEADERS: Optional[str] = None
+    OTEL_TRACING_ENABLED: bool = True
+
     model_config = {
         "case_sensitive": True,
         "env_file": ".env",
