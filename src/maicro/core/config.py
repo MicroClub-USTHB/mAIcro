@@ -37,3 +37,4 @@ class Settings(BaseSettings):
         return [cid.strip() for cid in self.DISCORD_CHANNEL_IDS.split(",") if cid.strip()]
 
 settings = Settings()
+

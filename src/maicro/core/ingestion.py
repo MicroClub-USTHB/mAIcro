@@ -51,10 +51,53 @@ def _is_missing_collection_exception(exc: Exception) -> bool:
 
 def _bootstrap_collection() -> None:
     """Create the Qdrant collection (if missing) and clear vector-store cache."""
+    client = get_qdrant_client()
+    
+    # Check if collection already exists
+    if client.collection_exists(settings.COLLECTION_NAME):
+        # Collection exists - just ensure indexes are created
+        _ensure_collection_indexes(client)
+        get_vector_store.cache_clear()
+        return
+    
+    # Collection doesn't exist - need to get embedding size
     embedding = get_embeddings()
     vector_size = len(embedding.embed_query("collection bootstrap"))
     _ensure_collection_exists(vector_size)
     get_vector_store.cache_clear()
+
+
+def _ensure_collection_indexes(client) -> None:
+    """Ensure payload indexes exist on the collection.
+    
+    Qdrant Cloud requires explicit payload indexes for filtered queries.
+    """
+    # Ensure payload indexes exist (required by Qdrant Cloud for filtered queries)
+    for field in ("metadata.channel_id", "metadata.message_id", "metadata.source"):
+        try:
+            client.create_payload_index(
+                collection_name=settings.COLLECTION_NAME,
+                field_name=field,
+                field_schema=qdrant_models.PayloadSchemaType.KEYWORD,
+            )
+        except Exception:
+            pass  # Index already exists or collection just created
+
+    # Enable Full-Text Index on page_content for keyword/BM25 search (hybrid search)
+    try:
+        client.create_payload_index(
+            collection_name=settings.COLLECTION_NAME,
+            field_name="page_content",
+            field_schema=qdrant_models.TextIndexParams(
+                type=qdrant_models.TextIndexType.TEXT,
+                tokenizer=qdrant_models.TokenizerType.WORD,
+                min_token_len=2,
+                max_token_len=None,
+                lowercase=True,
+            ),
+        )
+    except Exception as e:
+        logger.warning(f"Full-text index creation for page_content: {e}")
 
 
 def _docs_from_discord_messages(
@@ -123,18 +166,38 @@ def _ensure_collection_exists(vector_size: int) -> None:
         except Exception:
             pass  # Index already exists or collection just created
 
+    # Enable Full-Text Index on page_content for keyword/BM25 search (hybrid search)
+    try:
+        client.create_payload_index(
+            collection_name=settings.COLLECTION_NAME,
+            field_name="page_content",
+            field_schema=qdrant_models.TextIndexParams(
+                type=qdrant_models.TextIndexType.TEXT,
+                tokenizer=qdrant_models.TokenizerType.WORD,
+                min_token_len=2,
+                max_token_len=None,
+                lowercase=True,
+            ),
+        )
+    except Exception as e:
+        logger.warning(f"Full-text index creation for page_content: {e}")
+
 
 def ingest_documents(documents: list[Document], filter_duplicates: bool = True) -> int:
     """
     Push a list of LangChain Documents into the Qdrant vector store.
     Returns the number of documents ingested.
-    
+
     Args:
         documents: List of LangChain Documents to ingest.
         filter_duplicates: If True, skip documents that already exist based on message_id.
     """
     if not documents:
         return 0
+
+    # Ensure collection exists with proper indexes before filtering/ingesting
+    # This handles the case where collection was created by LangChain without indexes
+    _bootstrap_collection()
 
     if filter_duplicates:
         documents, duplicate_count = _filter_duplicate_documents(documents)
