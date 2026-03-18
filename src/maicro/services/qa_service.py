@@ -46,6 +46,8 @@ _TEMPORAL_KEYWORDS_PATTERN = re.compile(
 )
 
 # Maximum messages fetched for "today's updates" — keeps the prompt bounded.
+_CONTEXT_CHAR_BUDGET = 6_000   
+_DOC_CHAR_LIMIT      = 1_200   
 _TODAY_MESSAGES_LIMIT = 50
 
 
@@ -99,22 +101,33 @@ def _format_llm_error(exc: Exception) -> str:
 
 
 def _format_context(docs: list[Document]) -> str:
-    """Render retrieved docs into concise, traceable snippets for the prompt."""
     if not docs:
         return "No relevant context retrieved."
 
     chunks = []
+    total_chars = 0
+
     for i, doc in enumerate(docs, start=1):
         text = " ".join((doc.page_content or "").split())
-        text = text[:1200]
+        text = text[:_DOC_CHAR_LIMIT]
 
         metadata = doc.metadata or {}
         source = metadata.get("source") or metadata.get("channel_id") or "unknown"
         date = metadata.get("date") or metadata.get("timestamp") or "unknown"
 
-        chunks.append(f"[{i}] source={source} | date={date}\\n{text}")
+        chunk = f"[{i}] source={source} | date={date}\\n{text}"
 
-    return "\\n\\n".join(chunks)
+        if total_chars + len(chunk) > _CONTEXT_CHAR_BUDGET:
+            logger.debug(
+                "[context] Budget exhausted after %d/%d docs (%d chars used).",
+                i - 1, len(docs), total_chars,
+            )
+            break
+
+        chunks.append(chunk)
+        total_chars += len(chunk)
+
+    return "\\n\\n".join(chunks) if chunks else "No relevant context retrieved."
 
 
 def _normalize_question(question: str) -> str:
@@ -123,21 +136,20 @@ def _normalize_question(question: str) -> str:
         normalized = pattern.sub(replacement, normalized)
     return normalized
 
+def _doc_key(doc: Document) -> tuple[str, str, str]:
+    """Stable deduplication key for a retrieved document."""
+    metadata = doc.metadata or {}
+    message_id = str(metadata.get("message_id") or "")
+    source = str(metadata.get("source") or "")
+    content_fp = " ".join((doc.page_content or "").split())[:200]
+    return (source, message_id, content_fp)
 
 def _merge_docs(primary: list[Document], secondary: list[Document], limit: int) -> list[Document]:
     merged: list[Document] = []
     seen: set[tuple[str, str, str]] = set()
 
-    def _key(doc: Document) -> tuple[str, str, str]:
-        metadata = doc.metadata or {}
-        return (
-            str(metadata.get("source", "")),
-            str(metadata.get("message_id", "")),
-            (doc.page_content or "")[:160],
-        )
-
     for doc in primary + secondary:
-        key = _key(doc)
+        key = _doc_key(doc)
         if key in seen:
             continue
         seen.add(key)
@@ -150,10 +162,17 @@ def _merge_docs(primary: list[Document], secondary: list[Document], limit: int) 
 
 def _retrieve_with_rewrites(question: str, retriever, k: int = 6) -> list[Document]:
     normalized = _normalize_question(question)
-    primary = retriever.invoke(question)
-    if normalized.lower() == question.strip().lower():
-        return primary
-    secondary = retriever.invoke(normalized)
+    needs_rewrite = normalized.lower() != question.strip().lower()
+
+    if not needs_rewrite:
+        return retriever.invoke(question)
+
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        future_primary = executor.submit(retriever.invoke, question)
+        future_secondary = executor.submit(retriever.invoke, normalized)
+        primary = future_primary.result()
+        secondary = future_secondary.result()
+
     return _merge_docs(primary, secondary, limit=k)
 
 
