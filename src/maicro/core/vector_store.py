@@ -5,8 +5,10 @@ from functools import lru_cache
 from qdrant_client import QdrantClient
 from qdrant_client.http import models as qdrant_models
 from langchain_qdrant import QdrantVectorStore
+
 from maicro.core.config import settings
 from maicro.core.llm_provider import get_embeddings
+
 
 logger = logging.getLogger(__name__)
 
@@ -134,3 +136,13 @@ def _close_qdrant_client_on_exit() -> None:
         get_qdrant_client().close()
     except Exception:
         pass
+
+
+# Import hybrid search functions from separate module
+from maicro.core.hybrid_search import (
+    hybrid_search,
+    get_hybrid_retriever,
+    _reciprocal_rank_fusion,
+)
+
+__all__ = ["hybrid_search", "get_hybrid_retriever"]
