@@ -14,27 +14,27 @@ def get_llm():
 
     from langchain_google_genai import ChatGoogleGenerativeAI
 
-    if not settings.GOOGLE_API_KEY:
-        raise ConfigurationError("GOOGLE_API_KEY not found in .env.")
+    if not settings.GEMINI_API_KEY:
+        raise ConfigurationError("GEMINI_API_KEY not found in .env.")
 
     model_name = settings.MODEL_NAME or settings.GOOGLE_MODEL_NAME
     return ChatGoogleGenerativeAI(
         model=model_name,
-        google_api_key=settings.GOOGLE_API_KEY,
+        google_api_key=settings.GEMINI_API_KEY,
         temperature=0,
     )
 
 def get_embeddings():
     from langchain_google_genai import GoogleGenerativeAIEmbeddings
 
-    if not settings.GOOGLE_API_KEY:
+    if not settings.GEMINI_API_KEY:
         raise ConfigurationError(
-            "GOOGLE_API_KEY not found in .env. "
+            "GEMINI_API_KEY not found in .env. "
             "Gemini embeddings require a valid Google API key."
         )
 
     return GoogleGenerativeAIEmbeddings(
         model="models/gemini-embedding-001",
-        google_api_key=settings.GOOGLE_API_KEY
+        google_api_key=settings.GEMINI_API_KEY
     )
 

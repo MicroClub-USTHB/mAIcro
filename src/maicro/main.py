@@ -53,6 +53,12 @@ app = FastAPI(
     ),
 )
 
+@app.get("/health")
+async def health_check():
+    """Simple health check endpoint."""
+    return {"status": "ok"}
+
+
 app.include_router(router)
 register_exception_handlers(app)
 

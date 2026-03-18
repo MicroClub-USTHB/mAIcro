@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     CORE_RULES: Optional[List[str]] = None
 
     LLM_PROVIDER: str = "google"
-    GOOGLE_API_KEY: Optional[str] = None
+    GEMINI_API_KEY: Optional[str] = None
     MODEL_NAME: Optional[str] = None
     GOOGLE_MODEL_NAME: str = "gemini-2.5-flash"
 
