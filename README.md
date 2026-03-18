@@ -71,11 +71,11 @@ cp .env.example .env
 
 #### 2. Configure Credentials
 Open `.env` and fill in:
-| Service | Purpose | Where to get it |
+| Service | Purpose | Environment Variable |
 |---|---|---|
-| **Google Gemini** | LLM & Embeddings | [Google AI Studio](https://aistudio.google.com/app/apikey) |
-| **Discord Bot** | Data Source | [Discord Developer Portal](https://discord.com/developers/applications) |
-| **Qdrant Cloud** | Stateless Memory | [Qdrant Cloud](https://cloud.qdrant.io) (Free 1GB tier) |
+| **Google Gemini** | LLM & Embeddings | `GEMINI_API_KEY` |
+| **Discord Bot** | Data Source | `DISCORD_BOT_TOKEN` |
+| **Qdrant Cloud** | Stateless Memory | `QDRANT_URL`, `QDRANT_API_KEY` |
 
 #### 3. Run
 ```bash
@@ -137,9 +137,6 @@ We welcome professional contributions. Please see `CONTRIBUTING.md` for our deve
 
 ---
 © 2026 Micro Club. Released under the MIT License.
-
-
-For new setups, prefer `maicro.main:app`.
 
 ---
 
