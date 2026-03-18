@@ -31,14 +31,25 @@ Open `.env` and fill in:
 | **Google Gemini** | LLM & Embeddings | `GEMINI_API_KEY` |
 | **Discord Bot** | Data Source | `DISCORD_BOT_TOKEN` |
 | **Qdrant Cloud** | Vector Database | `QDRANT_URL`, `QDRANT_API_KEY` |
+| **Discord Channels IDS** | IDs of important channels in your discord | `DISCORD_CHANNEL_IDS` |
 
 ### 2. Run
 
+You can run mAIcro in two ways:
+
+**Method A: Clone the repository and run with Docker Compose**
+
 ```bash
+git clone https://github.com/MicroClub-USTHB/mAIcro.git
+cd mAIcro
 docker compose up -d
 ```
 
-Docker automatically pulls the image from GHCR and starts the service at `http://localhost:8000`.
+This starts the app from the repository using the Compose service.
+
+**Method B: Pull the GHCR image directly and run it as a service**
+
+Both methods expose the API at `http://localhost:8000`.
 
 ### 3. Ingest & Ask
 
