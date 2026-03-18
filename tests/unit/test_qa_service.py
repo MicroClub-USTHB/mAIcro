@@ -29,23 +29,23 @@ def test_latest_discord_message_picks_newest_timestamp(monkeypatch):
     points = [
         SimpleNamespace(
             payload={
-                "page_content": "[a] older message",
-                "metadata": {
-                    "source": "discord",
-                    "author": "a",
-                    "channel_id": "c1",
-                    "timestamp": "2026-03-01T10:00:00+00:00",
-                },
-            }
-        ),
-        SimpleNamespace(
-            payload={
                 "page_content": "[b] newest message",
                 "metadata": {
                     "source": "discord",
                     "author": "b",
                     "channel_id": "c2",
                     "timestamp": "2026-03-09T17:39:33+00:00",
+                },
+            }
+        ),
+        SimpleNamespace(
+            payload={
+                "page_content": "[a] older message",
+                "metadata": {
+                    "source": "discord",
+                    "author": "a",
+                    "channel_id": "c1",
+                    "timestamp": "2026-03-01T10:00:00+00:00",
                 },
             }
         ),
