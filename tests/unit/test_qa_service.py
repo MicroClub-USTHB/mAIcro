@@ -3,7 +3,7 @@ from types import SimpleNamespace
 import pytest
 from langchain_core.runnables import RunnableLambda
 
-from maicro.services import qa_service
+from services import qa_service
 
 
 def test_ask_question_uses_latest_shortcut(monkeypatch):

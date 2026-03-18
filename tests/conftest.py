@@ -1,5 +1,5 @@
 import pytest
-from maicro.core.config import settings
+from core.config import settings
 
 @pytest.fixture(autouse=True)
 def mock_env_vars(monkeypatch):

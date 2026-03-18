@@ -4,8 +4,8 @@ from typing import Optional
 
 from qdrant_client.http import models as qdrant_models
 
-from maicro.core.config import settings
-from maicro.core.vector_store import get_qdrant_client
+from core.config import settings
+from core.vector_store import get_qdrant_client
 
 logger = logging.getLogger(__name__)
 

@@ -5,8 +5,8 @@ from unittest.mock import MagicMock, patch
 
 from langchain_core.documents import Document
 
-from maicro.core.hybrid_search import hybrid_search
-from maicro.core.config import settings
+from core.hybrid_search import hybrid_search
+from core.config import settings
 
 
 def test_hybrid_search_returns_specific_message_as_top_hit():
@@ -93,8 +93,8 @@ def test_hybrid_search_returns_specific_message_as_top_hit():
     mock_embeddings = MagicMock()
     mock_embeddings.embed_query.return_value = [0.1] * 3072
     
-    with patch('maicro.core.hybrid_search._get_qdrant_client', return_value=mock_client):
-        with patch('maicro.core.hybrid_search.get_embeddings', return_value=mock_embeddings):
+    with patch('core.hybrid_search._get_qdrant_client', return_value=mock_client):
+        with patch('core.hybrid_search.get_embeddings', return_value=mock_embeddings):
             # Search for message with ID 456 - BM25 will search metadata.message_id
             results = hybrid_search(query="456", k=3)
     
@@ -128,8 +128,8 @@ def test_hybrid_search_with_keyword_match():
     mock_embeddings = MagicMock()
     mock_embeddings.embed_query.return_value = [0.1] * 3072
     
-    with patch('maicro.core.hybrid_search._get_qdrant_client', return_value=mock_client):
-        with patch('maicro.core.hybrid_search.get_embeddings', return_value=mock_embeddings):
+    with patch('core.hybrid_search._get_qdrant_client', return_value=mock_client):
+        with patch('core.hybrid_search.get_embeddings', return_value=mock_embeddings):
             # Search for specific text
             results = hybrid_search(query="ID-123456", k=1)
     

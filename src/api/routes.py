@@ -6,9 +6,9 @@ import asyncio
 
 from fastapi import APIRouter, HTTPException
 
-from maicro.api.schemas import AskRequest, AskResponse, IngestResponse
-from maicro.core.config import settings
-from maicro.services.qa_service import ask_question
+from api.schemas import AskRequest, AskResponse, IngestResponse
+from core.config import settings
+from services.qa_service import ask_question
 
 router = APIRouter()
 
@@ -39,7 +39,7 @@ async def ask(req: AskRequest):
 @router.post("/ingest/discord", response_model=IngestResponse)
 async def ingest_discord():
     """Fetch messages from Discord channels and ingest them."""
-    from maicro.core.ingestion import ingest_from_discord
+    from core.ingestion import ingest_from_discord
 
     if not settings.DISCORD_BOT_TOKEN:
         raise HTTPException(

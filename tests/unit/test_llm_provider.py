@@ -2,7 +2,7 @@ import types
 
 import pytest
 
-from maicro.core import llm_provider
+from core import llm_provider
 
 
 @pytest.fixture

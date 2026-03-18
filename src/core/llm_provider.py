@@ -7,7 +7,7 @@ from typing import Optional
 
 from langchain_core.runnables import RunnableLambda
 
-from maicro.core.config import settings
+from core.config import settings
 
 
 class ConfigurationError(ValueError):

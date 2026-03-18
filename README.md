@@ -116,10 +116,11 @@ curl -X POST http://localhost:8000/api/v1/ask \
 
 ```text
 .
-├── src/maicro/
+├── src/
 │   ├── api/           # HTTP routes & schemas
 │   ├── core/          # Configuration & Ingestion logic
-│   └── services/      # Business logic (QA system)
+│   ├── services/      # Business logic (QA system)
+│   └── main.py        # Application entrypoint
 ├── Dockerfile         # Optimized multi-stage build
 ├── docker-compose.yml # Service definitions
 └── pyproject.toml     # Metadata & dependencies

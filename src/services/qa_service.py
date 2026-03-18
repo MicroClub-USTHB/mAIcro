@@ -9,11 +9,11 @@ from langchain_core.documents import Document
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnableLambda, RunnablePassthrough
 
-from maicro.core.config import settings
-from maicro.core.hybrid_search import get_hybrid_retriever
-from maicro.core.llm_provider import ConfigurationError, get_llm
-from maicro.core.prompt_template import build_rag_prompt_template
-from maicro.core.vector_store import get_vector_store
+from core.config import settings
+from core.hybrid_search import get_hybrid_retriever
+from core.llm_provider import ConfigurationError, get_llm
+from core.prompt_template import build_rag_prompt_template
+from core.vector_store import get_vector_store
 
 logger = logging.getLogger(__name__)
 

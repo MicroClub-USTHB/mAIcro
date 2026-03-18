@@ -5,8 +5,8 @@ import httpx
 from langchain_core.documents import Document
 from qdrant_client.http.exceptions import UnexpectedResponse
 
-from maicro.core import ingestion
-from maicro.core.discord_fetcher import DiscordFetchError
+from core import ingestion
+from core.discord_fetcher import DiscordFetchError
 
 
 def test_docs_from_discord_messages_skips_blank_content_and_appends_embeds():

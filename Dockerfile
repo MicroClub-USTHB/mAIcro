@@ -1,4 +1,6 @@
-FROM ghcr.io/astral-sh/uv:0.10.11-python3.12-trixie AS builder
+FROM python:3.12-slim AS builder
+
+RUN pip install uv
 
 ENV UV_COMPILE_BYTECODE=1
 ENV UV_LINK_MODE=copy
@@ -28,4 +30,4 @@ COPY src ./src
 
 EXPOSE 8000
 
-CMD ["uvicorn", "maicro.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

@@ -33,7 +33,7 @@ uv run pytest
 Start the API locally:
 
 ```bash
-uv run uvicorn maicro.main:app --reload --host 0.0.0.0 --port 8000
+uv run uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 ## Pull requests

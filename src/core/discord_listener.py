@@ -8,13 +8,13 @@ from __future__ import annotations
 import asyncio
 import logging
 
-from maicro.core.ingestion import (
+from core.ingestion import (
     _docs_from_discord_messages,
     delete_message_from_store,
     ingest_documents,
     update_message_in_store,
 )
-from maicro.core.state import update_last_ingested_message_id
+from core.state import update_last_ingested_message_id
 
 logger = logging.getLogger(__name__)
 

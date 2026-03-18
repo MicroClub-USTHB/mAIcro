@@ -3,9 +3,9 @@ Audit module — handles startup reconciliation of offline edits and deletes.
 """
 
 
-from maicro.core.config import settings
-from maicro.core.discord_fetcher import fetch_channel_messages, fetch_message_by_id
-from maicro.core.state import get_last_ingested_message_id, ensure_channel_in_state, update_last_ingested_message_id
+from core.config import settings
+from core.discord_fetcher import fetch_channel_messages, fetch_message_by_id
+from core.state import get_last_ingested_message_id, ensure_channel_in_state, update_last_ingested_message_id
 import logging
 
 logger = logging.getLogger(__name__)
@@ -19,7 +19,7 @@ async def run_startup_audit(
 
     from qdrant_client.http import models as qdrant_models
 
-    from maicro.core.ingestion import (
+    from core.ingestion import (
         _bootstrap_collection,
         _docs_from_discord_messages,
         delete_message_from_store,

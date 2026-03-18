@@ -2,9 +2,9 @@ import asyncio
 
 import httpx
 
-import maicro.api.routes as routes
-from maicro.services.qa_service import AskError
-from maicro.main import app
+import api.routes as routes
+from services.qa_service import AskError
+from main import app
 
 
 def request(method: str, path: str, **kwargs):
@@ -74,7 +74,7 @@ def test_ingest_discord_partial_response(monkeypatch):
             "total_documents": 5,
         }
 
-    import maicro.core.ingestion as ingestion
+    import core.ingestion as ingestion
 
     monkeypatch.setattr(ingestion, "ingest_from_discord", _fake_ingest)
 

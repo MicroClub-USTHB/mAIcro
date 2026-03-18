@@ -5,7 +5,7 @@ and pushes them into the Qdrant vector store.
 Supports one source:
   1. Discord messages (from the discord_fetcher)
 
-For startup audit (offline edit/delete reconciliation), see `maicro.core.audit`.
+For startup audit (offline edit/delete reconciliation), see `core.audit`.
 """
 
 import logging
@@ -14,14 +14,14 @@ from langchain_core.documents import Document
 from qdrant_client.http import models as qdrant_models
 from qdrant_client.http.exceptions import UnexpectedResponse
 
-from maicro.core.config import settings
-from maicro.core.discord_fetcher import DiscordFetchError, fetch_channel_messages
-from maicro.core.llm_provider import get_embeddings
-from maicro.core.state import get_last_ingested_message_id, update_last_ingested_message_id
-from maicro.core.vector_store import get_qdrant_client, get_vector_store
+from core.config import settings
+from core.discord_fetcher import DiscordFetchError, fetch_channel_messages
+from core.llm_provider import get_embeddings
+from core.state import get_last_ingested_message_id, update_last_ingested_message_id
+from core.vector_store import get_qdrant_client, get_vector_store
 
 # Re-export run_startup_audit for backward compatibility
-from maicro.core.audit import run_startup_audit
+from core.audit import run_startup_audit
 
 __all__ = ["ingest_documents", "ingest_from_discord", "run_startup_audit"]
 

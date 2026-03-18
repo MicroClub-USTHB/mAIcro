@@ -11,11 +11,11 @@ from qdrant_client.http import models as qdrant_models
 from langchain_core.documents import Document
 from langchain_core.retrievers import RetrieverLike
 
-from maicro.core.config import settings
-from maicro.core.llm_provider import get_embeddings
+from core.config import settings
+from core.llm_provider import get_embeddings
 
 def _get_qdrant_client():
-    from maicro.core.vector_store import get_qdrant_client
+    from core.vector_store import get_qdrant_client
     return get_qdrant_client()
 
 logger = logging.getLogger(__name__)

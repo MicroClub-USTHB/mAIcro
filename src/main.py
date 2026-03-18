@@ -5,11 +5,11 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from maicro.api.error_handlers import register_exception_handlers
-from maicro.api.routes import router
-from maicro.core.config import settings
-from maicro.core.discord_listener import run_discord_listener
-from maicro.core.ingestion import ingest_from_discord, run_startup_audit
+from api.error_handlers import register_exception_handlers
+from api.routes import router
+from core.config import settings
+from core.discord_listener import run_discord_listener
+from core.ingestion import ingest_from_discord, run_startup_audit
 import logging
 
 logging.basicConfig(
@@ -61,4 +61,4 @@ register_exception_handlers(app)
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run("maicro.main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

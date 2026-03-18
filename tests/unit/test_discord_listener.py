@@ -11,7 +11,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from maicro.core import discord_listener
+from core import discord_listener
 
 
 # ---------------------------------------------------------------------------
@@ -139,7 +139,7 @@ def test_message_to_dict_produces_expected_shape():
 def test_run_discord_listener_returns_early_without_token(caplog):
     """Missing token must log an error and return without connecting."""
     import logging
-    with caplog.at_level(logging.ERROR, logger="maicro.core.discord_listener"):
+    with caplog.at_level(logging.ERROR, logger="core.discord_listener"):
         asyncio.run(discord_listener.run_discord_listener("", ["111"]))
     assert any("DISCORD_BOT_TOKEN" in r.message for r in caplog.records)
 
@@ -147,6 +147,6 @@ def test_run_discord_listener_returns_early_without_token(caplog):
 def test_run_discord_listener_returns_early_without_channels(caplog):
     """Missing channel list must log an error and return without connecting."""
     import logging
-    with caplog.at_level(logging.ERROR, logger="maicro.core.discord_listener"):
+    with caplog.at_level(logging.ERROR, logger="core.discord_listener"):
         asyncio.run(discord_listener.run_discord_listener("some-token", []))
     assert any("No channel IDs" in r.message for r in caplog.records)
