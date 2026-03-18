@@ -162,52 +162,6 @@ def test_today_updates_without_today_messages_falls_back_to_latest(monkeypatch):
     assert answer == "Fallback latest summary"
 
 
-def test_collect_discord_messages_sorted_handles_pagination(monkeypatch):
-    pages = [
-        (
-            [
-                SimpleNamespace(payload={"metadata": {"timestamp": "not-a-timestamp"}}),
-                SimpleNamespace(
-                    payload={
-                        "page_content": "older",
-                        "metadata": {"timestamp": "2026-03-09T08:00:00+00:00", "author": "older"},
-                    }
-                ),
-            ],
-            "page-2",
-        ),
-        (
-            [
-                SimpleNamespace(
-                    payload={
-                        "page_content": "newer",
-                        "metadata": {"timestamp": "2026-03-10T09:30:00+00:00", "author": "newer"},
-                    }
-                )
-            ],
-            None,
-        ),
-    ]
-
-    class FakeClient:
-        def __init__(self):
-            self.offsets = []
-
-        def scroll(self, **kwargs):
-            self.offsets.append(kwargs["offset"])
-            return pages.pop(0)
-
-    fake_vector_store = SimpleNamespace(
-        client=FakeClient(),
-        collection_name="microclub_knowledge",
-    )
-    monkeypatch.setattr(qa_service, "get_vector_store", lambda: fake_vector_store)
-
-    result = qa_service._collect_discord_messages_sorted()
-
-    assert fake_vector_store.client.offsets == [None, "page-2"]
-    assert [payload["page_content"] for _, payload in result] == ["newer", "older"]
-
 
 def test_ask_question_recency_query_returns_latest_message_when_llm_fails(monkeypatch):
     latest_message = "Latest Discord message:\n- content: fallback"

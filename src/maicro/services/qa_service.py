@@ -235,7 +235,7 @@ def _latest_discord_message() -> str | None:
         scroll_filter=_build_discord_filter(),
         order_by=qdrant_models.OrderBy(
             key="metadata.timestamp",
-            direction=qdrant_models.Direction.Desc,
+            direction=qdrant_models.Direction.DESC,
         ),
         with_payload=True,
         with_vectors=False,
@@ -285,7 +285,7 @@ def _today_discord_messages(reference_date) -> list[dict]:
             scroll_filter=_build_discord_filter(),
             order_by=qdrant_models.OrderBy(
                 key="metadata.timestamp",
-                direction=qdrant_models.Direction.Desc,
+                direction=qdrant_models.Direction.DESC,
             ),
             with_payload=True,
             with_vectors=False,
