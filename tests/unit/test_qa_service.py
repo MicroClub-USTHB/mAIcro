@@ -228,8 +228,8 @@ def test_ask_question_errors_when_qdrant_is_locked(monkeypatch):
     monkeypatch.setattr(qa_service, "get_llm", lambda: RunnableLambda(lambda _prompt: "ignored"))
     monkeypatch.setattr(
         qa_service,
-        "get_vector_store",
-        lambda: (_ for _ in ()).throw(
+        "get_hybrid_retriever",
+        lambda k=6: (_ for _ in ()).throw(
             RuntimeError("Storage already accessed by another instance of Qdrant client")
         ),
     )
@@ -245,12 +245,11 @@ def test_ask_question_missing_collection_raises_config_error(monkeypatch):
         def invoke(self, _query):
             raise RuntimeError("Collection microclub_knowledge not found")
 
-    class FakeVectorStore:
-        def as_retriever(self, **_kwargs):
-            return FakeRetriever()
+    def fake_hybrid_retriever(k=6):
+        return FakeRetriever()
 
     monkeypatch.setattr(qa_service, "get_llm", lambda: RunnableLambda(lambda _prompt: "ignored"))
-    monkeypatch.setattr(qa_service, "get_vector_store", lambda: FakeVectorStore())
+    monkeypatch.setattr(qa_service, "get_hybrid_retriever", fake_hybrid_retriever)
     monkeypatch.setattr(
         qa_service,
         "build_rag_prompt_template",

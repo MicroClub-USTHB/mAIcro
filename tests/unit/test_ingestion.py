@@ -38,6 +38,10 @@ def test_ingest_documents_bootstraps_missing_collection(monkeypatch):
     documents = [Document(page_content="Release planning", metadata={"source": "json_file"})]
     bootstrapped = {}
 
+    class FakeClient:
+        def collection_exists(self, name: str) -> bool:
+            return False  # Simulate missing collection
+
     class BrokenVectorStore:
         def add_documents(self, _documents):
             raise RuntimeError("Collection microclub_knowledge not found")
@@ -67,6 +71,7 @@ def test_ingest_documents_bootstraps_missing_collection(monkeypatch):
 
     getter = VectorStoreGetter()
 
+    monkeypatch.setattr(ingestion, "get_qdrant_client", lambda: FakeClient())
     monkeypatch.setattr(ingestion, "get_vector_store", getter)
     monkeypatch.setattr(
         ingestion,
@@ -83,13 +88,17 @@ def test_ingest_documents_bootstraps_missing_collection(monkeypatch):
 
     assert count == 1
     assert bootstrapped["vector_size"] == 4
-    assert getter.cache_clears == 1
+    assert getter.cache_clears == 2  # cache cleared twice: once for index check, once after bootstrap
     assert working_store.added == documents
 
 
 def test_ingest_documents_bootstraps_missing_collection_when_qdrant_returns_404(monkeypatch):
     documents = [Document(page_content="Release planning", metadata={"source": "json_file"})]
     bootstrapped = {}
+
+    class FakeClient:
+        def collection_exists(self, name: str) -> bool:
+            return False  # Simulate missing collection
 
     class BrokenVectorStore:
         def add_documents(self, _documents):
@@ -125,6 +134,7 @@ def test_ingest_documents_bootstraps_missing_collection_when_qdrant_returns_404(
 
     getter = VectorStoreGetter()
 
+    monkeypatch.setattr(ingestion, "get_qdrant_client", lambda: FakeClient())
     monkeypatch.setattr(ingestion, "get_vector_store", getter)
     monkeypatch.setattr(
         ingestion,
@@ -141,7 +151,7 @@ def test_ingest_documents_bootstraps_missing_collection_when_qdrant_returns_404(
 
     assert count == 1
     assert bootstrapped["vector_size"] == 4
-    assert getter.cache_clears == 1
+    assert getter.cache_clears == 2  # cache cleared twice: once for index check, once after bootstrap
     assert working_store.added == documents
 
 
@@ -155,6 +165,9 @@ def test_ingest_documents_ignores_missing_collection_during_duplicate_check(monk
     bootstrapped = {}
 
     class FakeClient:
+        def collection_exists(self, name: str) -> bool:
+            return False  # Simulate missing collection
+            
         def count(self, **_kwargs):
             raise UnexpectedResponse(
                 status_code=404,
@@ -209,7 +222,7 @@ def test_ingest_documents_ignores_missing_collection_during_duplicate_check(monk
 
     assert count == 1
     assert bootstrapped["vector_size"] == 4
-    assert getter.cache_clears == 1
+    assert getter.cache_clears == 2  # cache cleared twice: once for index check, once after bootstrap
     assert working_store.added == documents
 
 
