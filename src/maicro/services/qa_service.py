@@ -41,7 +41,12 @@ _QUESTION_REWRITES: list[tuple[re.Pattern[str], str]] = [
     (re.compile(r"\bgonna\b", re.IGNORECASE), "going to"),
     (re.compile(r"\bthe\s+we\s+have\b", re.IGNORECASE), "do we have"),
 ]
-_TEMPORAL_KEYWORDS_PATTERN = re.compile(r"\b(today|tomorrow|yesterday|this week|next week)\b", re.IGNORECASE)
+_TEMPORAL_KEYWORDS_PATTERN = re.compile(
+    r"\b(today|tomorrow|yesterday|this week|next week)\b", re.IGNORECASE
+)
+
+# Maximum messages fetched for "today's updates" — keeps the prompt bounded.
+_TODAY_MESSAGES_LIMIT = 50
 
 
 def _is_missing_collection_error(message: str) -> bool:
@@ -176,59 +181,57 @@ def _parse_iso_timestamp(value: str) -> datetime | None:
         return None
 
 
+def _build_discord_filter():
+    """Return a Qdrant filter that restricts results to Discord messages."""
+    from qdrant_client.http import models as qdrant_models
+
+    return qdrant_models.Filter(
+        must=[
+            qdrant_models.FieldCondition(
+                key="metadata.source",
+                match=qdrant_models.MatchValue(value="discord"),
+            )
+        ]
+    )
+
+
 def _latest_discord_message() -> str | None:
-    """Return a deterministic response for the latest Discord message in storage."""
+    """Return the single most-recent Discord message using server-side ordering.
+
+    Replaces the old full-scan approach: instead of pulling all points into
+    Python memory and sorting there, we ask Qdrant to order by timestamp
+    descending and return only the first record.  This is O(log N) on the
+    server and transfers exactly one point over the wire.
+    """
     from qdrant_client.http import models as qdrant_models
 
     vector_store = get_vector_store()
     client = vector_store.client
     collection_name = vector_store.collection_name
 
-    next_offset = None
-    latest_payload = None
-    latest_dt = None
+    # order_by with desc direction was introduced in Qdrant 1.8.
+    # With limit=1 we fetch only the single latest point — no pagination needed.
+    points, _ = client.scroll(
+        collection_name=collection_name,
+        scroll_filter=_build_discord_filter(),
+        order_by=qdrant_models.OrderBy(
+            key="metadata.timestamp",
+            direction=qdrant_models.Direction.Desc,
+        ),
+        with_payload=True,
+        with_vectors=False,
+        limit=1,
+    )
 
-    while True:
-        points, next_offset = client.scroll(
-            collection_name=collection_name,
-            scroll_filter=qdrant_models.Filter(
-                must=[
-                    qdrant_models.FieldCondition(
-                        key="metadata.source",
-                        match=qdrant_models.MatchValue(value="discord"),
-                    )
-                ]
-            ),
-            with_payload=True,
-            with_vectors=False,
-            limit=256,
-            offset=next_offset,
-        )
-
-        for point in points:
-            payload = point.payload or {}
-            metadata = payload.get("metadata") or {}
-            timestamp = str(metadata.get("timestamp") or "")
-            dt = _parse_iso_timestamp(timestamp)
-            if dt is None:
-                continue
-            if latest_dt is None or dt > latest_dt:
-                latest_dt = dt
-                latest_payload = payload
-
-        if next_offset is None:
-            break
-
-    if not latest_payload:
+    if not points:
         return None
 
-    metadata = latest_payload.get("metadata") or {}
+    payload = points[0].payload or {}
+    metadata = payload.get("metadata") or {}
     author = metadata.get("author") or "unknown"
     timestamp = metadata.get("timestamp") or "unknown"
     channel_id = metadata.get("channel_id") or "unknown"
-    text = str(latest_payload.get("page_content") or "").strip()
-    if not text:
-        text = "No text content."
+    text = str(payload.get("page_content") or "").strip() or "No text content."
 
     return (
         f"Latest Discord message:\n"
@@ -239,55 +242,66 @@ def _latest_discord_message() -> str | None:
     )
 
 
-def _collect_discord_messages_sorted() -> list[tuple[datetime, dict]]:
+def _today_discord_messages(reference_date) -> list[dict]:
+    """Return today's Discord messages, sorted newest-first, via Qdrant ordering.
+
+    Key changes vs. the old implementation:
+    - Sorting is done by Qdrant (order_by DESC) — no in-process sort.
+    - We stop fetching as soon as we've scrolled past today's date, so we
+      never load the entire collection into memory.
+    - Results are capped at _TODAY_MESSAGES_LIMIT to bound prompt size.
+    """
     from qdrant_client.http import models as qdrant_models
 
     vector_store = get_vector_store()
     client = vector_store.client
     collection_name = vector_store.collection_name
 
+    results: list[dict] = []
     next_offset = None
-    items: list[tuple[datetime, dict]] = []
 
-    while True:
+    while len(results) < _TODAY_MESSAGES_LIMIT:
         points, next_offset = client.scroll(
             collection_name=collection_name,
-            scroll_filter=qdrant_models.Filter(
-                must=[
-                    qdrant_models.FieldCondition(
-                        key="metadata.source",
-                        match=qdrant_models.MatchValue(value="discord"),
-                    )
-                ]
+            scroll_filter=_build_discord_filter(),
+            order_by=qdrant_models.OrderBy(
+                key="metadata.timestamp",
+                direction=qdrant_models.Direction.Desc,
             ),
             with_payload=True,
             with_vectors=False,
-            limit=256,
+            # Fetch in pages of 64; small enough to stay lean, large enough to
+            # avoid round-trip overhead on busy channels.
+            limit=64,
             offset=next_offset,
         )
+
+        if not points:
+            break
 
         for point in points:
             payload = point.payload or {}
             metadata = payload.get("metadata") or {}
-            timestamp = str(metadata.get("timestamp") or "")
-            dt = _parse_iso_timestamp(timestamp)
+            timestamp_str = str(metadata.get("timestamp") or "")
+            dt = _parse_iso_timestamp(timestamp_str)
+
             if dt is None:
                 continue
-            items.append((dt, payload))
+
+            # Because we're iterating newest-first, the moment we see a point
+            # older than today we can stop — everything after will be older too.
+            if dt.date() < reference_date:
+                return results
+
+            if dt.date() == reference_date:
+                results.append(payload)
+                if len(results) >= _TODAY_MESSAGES_LIMIT:
+                    return results
 
         if next_offset is None:
             break
 
-    items.sort(key=lambda x: x[0], reverse=True)
-    return items
-
-
-def _today_discord_messages(reference_date) -> list[dict]:
-    return [
-        payload
-        for dt, payload in _collect_discord_messages_sorted()
-        if dt.date() == reference_date
-    ]
+    return results
 
 
 def _answer_from_latest_message_with_llm(question: str, latest_message: str, llm) -> str:
@@ -355,7 +369,6 @@ def ask_question(question: str) -> str:
                 llm = get_llm()
                 return _answer_from_latest_message_with_llm(question, latest, llm)
         except Exception:
-            # Fall back to deterministic latest message, then standard RAG path.
             if latest:
                 return latest
 
@@ -365,7 +378,6 @@ def ask_question(question: str) -> str:
         raise AskConfigError(str(exc)) from exc
 
     try:
-        # Use hybrid retriever
         retriever = get_hybrid_retriever(k=6)
     except ConfigurationError as exc:
         raise AskConfigError(str(exc)) from exc
@@ -404,7 +416,7 @@ def ask_question(question: str) -> str:
             for i, doc in enumerate(docs):
                 logger.info(f"[DEBUG] Doc {i}: {doc.page_content[:200]}... | metadata: {doc.metadata}")
             return docs
-        
+
         return (
             {
                 "context": RunnableLambda(lambda q: _debug_retrieve(q))
@@ -428,4 +440,3 @@ def ask_question(question: str) -> str:
                 "Ingest Discord data first (POST /api/v1/ingest/discord)."
             ) from exc
         raise AskError(_format_llm_error(exc)) from exc
-
