@@ -1,8 +1,6 @@
-<p align="center">
-  <img width="969" height="547" alt="image" src="https://github.com/user-attachments/assets/93708b00-4dbb-4005-a9b2-629bd82080aa" />
-</p>
-
 # mAIcro: Open Source Knowledge Service
+
+<img width="1536" height="1024" alt="Logo moderne de mAIcro" src="https://github.com/user-attachments/assets/43280cad-5584-4c87-8bf6-6dde49d1d14a" />
 
 **mAIcro** is a professional, stateless AI service designed to centralize organizational knowledge and answer questions via RAG (Retrieval-Augmented Generation).
 
