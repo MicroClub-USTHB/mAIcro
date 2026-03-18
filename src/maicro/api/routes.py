@@ -10,7 +10,7 @@ from maicro.api.schemas import AskRequest, AskResponse, IngestResponse
 from maicro.core.config import settings
 from maicro.services.qa_service import ask_question
 
-router = APIRouter(prefix=settings.API_V1_STR)
+router = APIRouter()
 
 
 @router.get("/health")

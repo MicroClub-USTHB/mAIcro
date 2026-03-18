@@ -1,11 +1,12 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import List, Optional
 
+
 class Settings(BaseSettings):
     PROJECT_NAME: str = "mAIcro"
     VERSION: str = "0.1.0"
     API_V1_STR: str = "/api/v1"
-    
+
     ORG_NAME: str = "MicroClub"
     ORG_DESCRIPTION: Optional[str] = "A generic organization using mAIcro"
     CORE_RULES: Optional[List[str]] = None
@@ -34,6 +35,9 @@ class Settings(BaseSettings):
         if not self.DISCORD_CHANNEL_IDS:
             return []
 
-        return [cid.strip() for cid in self.DISCORD_CHANNEL_IDS.split(",") if cid.strip()]
+        return [
+            cid.strip() for cid in self.DISCORD_CHANNEL_IDS.split(",") if cid.strip()
+        ]
+
 
 settings = Settings()
