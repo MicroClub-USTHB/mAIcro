@@ -17,6 +17,7 @@ Start the local dev service:
 uv sync --dev
 cp .env.example .env
 # Edit .env and set at least:
+# API_KEY=...
 # LLM_PROVIDER=google
 # GEMINI_API_KEY=...
 # QDRANT_URL=http://localhost:6333

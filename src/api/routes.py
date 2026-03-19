@@ -4,10 +4,11 @@ mAIcro REST API routes.
 
 import asyncio
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 
 from api.schemas import AskRequest, AskResponse, IngestResponse
 from core.config import settings
+from core.security import require_api_key
 from services.qa_service import ask_question
 
 router = APIRouter()
@@ -24,7 +25,7 @@ async def health():
     }
 
 
-@router.post("/ask", response_model=AskResponse)
+@router.post("/ask", response_model=AskResponse, dependencies=[Depends(require_api_key)])
 async def ask(req: AskRequest):
     """Answer a question using the RAG chain."""
     if not req.question.strip():
@@ -36,7 +37,11 @@ async def ask(req: AskRequest):
     return AskResponse(question=req.question, answer=answer)
 
 
-@router.post("/ingest/discord", response_model=IngestResponse)
+@router.post(
+    "/ingest/discord",
+    response_model=IngestResponse,
+    dependencies=[Depends(require_api_key)],
+)
 async def ingest_discord():
     """Fetch messages from Discord channels and ingest them."""
     from core.ingestion import ingest_from_discord

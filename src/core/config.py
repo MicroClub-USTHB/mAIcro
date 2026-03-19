@@ -6,6 +6,10 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "mAIcro"
     VERSION: str = "0.1.0"
     API_V1_STR: str = "/api/v1"
+    API_AUTH_ENABLED: bool = True
+    API_KEY: Optional[str] = None
+    API_KEY_HEADER: str = "X-API-Key"
+    EXPOSE_API_DOCS: bool = False
 
     ORG_NAME: str = "MicroClub"
     ORG_DESCRIPTION: Optional[str] = "A generic organization using mAIcro"
@@ -52,4 +56,3 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
-

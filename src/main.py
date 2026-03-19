@@ -51,8 +51,11 @@ app = FastAPI(
         f"AI knowledge service for {settings.ORG_NAME}. "
         "Ingest data from Discord or JSON files, then ask questions."
     ),
-    docs_url=f"{settings.API_V1_STR}/docs",
-    redoc_url=f"{settings.API_V1_STR}/redoc",
+    docs_url=f"{settings.API_V1_STR}/docs" if settings.EXPOSE_API_DOCS else None,
+    redoc_url=f"{settings.API_V1_STR}/redoc" if settings.EXPOSE_API_DOCS else None,
+    openapi_url=(
+        f"{settings.API_V1_STR}/openapi.json" if settings.EXPOSE_API_DOCS else None
+    ),
 )
 
 

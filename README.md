@@ -59,16 +59,18 @@ docker compose build
 docker compose up -d
 ```
 
-Fill in `.env` (see the [Configuration](#configuration) section below). The API is available at `http://localhost:8000`. Interactive docs at `http://localhost:8000/api/v1/docs`.
+Fill in `.env` (see the [Configuration](#configuration) section below). The API is available at `http://localhost:8000`. Interactive docs are disabled by default and can be enabled with `EXPOSE_API_DOCS=true`.
 
 ### Ingest and query
 
 ```bash
 # Sync Discord message history to Qdrant
-curl -X POST http://localhost:8000/api/v1/ingest/discord
+curl -X POST http://localhost:8000/api/v1/ingest/discord \
+  -H "X-API-Key: ${API_KEY}"
 
 # Ask a question
 curl -X POST http://localhost:8000/api/v1/ask \
+  -H "X-API-Key: ${API_KEY}" \
   -H "Content-Type: application/json" \
   -d '{"question":"When is the next event?"}'
 ```
@@ -83,6 +85,7 @@ All settings are environment variables loaded from `.env` via `pydantic-settings
 
 | Variable              | Description                                                      |
 | --------------------- | ---------------------------------------------------------------- |
+| `API_KEY`             | Shared secret required for protected API routes                  |
 | `GEMINI_API_KEY`      | Google Gemini API key (used for LLM + embeddings)                |
 | `QDRANT_URL`          | Qdrant Cloud instance URL (e.g. `https://xxxxx.cloud.qdrant.io`) |
 | `QDRANT_API_KEY`      | Qdrant Cloud API key                                             |
@@ -93,6 +96,9 @@ All settings are environment variables loaded from `.env` via `pydantic-settings
 
 | Variable                   | Default                               | Description                                                        |
 | -------------------------- | ------------------------------------- | ------------------------------------------------------------------ |
+| `API_AUTH_ENABLED`         | `true`                                | Protects sensitive routes with the shared API key                  |
+| `API_KEY_HEADER`           | `X-API-Key`                           | Header used to send the shared API key                             |
+| `EXPOSE_API_DOCS`          | `false`                               | Enables `/docs`, `/redoc`, and the OpenAPI schema when set to true |
 | `ORG_NAME`                 | `MicroClub`                           | Organization name embedded in the AI system prompt                 |
 | `ORG_DESCRIPTION`          | `A generic organization using mAIcro` | Organization description                                           |
 | `GOOGLE_MODEL_NAME`        | `gemini-2.5-flash`                    | Gemini model used for answering                                    |
@@ -228,12 +234,14 @@ curl http://localhost:8000/api/v1/health
 
 # Ask a question
 curl -X POST http://localhost:8000/api/v1/ask \
+  -H "X-API-Key: ${API_KEY}" \
   -H "Content-Type: application/json" \
   -d '{"question":"What are the rules for joining a workshop?"}'
 # {"question":"What are the rules for joining a workshop?","answer":"..."}
 
 # Trigger ingestion
-curl -X POST http://localhost:8000/api/v1/ingest/discord
+curl -X POST http://localhost:8000/api/v1/ingest/discord \
+  -H "X-API-Key: ${API_KEY}"
 # {"status":"ok","documents_ingested":42,"details":{"channels":{"123456789":42},"errors":{}}}
 ```
 
@@ -251,7 +259,7 @@ Includes mAIcro and a local Qdrant instance for testing without cloud credential
 
 ### Production
 
-The published GHCR image is public; anyone can pull and run it with no authentication needed.
+The published GHCR image is public, but the API itself now expects an `API_KEY` for sensitive routes by default.
 
 ```bash
 docker compose up -d
