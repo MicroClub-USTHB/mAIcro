@@ -2,13 +2,20 @@
 Audit module — handles startup reconciliation of offline edits and deletes.
 """
 
+import logging
 
 from core.config import settings
 from core.discord_fetcher import fetch_channel_messages, fetch_message_by_id
 from core.state import get_last_ingested_message_id, ensure_channel_in_state, update_last_ingested_message_id
-import logging
 
 logger = logging.getLogger(__name__)
+
+
+def _message_id_to_int(message_id: str) -> int | None:
+    try:
+        return int(str(message_id))
+    except (TypeError, ValueError):
+        return None
 
 
 async def run_startup_audit(
@@ -127,15 +134,17 @@ async def run_startup_audit(
                 limit=window,
                 before=last_message_id,
             )
-            
+
             discord_index: dict[str, str] = {}
+            recent_lookup: dict[str, dict] = {}
             cursor_id_str = str(cursor_msg["id"])
             discord_index[cursor_id_str] = cursor_content
-            
+
             for msg in recent:
                 docs = _docs_from_discord_messages([msg], channel_id)
                 msg_id_str = str(msg["id"])
                 discord_index[msg_id_str] = docs[0].page_content if docs else ""
+                recent_lookup[msg_id_str] = msg
             if not discord_index:
                 logger.info(
                     "[audit] Channel %s: no messages before cursor to audit",
@@ -143,6 +152,14 @@ async def run_startup_audit(
                 )
                 summary[channel_id] = {"deleted": 0, "updated": 0, "skipped": "no_messages_before_cursor"}
                 continue
+
+            cursor_id_int = _message_id_to_int(cursor_id_str)
+            audited_ids = [
+                parsed_id
+                for parsed_id in (_message_id_to_int(msg_id) for msg_id in discord_index)
+                if parsed_id is not None
+            ]
+            audit_lower_bound = min(audited_ids) if audited_ids else cursor_id_int
             try:
                 _bootstrap_collection()
             except Exception as e:
@@ -191,6 +208,22 @@ async def run_startup_audit(
                     if not msg_id:
                         continue
                     msg_id_str = str(msg_id)
+                    msg_id_int = _message_id_to_int(msg_id_str)
+                    if msg_id_int is None:
+                        logger.debug("[audit] Skipping non-numeric message_id=%s", msg_id_str)
+                        continue
+                    if (
+                        audit_lower_bound is not None
+                        and cursor_id_int is not None
+                        and not audit_lower_bound <= msg_id_int <= cursor_id_int
+                    ):
+                        logger.debug(
+                            "[audit] Skipping message_id=%s outside audited window [%s, %s]",
+                            msg_id_str,
+                            audit_lower_bound,
+                            cursor_id_int,
+                        )
+                        continue
                     logger.debug(
                         "[audit] Checking msg_id=%s (type=%s) - in discord_index=%s",
                         msg_id_str, type(msg_id), msg_id_str in discord_index,
@@ -218,9 +251,7 @@ async def run_startup_audit(
                         if msg_id_str == cursor_id_str:
                             msg_dict = cursor_msg
                         else:
-                            msg_dict = next(
-                                (m for m in recent if str(m["id"]) == msg_id_str), None
-                            )
+                            msg_dict = recent_lookup.get(msg_id_str)
                         if msg_dict:
                             update_message_in_store(msg_dict, channel_id)
                             updated += 1
