@@ -19,6 +19,7 @@ lib64/
 parts/
 sdist/
 var/
+local_qdrant/
 wheels/
 share/python-wheels/
 *.egg-info/
@@ -205,3 +206,6 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Qdrant
+qdrant_storage/

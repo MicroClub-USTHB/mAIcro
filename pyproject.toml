@@ -1,14 +1,50 @@
-[tool.poetry]
-name = "miacro"
-version = "0.1.0"
-description = "Community Intelligence Service"
-authors = ["MicroClub-USTHB"]
+[build-system]
+requires = ["hatchling>=1.25.0"]
+build-backend = "hatchling.build"
 
-[tool.poetry.dependencies]
-python = ">=3.9,<3.12"
-fastapi = "*"
-uvicorn = "*"
-pydantic = "*"
-psycopg2-binary = "*"
-sqlalchemy = "*"
-openai = "*"
+[project]
+name = "maicro"
+version = "0.1.0"
+description = "mAIcro is an open-source AI service designed to help organizations centralize information and answer questions based on their internal data."
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+    { name = "mAIcro Contributors" }
+]
+keywords = ["ai", "rag", "fastapi", "qdrant", "discord", "langchain"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Framework :: FastAPI",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+dependencies = [
+    "discord-py>=2.4.0",
+    "fastapi>=0.115.0",
+    "google-generativeai>=0.8.6",
+    "langchain>=1.2.10",
+    "langchain-community>=0.4.1",
+    "langchain-core>=1.2.17",
+    "langchain-google-genai>=4.2.1",
+    "langchain-qdrant>=1.1.0",
+    "pydantic-settings>=2.13.1",
+    "python-dotenv>=1.2.2",
+    "qdrant-client>=1.17.0",
+    "uvicorn>=0.35.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.0",
+]

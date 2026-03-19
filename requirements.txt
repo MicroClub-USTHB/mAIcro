@@ -1,6 +1,0 @@
-fastapi
-uvicorn
-pydantic
-psycopg2-binary
-sqlalchemy
-openai

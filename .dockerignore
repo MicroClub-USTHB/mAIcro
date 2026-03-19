@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+.env
+local_qdrant/
+var/
+data/
+.git/
+.github/
+.pytest_cache/
+tests/

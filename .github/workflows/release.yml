@@ -1,0 +1,91 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository_owner }}/maicro
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha,prefix=sha-,format=short
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64,linux/arm64
+          provenance: true
+          sbom: true
+
+      - name: Generate attestation
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.build.outputs.digest }}
+          push-to-registry: true
+
+      - name: Make GHCR package public
+        if: always()
+        env:
+          GITHUB_API_URL: https://api.github.com
+          OWNER: ${{ github.repository_owner }}
+          PACKAGE: maicro
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          echo "Checking owner type for $OWNER"
+          owner_type=$(curl -sS -H "Authorization: Bearer $TOKEN" "$GITHUB_API_URL/users/$OWNER" | python -c "import sys, json; print(json.load(sys.stdin).get('type',''))")
+          echo "Owner type: $owner_type"
+          if [ "$owner_type" = "Organization" ]; then
+            url="$GITHUB_API_URL/orgs/$OWNER/packages/container/$PACKAGE/visibility"
+          else
+            url="$GITHUB_API_URL/user/packages/container/$PACKAGE/visibility"
+          fi
+          echo "Making package public via $url"
+          resp=$(curl -sS -o /dev/stderr -w "%{http_code}" -X PUT -H "Accept: application/vnd.github+json" -H "Authorization: Bearer $TOKEN" "$url" -d '{"visibility":"public"}')
+          if [ "$resp" -ge 200 ] && [ "$resp" -lt 300 ]; then
+            echo "Package visibility set to public"
+          else
+            echo "Failed to set package visibility (status $resp). You may need to make the package public manually in the GitHub UI or grant the workflow token additional permissions." >&2
+            exit 0
+          fi
