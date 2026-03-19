@@ -24,38 +24,44 @@
 
 ## Features
 
-- **RAG-Powered Q&A** — Google Gemini with hybrid search (semantic vector + keyword BM25) and Reciprocal Rank Fusion
-- **Real-Time Discord Sync** — Gateway WebSocket listener handles message CREATE, EDIT, and DELETE instantly
-- **Temporal Query Intelligence** — Understands "what happened today?" and "what was the last message?"
-- **Question Normalization** — Rewrites slang ("whats", "wanna", "gonna"), augments time-aware queries
-- **Startup Audit** — Reconciles offline Discord edits and deletes on every restart
-- **Stateless Architecture** — All cursors and vectors live in Qdrant Cloud — no local database
-- **Rate Limit Resilience** — Exponential backoff with jitter + optional secondary LLM fallback
-- **Production-Ready** — Multi-stage Docker, health checks, graceful reconnection
+- **RAG-Powered Q&A**: Google Gemini with hybrid search (semantic vector + keyword BM25) and Reciprocal Rank Fusion
+- **Real-Time Discord Sync**: Gateway WebSocket listener handles message CREATE, EDIT, and DELETE instantly
+- **Temporal Query Intelligence**: Understands "what happened today?" and "what was the last message?"
+- **Question Normalization**: Rewrites slang ("whats", "wanna", "gonna"), augments time-aware queries
+- **Startup Audit**: Reconciles offline Discord edits and deletes on every restart
+- **Stateless Architecture**: All cursors and vectors live in Qdrant Cloud; no local database
+- **Rate Limit Resilience**: Exponential backoff with jitter plus optional secondary LLM fallback
+- **Production-Ready**: Multi-stage Docker, health checks, graceful reconnection
 
 ---
 
 ## Quick Start
 
-### 1. Clone and configure
+There are two easy ways to run mAIcro locally. The recommended method does NOT require cloning the repository, it pulls and runs the published GHCR image.
+
+1. Run the published GHCR image (recommended)
+
+Pull & run the image directly with Docker:
+
+```bash
+docker pull ghcr.io/microclub-usthb/maicro:latest
+docker run --env-file .env -p 8000:8000 ghcr.io/microclub-usthb/maicro:latest
+```
+
+2. Clone and run from source (for development or when you want to build locally)
 
 ```bash
 git clone https://github.com/MicroClub-USTHB/mAIcro.git
 cd mAIcro
 cp .env.example .env
-```
-
-Fill in `.env` — see the [Configuration](#configuration) section below.
-
-### 2. Run
-
-```bash
+# Uncomment the `build: .` line in docker-compose.yml, then:
+docker compose build
 docker compose up -d
 ```
 
-The API is available at `http://localhost:8000`. Interactive docs at `http://localhost:8000/api/v1/docs`.
+Fill in `.env` (see the [Configuration](#configuration) section below). The API is available at `http://localhost:8000`. Interactive docs at `http://localhost:8000/api/v1/docs`.
 
-### 3. Ingest and query
+### Ingest and query
 
 ```bash
 # Sync Discord message history to Qdrant
@@ -90,7 +96,7 @@ All settings are environment variables loaded from `.env` via `pydantic-settings
 | `ORG_NAME`                 | `MicroClub`                           | Organization name embedded in the AI system prompt                 |
 | `ORG_DESCRIPTION`          | `A generic organization using mAIcro` | Organization description                                           |
 | `GOOGLE_MODEL_NAME`        | `gemini-2.5-flash`                    | Gemini model used for answering                                    |
-| `SECONDARY_GEMINI_API_KEY` | —                                     | Fallback Gemini key when the primary is rate-limited               |
+| `SECONDARY_GEMINI_API_KEY` | (none)                                | Fallback Gemini key when the primary is rate-limited               |
 | `LLM_FALLBACK_ENABLED`     | `false`                               | Set to `true` to enable automatic fallback to the secondary key    |
 | `COLLECTION_NAME`          | `microclub_knowledge`                 | Name of the Qdrant collection                                      |
 | `HYBRID_SEARCH_ALPHA`      | `0.7`                                 | Blend weight between vector and keyword search (1.0 = vector only) |
@@ -197,11 +203,11 @@ sequenceDiagram
 
 On startup, the app runs three tasks in parallel:
 
-1. **Audit** (`run_startup_audit`) — Fetches the last 200 messages before the cursor from each channel. Compares them against Qdrant. Deletes any points that no longer exist in Discord (offline deletes) and updates content that was edited offline.
+1. **Audit** (`run_startup_audit`): Fetches the last 200 messages before the cursor from each channel. Compares them against Qdrant. Deletes any points that no longer exist in Discord (offline deletes) and updates content that was edited offline.
 
-2. **Historical Ingest** (`ingest_from_discord`) — Fetches all messages _after_ each channel's cursor via the Discord REST API. Converts them to LangChain Documents, generates embeddings, and upserts them into Qdrant.
+2. **Historical Ingest** (`ingest_from_discord`): Fetches all messages _after_ each channel's cursor via the Discord REST API. Converts them to LangChain Documents, generates embeddings, and upserts them into Qdrant.
 
-3. **Real-Time Listener** (`run_discord_listener`) — Connects to the Discord Gateway via WebSocket. Listens for `MESSAGE_CREATE`, `MESSAGE_DELETE`, and `MESSAGE_UPDATE` events. Ingests, deletes, or updates Qdrant points accordingly. Automatically reconnects with exponential backoff on disconnect.
+3. **Real-Time Listener** (`run_discord_listener`): Connects to the Discord Gateway via WebSocket. Listens for `MESSAGE_CREATE`, `MESSAGE_DELETE`, and `MESSAGE_UPDATE` events. Ingests, deletes, or updates Qdrant points accordingly. Automatically reconnects with exponential backoff on disconnect.
 
 ---
 
@@ -245,30 +251,43 @@ Includes mAIcro and a local Qdrant instance for testing without cloud credential
 
 ### Production
 
+The published GHCR image is public; anyone can pull and run it with no authentication needed.
+
 ```bash
 docker compose up -d
 ```
 
-Set `QDRANT_URL` and `QDRANT_API_KEY` to your Qdrant Cloud instance. The multi-stage Dockerfile produces a lean production image with health checks.
+This pulls `ghcr.io/microclub-usthb/maicro:latest` by default. To use a specific tagged image instead:
+
+```bash
+MAICRO_IMAGE=ghcr.io/microclub-usthb/maicro:sha-<hash> docker compose up -d
+```
+
+Or pull & run directly with Docker:
+
+```bash
+docker pull ghcr.io/microclub-usthb/maicro:latest
+docker run --env-file .env -p 8000:8000 ghcr.io/microclub-usthb/maicro:latest
+```
 
 ---
 
 ## Use Cases
 
-- **Student Clubs** — Event info, team opportunities, FAQs, and workshop announcements
-- **Online Communities** — Consolidated announcements and member documentation
-- **Companies** — Internal policies, documentation, and knowledge bases
-- **NGOs** — Instant access to mission-critical organizational information
-- **Developer Communities** — Technical Q&A grounded in shared resources and past discussions
+- **Student Clubs**: Event info, team opportunities, FAQs, and workshop announcements
+- **Online Communities**: Consolidated announcements and member documentation
+- **Companies**: Internal policies, documentation, and knowledge bases
+- **NGOs**: Instant access to mission-critical organizational information
+- **Developer Communities**: Technical Q&A grounded in shared resources and past discussions
 
 ---
 
 ## Future Extensions
 
-- **Agentic AI** — Automate workflows, summarize announcements, notify members about events
-- **Multi-Platform Integration** — Notion, Slack, Google Docs, and other knowledge platforms
-- **Web Dashboard** — Visual knowledge browser and query analytics
-- **Third-Party API** — Public API for external tool integrations
+- **Agentic AI**: Automate workflows, summarize announcements, notify members about events
+- **Multi-Platform Integration**: Notion, Slack, Google Docs, and other knowledge platforms
+- **Web Dashboard**: Visual knowledge browser and query analytics
+- **Third-Party API**: Public API for external tool integrations
 
 ---
 

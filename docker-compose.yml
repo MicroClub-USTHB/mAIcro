@@ -1,7 +1,10 @@
 services:
   maicro:
-    # image: ghcr.io/microclub-usthb/maicro:latest #latest build from GHCR
-    build: . # local source (Dockerfile)
+    image: ${MAICRO_IMAGE:-ghcr.io/microclub-usthb/maicro:latest}
+
+    # If you want to build from the local source instead, uncomment the following build key
+    # build: .
+
     container_name: maicro
     ports:
       - "8000:8000"
@@ -9,7 +12,11 @@ services:
       - .env
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      test:
+        [
+          "CMD-SHELL",
+          'python -c ''import urllib.request as u; u.urlopen("http://localhost:8000/api/v1/health")'' || exit 1',
+        ]
       interval: 30s
       timeout: 10s
       retries: 3
