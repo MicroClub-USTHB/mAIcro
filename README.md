@@ -61,6 +61,8 @@ docker compose up -d
 
 Fill in `.env` (see the [Configuration](#configuration) section below). The API is available at `http://localhost:8000`. Interactive docs at `http://localhost:8000/api/v1/docs`.
 
+If you are calling the API from a browser-based frontend on another origin, set `CORS_ORIGINS` to the allowed frontend origins.
+
 ### Ingest and query
 
 ```bash
@@ -93,6 +95,7 @@ All settings are environment variables loaded from `.env` via `pydantic-settings
 
 | Variable                   | Default                               | Description                                                        |
 | -------------------------- | ------------------------------------- | ------------------------------------------------------------------ |
+| `CORS_ORIGINS`             | (none)                                | Comma-separated frontend origins allowed by browser CORS           |
 | `ORG_NAME`                 | `MicroClub`                           | Organization name embedded in the AI system prompt                 |
 | `ORG_DESCRIPTION`          | `A generic organization using mAIcro` | Organization description                                           |
 | `GOOGLE_MODEL_NAME`        | `gemini-2.5-flash`                    | Gemini model used for answering                                    |

@@ -6,6 +6,7 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "mAIcro"
     VERSION: str = "0.1.0"
     API_V1_STR: str = "/api/v1"
+    CORS_ORIGINS: Optional[str] = None
 
     ORG_NAME: str = "MicroClub"
     ORG_DESCRIPTION: Optional[str] = "A generic organization using mAIcro"
@@ -50,6 +51,17 @@ class Settings(BaseSettings):
             cid.strip() for cid in self.DISCORD_CHANNEL_IDS.split(",") if cid.strip()
         ]
 
+    @property
+    def cors_origin_list(self) -> List[str]:
+        """Parse comma-separated CORS origins from CORS_ORIGINS."""
+        if not self.CORS_ORIGINS:
+            return []
+
+        return [
+            origin.strip()
+            for origin in self.CORS_ORIGINS.split(",")
+            if origin.strip()
+        ]
+
 
 settings = Settings()
-
