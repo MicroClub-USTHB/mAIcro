@@ -34,7 +34,9 @@ def _resolve_model_name(*, secondary: bool) -> str:
 def _build_google_llm(*, secondary: bool):
     from langchain_google_genai import ChatGoogleGenerativeAI
 
-    api_key = settings.SECONDARY_GEMINI_API_KEY if secondary else settings.GEMINI_API_KEY
+    api_key = (
+        settings.SECONDARY_GEMINI_API_KEY if secondary else settings.GEMINI_API_KEY
+    )
     if not api_key:
         missing_key = "SECONDARY_GEMINI_API_KEY" if secondary else "GEMINI_API_KEY"
         raise ConfigurationError(f"{missing_key} not found in .env.")
@@ -139,6 +141,5 @@ def get_embeddings():
         )
 
     return GoogleGenerativeAIEmbeddings(
-        model="models/gemini-embedding-001",
-        google_api_key=settings.GEMINI_API_KEY
+        model="models/gemini-embedding-001", google_api_key=settings.GEMINI_API_KEY
     )

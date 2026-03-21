@@ -28,7 +28,6 @@ __all__ = ["ingest_documents", "ingest_from_discord", "run_startup_audit"]
 logger = logging.getLogger(__name__)
 
 
-
 def _is_missing_collection_error(message: str) -> bool:
     """Return True when an exception message indicates the Qdrant collection is missing."""
     if not message:
@@ -37,7 +36,9 @@ def _is_missing_collection_error(message: str) -> bool:
     collection = settings.COLLECTION_NAME.lower()
     if collection not in lowered:
         return False
-    return any(needle in lowered for needle in ("doesn't exist", "does not exist", "not found"))
+    return any(
+        needle in lowered for needle in ("doesn't exist", "does not exist", "not found")
+    )
 
 
 def _is_missing_collection_exception(exc: Exception) -> bool:
@@ -45,21 +46,23 @@ def _is_missing_collection_exception(exc: Exception) -> bool:
     if isinstance(exc, UnexpectedResponse):
         if exc.status_code != 404:
             return False
-        return _is_missing_collection_error(exc.content.decode("utf-8", errors="ignore"))
+        return _is_missing_collection_error(
+            exc.content.decode("utf-8", errors="ignore")
+        )
     return _is_missing_collection_error(str(exc))
 
 
 def _bootstrap_collection() -> None:
     """Create the Qdrant collection (if missing) and clear vector-store cache."""
     client = get_qdrant_client()
-    
+
     # Check if collection already exists
     if client.collection_exists(settings.COLLECTION_NAME):
         # Collection exists - just ensure indexes are created
         _ensure_collection_indexes(client)
         get_vector_store.cache_clear()
         return
-    
+
     # Collection doesn't exist - need to get embedding size
     embedding = get_embeddings()
     vector_size = len(embedding.embed_query("collection bootstrap"))
@@ -69,7 +72,7 @@ def _bootstrap_collection() -> None:
 
 def _ensure_collection_indexes(client) -> None:
     """Ensure payload indexes exist on the collection.
-    
+
     Qdrant Cloud requires explicit payload indexes for filtered queries.
     """
     # Ensure payload indexes exist (required by Qdrant Cloud for filtered queries)
@@ -136,7 +139,6 @@ def _docs_from_discord_messages(
         docs.append(Document(page_content=page_content, metadata=metadata))
 
     return docs
-
 
 
 def _ensure_collection_exists(vector_size: int) -> None:
@@ -232,7 +234,6 @@ def ingest_documents(documents: list[Document], filter_duplicates: bool = True) 
     return len(documents)
 
 
-
 def _filter_by_message(channel_id: str, message_id: str) -> qdrant_models.Filter:
     """Build a Qdrant payload filter matching a specific (channel_id, message_id) pair."""
     return qdrant_models.Filter(
@@ -284,7 +285,9 @@ def _check_duplicate_message_ids(documents: list[Document]) -> set[str]:
     return existing_ids
 
 
-def _filter_duplicate_documents(documents: list[Document]) -> tuple[list[Document], int]:
+def _filter_duplicate_documents(
+    documents: list[Document],
+) -> tuple[list[Document], int]:
     """
     Filter out documents that already exist in the vector store based on message_id.
     Returns a tuple of (filtered_documents, duplicate_count).
@@ -338,7 +341,9 @@ def delete_message_from_store(channel_id: str, message_id: str) -> int:
         )
         logger.debug(
             "[ingestion] deleted %d point(s) for message_id=%s channel=%s",
-            n, message_id, channel_id,
+            n,
+            message_id,
+            channel_id,
         )
     return n
 
@@ -378,21 +383,20 @@ async def ingest_from_discord(limit_per_channel: int = 200) -> dict:
                 limit=None,
                 after=last_message_id,
             )
-            
+
             if not messages:
                 summary[channel_id] = 0
                 continue
-                
+
             docs = _docs_from_discord_messages(messages, channel_id)
             count = ingest_documents(docs)
             summary[channel_id] = count
             total += count
-            
-           
+
             if messages:
                 newest_message = messages[-1] if last_message_id else messages[0]
                 update_last_ingested_message_id(channel_id, newest_message["id"])
-                
+
         except DiscordFetchError as exc:
             if exc.status_code == 403:
                 errors[channel_id] = (

@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 
 from langchain_core.documents import Document
 from langchain_core.output_parsers import StrOutputParser
-from langchain_core.runnables import RunnableLambda, RunnablePassthrough
+from langchain_core.runnables import RunnableLambda
 
 from core.config import settings
 from core.hybrid_search import get_hybrid_retriever
@@ -46,8 +46,8 @@ _TEMPORAL_KEYWORDS_PATTERN = re.compile(
 )
 
 # Maximum messages fetched for "today's updates" — keeps the prompt bounded.
-_CONTEXT_CHAR_BUDGET = 6_000   
-_DOC_CHAR_LIMIT      = 1_200   
+_CONTEXT_CHAR_BUDGET = 6_000
+_DOC_CHAR_LIMIT = 1_200
 _TODAY_MESSAGES_LIMIT = 50
 
 
@@ -58,10 +58,14 @@ def _is_missing_collection_error(message: str) -> bool:
     collection = settings.COLLECTION_NAME.lower()
     if collection not in lowered:
         return False
-    return any(needle in lowered for needle in ("doesn't exist", "does not exist", "not found"))
+    return any(
+        needle in lowered for needle in ("doesn't exist", "does not exist", "not found")
+    )
 
 
-def _invoke_with_timeout(chain, question: str, timeout_seconds: int = _ASK_TIMEOUT_SECONDS) -> str:
+def _invoke_with_timeout(
+    chain, question: str, timeout_seconds: int = _ASK_TIMEOUT_SECONDS
+) -> str:
     """Run model invocation with a hard timeout to avoid long-hanging requests."""
     executor = ThreadPoolExecutor(max_workers=1)
     future = executor.submit(chain.invoke, question)
@@ -91,10 +95,13 @@ def _format_llm_error(exc: Exception) -> str:
             "Check your provider billing/quota, wait a bit, then retry."
         )
 
-    if "api key" in lowered or "permission denied" in lowered or "unauthorized" in lowered:
+    if (
+        "api key" in lowered
+        or "permission denied" in lowered
+        or "unauthorized" in lowered
+    ):
         return (
-            "Invalid API credentials. "
-            "Verify your provider API key(s) in the .env file."
+            "Invalid API credentials. Verify your provider API key(s) in the .env file."
         )
 
     return f"Request failed: {message}"
@@ -120,7 +127,9 @@ def _format_context(docs: list[Document]) -> str:
         if total_chars + len(chunk) > _CONTEXT_CHAR_BUDGET:
             logger.debug(
                 "[context] Budget exhausted after %d/%d docs (%d chars used).",
-                i - 1, len(docs), total_chars,
+                i - 1,
+                len(docs),
+                total_chars,
             )
             break
 
@@ -136,6 +145,7 @@ def _normalize_question(question: str) -> str:
         normalized = pattern.sub(replacement, normalized)
     return normalized
 
+
 def _doc_key(doc: Document) -> tuple[str, str, str]:
     """Stable deduplication key for a retrieved document."""
     metadata = doc.metadata or {}
@@ -144,7 +154,10 @@ def _doc_key(doc: Document) -> tuple[str, str, str]:
     content_fp = " ".join((doc.page_content or "").split())[:200]
     return (source, message_id, content_fp)
 
-def _merge_docs(primary: list[Document], secondary: list[Document], limit: int) -> list[Document]:
+
+def _merge_docs(
+    primary: list[Document], secondary: list[Document], limit: int
+) -> list[Document]:
     merged: list[Document] = []
     seen: set[tuple[str, str, str]] = set()
 
@@ -323,7 +336,9 @@ def _today_discord_messages(reference_date) -> list[dict]:
     return results
 
 
-def _answer_from_latest_message_with_llm(question: str, latest_message: str, llm) -> str:
+def _answer_from_latest_message_with_llm(
+    question: str, latest_message: str, llm
+) -> str:
     """Use the LLM to phrase an answer grounded in the latest Discord message."""
     prompt = (
         "You are answering a question about the latest Discord message.\n"
@@ -336,7 +351,9 @@ def _answer_from_latest_message_with_llm(question: str, latest_message: str, llm
     return _invoke_with_timeout(chain, prompt)
 
 
-def _answer_today_updates_with_llm(question: str, messages: list[dict], llm, reference_date: str) -> str:
+def _answer_today_updates_with_llm(
+    question: str, messages: list[dict], llm, reference_date: str
+) -> str:
     rows = []
     for item in messages[:8]:
         metadata = item.get("metadata") or {}
@@ -349,8 +366,7 @@ def _answer_today_updates_with_llm(question: str, messages: list[dict], llm, ref
         "Use only the provided message list and do not invent details.\n"
         f"Reference date (UTC): {reference_date}\n\n"
         f"User question: {question}\n\n"
-        "Messages:\n"
-        + "\n".join(rows)
+        "Messages:\n" + "\n".join(rows)
     )
     chain = RunnableLambda(lambda p: _extract_llm_content(llm.invoke(p)))
     return _invoke_with_timeout(chain, prompt)
@@ -433,7 +449,9 @@ def ask_question(question: str) -> str:
             docs = _retrieve_with_rewrites(q, retriever, k=6)
             logger.info(f"[DEBUG] Retrieved {len(docs)} documents for question: {q}")
             for i, doc in enumerate(docs):
-                logger.info(f"[DEBUG] Doc {i}: {doc.page_content[:200]}... | metadata: {doc.metadata}")
+                logger.info(
+                    f"[DEBUG] Doc {i}: {doc.page_content[:200]}... | metadata: {doc.metadata}"
+                )
             return docs
 
         return (

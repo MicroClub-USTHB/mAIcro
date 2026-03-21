@@ -7,9 +7,8 @@ so these tests work without discord.py installed.
 """
 
 import asyncio
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
-import pytest
 
 from core import discord_listener
 
@@ -34,10 +33,13 @@ VALID_MESSAGE = {
 # handle_message_create — channel filtering
 # ---------------------------------------------------------------------------
 
+
 def test_handle_message_create_ignores_wrong_channel(monkeypatch):
     """Messages in unwatched channels must not trigger ingestion."""
     called = []
-    monkeypatch.setattr(discord_listener, "ingest_documents", lambda docs: called.append(docs) or 0)
+    monkeypatch.setattr(
+        discord_listener, "ingest_documents", lambda docs: called.append(docs) or 0
+    )
 
     asyncio.run(
         discord_listener.handle_message_create(
@@ -103,6 +105,7 @@ def test_handle_message_create_skips_blank_content(monkeypatch):
 # _message_to_dict — shape contract
 # ---------------------------------------------------------------------------
 
+
 def test_message_to_dict_produces_expected_shape():
     """_message_to_dict must produce the same dict shape as the REST API returns."""
     from datetime import datetime, timezone
@@ -136,9 +139,11 @@ def test_message_to_dict_produces_expected_shape():
 # run_discord_listener — guard clauses
 # ---------------------------------------------------------------------------
 
+
 def test_run_discord_listener_returns_early_without_token(caplog):
     """Missing token must log an error and return without connecting."""
     import logging
+
     with caplog.at_level(logging.ERROR, logger="core.discord_listener"):
         asyncio.run(discord_listener.run_discord_listener("", ["111"]))
     assert any("DISCORD_BOT_TOKEN" in r.message for r in caplog.records)
@@ -147,6 +152,7 @@ def test_run_discord_listener_returns_early_without_token(caplog):
 def test_run_discord_listener_returns_early_without_channels(caplog):
     """Missing channel list must log an error and return without connecting."""
     import logging
+
     with caplog.at_level(logging.ERROR, logger="core.discord_listener"):
         asyncio.run(discord_listener.run_discord_listener("some-token", []))
     assert any("No channel IDs" in r.message for r in caplog.records)

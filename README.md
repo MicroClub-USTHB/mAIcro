@@ -5,6 +5,8 @@
 
 # mAIcro: Open Source Knowledge Service
 
+Built and maintained by the **Dev Department of MicroClub**, the computer science club at **USTHB** (University of Science and Technology Houari Boumediene, Algiers).
+
 **mAIcro** is an open-source AI service designed to centralize organizational knowledge and answer questions via RAG (Retrieval-Augmented Generation). It features a stateless architecture optimized for cloud deployment, automatic Discord integration, and production-ready performance.
 
 ## Table of Contents
