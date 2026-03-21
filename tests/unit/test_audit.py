@@ -66,7 +66,9 @@ def test_startup_audit_does_not_delete_messages_older_than_audited_window(monkey
     async def fake_fetch_channel_messages(**_kwargs):
         return recent_messages
 
-    monkeypatch.setattr(audit, "get_last_ingested_message_id", lambda _channel_id: "1005")
+    monkeypatch.setattr(
+        audit, "get_last_ingested_message_id", lambda _channel_id: "1005"
+    )
     monkeypatch.setattr(audit, "fetch_message_by_id", fake_fetch_message_by_id)
     monkeypatch.setattr(audit, "fetch_channel_messages", fake_fetch_channel_messages)
     monkeypatch.setattr(audit, "ensure_channel_in_state", lambda _channel_id: None)
@@ -77,7 +79,9 @@ def test_startup_audit_does_not_delete_messages_older_than_audited_window(monkey
         "delete_message_from_store",
         lambda _channel_id, message_id: deleted_ids.append(message_id) or 1,
     )
-    monkeypatch.setattr(ingestion, "update_message_in_store", lambda *_args, **_kwargs: 0)
+    monkeypatch.setattr(
+        ingestion, "update_message_in_store", lambda *_args, **_kwargs: 0
+    )
 
     summary = asyncio.run(audit.run_startup_audit([channel_id], window=2))
 
@@ -124,7 +128,9 @@ def test_startup_audit_deletes_missing_message_within_audited_window(monkeypatch
     async def fake_fetch_channel_messages(**_kwargs):
         return recent_messages
 
-    monkeypatch.setattr(audit, "get_last_ingested_message_id", lambda _channel_id: "1005")
+    monkeypatch.setattr(
+        audit, "get_last_ingested_message_id", lambda _channel_id: "1005"
+    )
     monkeypatch.setattr(audit, "fetch_message_by_id", fake_fetch_message_by_id)
     monkeypatch.setattr(audit, "fetch_channel_messages", fake_fetch_channel_messages)
     monkeypatch.setattr(audit, "ensure_channel_in_state", lambda _channel_id: None)
@@ -135,7 +141,9 @@ def test_startup_audit_deletes_missing_message_within_audited_window(monkeypatch
         "delete_message_from_store",
         lambda _channel_id, message_id: deleted_ids.append(message_id) or 1,
     )
-    monkeypatch.setattr(ingestion, "update_message_in_store", lambda *_args, **_kwargs: 0)
+    monkeypatch.setattr(
+        ingestion, "update_message_in_store", lambda *_args, **_kwargs: 0
+    )
 
     summary = asyncio.run(audit.run_startup_audit([channel_id], window=2))
 

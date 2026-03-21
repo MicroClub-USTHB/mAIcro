@@ -6,7 +6,11 @@ import logging
 
 from core.config import settings
 from core.discord_fetcher import fetch_channel_messages, fetch_message_by_id
-from core.state import get_last_ingested_message_id, ensure_channel_in_state, update_last_ingested_message_id
+from core.state import (
+    get_last_ingested_message_id,
+    ensure_channel_in_state,
+    update_last_ingested_message_id,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +26,6 @@ async def run_startup_audit(
     channel_ids: list[str],
     window: int = 1000,
 ) -> dict:
-
 
     from qdrant_client.http import models as qdrant_models
 
@@ -54,7 +57,11 @@ async def run_startup_audit(
                     "[audit] Channel %s: no cursor found or channel never ingested, skipping audit",
                     channel_id,
                 )
-                summary[channel_id] = {"deleted": 0, "updated": 0, "skipped": "new_channel"}
+                summary[channel_id] = {
+                    "deleted": 0,
+                    "updated": 0,
+                    "skipped": "new_channel",
+                }
                 continue
 
             cursor_msg = await fetch_message_by_id(
@@ -66,7 +73,8 @@ async def run_startup_audit(
             if cursor_msg is None:
                 logger.info(
                     "[audit] Channel %s: cursor message %s was deleted, searching for new cursor",
-                    channel_id, last_message_id,
+                    channel_id,
+                    last_message_id,
                 )
                 recent_messages: list[dict] = await fetch_channel_messages(
                     bot_token=settings.DISCORD_BOT_TOKEN,
@@ -77,7 +85,9 @@ async def run_startup_audit(
                     new_cursor = recent_messages[0]["id"]
                     logger.info(
                         "[audit] Channel %s: updating cursor from %s to %s",
-                        channel_id, last_message_id, new_cursor,
+                        channel_id,
+                        last_message_id,
+                        new_cursor,
                     )
                     update_last_ingested_message_id(channel_id, new_cursor)
                     last_message_id = new_cursor
@@ -87,12 +97,16 @@ async def run_startup_audit(
                         "[audit] Channel %s: no messages found in channel at all",
                         channel_id,
                     )
-                    summary[channel_id] = {"deleted": 0, "updated": 0, "skipped": "channel_empty"}
+                    summary[channel_id] = {
+                        "deleted": 0,
+                        "updated": 0,
+                        "skipped": "channel_empty",
+                    }
                     continue
-            
+
             # Check if cursor message was edited - get stored content from Qdrant
             cursor_id_str = str(cursor_msg["id"])
-            
+
             # Get the stored content for cursor from Qdrant
             cursor_stored_content = ""
             try:
@@ -113,10 +127,12 @@ async def run_startup_audit(
                 )
                 cursor_points, _ = search_result
                 if cursor_points:
-                    cursor_stored_content = (cursor_points[0].payload.get("page_content") or "").strip()
+                    cursor_stored_content = (
+                        cursor_points[0].payload.get("page_content") or ""
+                    ).strip()
             except Exception as e:
                 logger.warning(f"[audit] Failed to get cursor content from Qdrant: {e}")
-            
+
             cursor_docs = _docs_from_discord_messages([cursor_msg], channel_id)
             cursor_content = cursor_docs[0].page_content if cursor_docs else ""
 
@@ -127,7 +143,7 @@ async def run_startup_audit(
                 )
                 update_message_in_store(cursor_msg, channel_id)
                 updated += 1
-            
+
             recent: list[dict] = await fetch_channel_messages(
                 bot_token=settings.DISCORD_BOT_TOKEN,
                 channel_id=channel_id,
@@ -150,13 +166,19 @@ async def run_startup_audit(
                     "[audit] Channel %s: no messages before cursor to audit",
                     channel_id,
                 )
-                summary[channel_id] = {"deleted": 0, "updated": 0, "skipped": "no_messages_before_cursor"}
+                summary[channel_id] = {
+                    "deleted": 0,
+                    "updated": 0,
+                    "skipped": "no_messages_before_cursor",
+                }
                 continue
 
             cursor_id_int = _message_id_to_int(cursor_id_str)
             audited_ids = [
                 parsed_id
-                for parsed_id in (_message_id_to_int(msg_id) for msg_id in discord_index)
+                for parsed_id in (
+                    _message_id_to_int(msg_id) for msg_id in discord_index
+                )
                 if parsed_id is not None
             ]
             audit_lower_bound = min(audited_ids) if audited_ids else cursor_id_int
@@ -179,7 +201,9 @@ async def run_startup_audit(
             )
             logger.info(
                 "[audit] Channel %s: checking %d Qdrant points against %d messages before cursor",
-                channel_id, total_count_result.count, len(discord_index),
+                channel_id,
+                total_count_result.count,
+                len(discord_index),
             )
             all_points_filter = qdrant_models.Filter(
                 must=[
@@ -210,7 +234,9 @@ async def run_startup_audit(
                     msg_id_str = str(msg_id)
                     msg_id_int = _message_id_to_int(msg_id_str)
                     if msg_id_int is None:
-                        logger.debug("[audit] Skipping non-numeric message_id=%s", msg_id_str)
+                        logger.debug(
+                            "[audit] Skipping non-numeric message_id=%s", msg_id_str
+                        )
                         continue
                     if (
                         audit_lower_bound is not None
@@ -226,7 +252,9 @@ async def run_startup_audit(
                         continue
                     logger.debug(
                         "[audit] Checking msg_id=%s (type=%s) - in discord_index=%s",
-                        msg_id_str, type(msg_id), msg_id_str in discord_index,
+                        msg_id_str,
+                        type(msg_id),
+                        msg_id_str in discord_index,
                     )
                     if msg_id_str not in discord_index:
                         n = delete_message_from_store(channel_id, msg_id_str)
@@ -234,7 +262,8 @@ async def run_startup_audit(
                         if n:
                             logger.info(
                                 "[audit] deleted message_id=%s from channel %s (was deleted offline)",
-                                msg_id_str, channel_id,
+                                msg_id_str,
+                                channel_id,
                             )
                         else:
                             logger.debug(
@@ -257,7 +286,8 @@ async def run_startup_audit(
                             updated += 1
                             logger.info(
                                 "[audit] updated message_id=%s in channel %s (edited offline)",
-                                msg_id_str, channel_id,
+                                msg_id_str,
+                                channel_id,
                             )
 
                 if next_offset is None:
@@ -266,17 +296,27 @@ async def run_startup_audit(
 
             logger.info(
                 "[audit] Channel %s audit complete: deleted=%d, updated=%d",
-                channel_id, deleted, updated,
+                channel_id,
+                deleted,
+                updated,
             )
 
         except Exception as exc:
-            logger.warning("[audit] Unexpected error for channel %s: %s", channel_id, exc)
+            logger.warning(
+                "[audit] Unexpected error for channel %s: %s", channel_id, exc
+            )
             errors_list.append(str(exc))
 
-        summary[channel_id] = {"deleted": deleted, "updated": updated, "errors": errors_list}
+        summary[channel_id] = {
+            "deleted": deleted,
+            "updated": updated,
+            "errors": errors_list,
+        }
         logger.info(
             "[audit] channel=%s  deleted=%d  updated=%d",
-            channel_id, deleted, updated,
+            channel_id,
+            deleted,
+            updated,
         )
 
     return summary

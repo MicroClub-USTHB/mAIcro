@@ -90,7 +90,9 @@ def test_retrieve_with_rewrites_merges_when_rewrite_changes_query(monkeypatch):
                 return [original_doc]
             return [normalized_doc]
 
-    docs = qa_service._retrieve_with_rewrites("whats the we have today", FakeRetriever(), k=6)
+    docs = qa_service._retrieve_with_rewrites(
+        "whats the we have today", FakeRetriever(), k=6
+    )
 
     assert len(docs) == 2
     assert docs[0].page_content == "original result"
@@ -109,8 +111,21 @@ def test_augment_temporal_question_keeps_non_temporal_query():
 
 def test_today_updates_query_uses_llm_summary(monkeypatch):
     monkeypatch.setattr(qa_service, "_is_today_updates_query", lambda _q: True)
-    monkeypatch.setattr(qa_service, "_today_discord_messages", lambda reference_date: [{"metadata": {"timestamp": "2026-03-09T12:00:00+00:00", "author": "u"}, "page_content": "Meeting at 2pm"}])
-    monkeypatch.setattr(qa_service, "_invoke_with_timeout", lambda chain, question, timeout_seconds=30: chain.invoke(question))
+    monkeypatch.setattr(
+        qa_service,
+        "_today_discord_messages",
+        lambda reference_date: [
+            {
+                "metadata": {"timestamp": "2026-03-09T12:00:00+00:00", "author": "u"},
+                "page_content": "Meeting at 2pm",
+            }
+        ],
+    )
+    monkeypatch.setattr(
+        qa_service,
+        "_invoke_with_timeout",
+        lambda chain, question, timeout_seconds=30: chain.invoke(question),
+    )
 
     class FakeLLM:
         def invoke(self, _prompt):
@@ -136,7 +151,9 @@ def test_retrieve_with_rewrites_deduplicates_results():
         def invoke(self, _query):
             return [shared_doc]
 
-    docs = qa_service._retrieve_with_rewrites("whats the we have today", FakeRetriever(), k=6)
+    docs = qa_service._retrieve_with_rewrites(
+        "whats the we have today", FakeRetriever(), k=6
+    )
 
     assert len(docs) == 1
     assert docs[0].page_content == "same result"
@@ -144,8 +161,14 @@ def test_retrieve_with_rewrites_deduplicates_results():
 
 def test_today_updates_without_today_messages_falls_back_to_latest(monkeypatch):
     monkeypatch.setattr(qa_service, "_is_today_updates_query", lambda _q: True)
-    monkeypatch.setattr(qa_service, "_today_discord_messages", lambda reference_date: [])
-    monkeypatch.setattr(qa_service, "_latest_discord_message", lambda: "Latest Discord message:\n- content: fallback")
+    monkeypatch.setattr(
+        qa_service, "_today_discord_messages", lambda reference_date: []
+    )
+    monkeypatch.setattr(
+        qa_service,
+        "_latest_discord_message",
+        lambda: "Latest Discord message:\n- content: fallback",
+    )
     monkeypatch.setattr(
         qa_service,
         "_invoke_with_timeout",
@@ -160,7 +183,6 @@ def test_today_updates_without_today_messages_falls_back_to_latest(monkeypatch):
 
     answer = qa_service.ask_question("what do we have today")
     assert answer == "Fallback latest summary"
-
 
 
 def test_ask_question_recency_query_returns_latest_message_when_llm_fails(monkeypatch):
@@ -179,12 +201,16 @@ def test_ask_question_recency_query_returns_latest_message_when_llm_fails(monkey
 
 
 def test_ask_question_errors_when_qdrant_is_locked(monkeypatch):
-    monkeypatch.setattr(qa_service, "get_llm", lambda: RunnableLambda(lambda _prompt: "ignored"))
+    monkeypatch.setattr(
+        qa_service, "get_llm", lambda: RunnableLambda(lambda _prompt: "ignored")
+    )
     monkeypatch.setattr(
         qa_service,
         "get_hybrid_retriever",
         lambda k=6: (_ for _ in ()).throw(
-            RuntimeError("Storage already accessed by another instance of Qdrant client")
+            RuntimeError(
+                "Storage already accessed by another instance of Qdrant client"
+            )
         ),
     )
 
@@ -202,7 +228,9 @@ def test_ask_question_missing_collection_raises_config_error(monkeypatch):
     def fake_hybrid_retriever(k=6):
         return FakeRetriever()
 
-    monkeypatch.setattr(qa_service, "get_llm", lambda: RunnableLambda(lambda _prompt: "ignored"))
+    monkeypatch.setattr(
+        qa_service, "get_llm", lambda: RunnableLambda(lambda _prompt: "ignored")
+    )
     monkeypatch.setattr(qa_service, "get_hybrid_retriever", fake_hybrid_retriever)
     monkeypatch.setattr(
         qa_service,

@@ -47,4 +47,5 @@ pythonpath = ["src"]
 [dependency-groups]
 dev = [
     "pytest>=8.3.0",
+    "ruff>=0.9.3",
 ]

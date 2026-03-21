@@ -22,7 +22,7 @@ def get_last_ingested_message_id(channel_id: str) -> Optional[str]:
     """Get the last ingested message ID from Qdrant Cloud."""
     client = get_qdrant_client()
     point_id = _get_cursor_id(channel_id)
-    
+
     try:
         results = client.retrieve(
             collection_name=settings.COLLECTION_NAME,
@@ -34,7 +34,7 @@ def get_last_ingested_message_id(channel_id: str) -> Optional[str]:
             return results[0].payload.get("message_id")
     except Exception as e:
         logger.debug(f"[state] Failed to retrieve cursor for {channel_id}: {e}")
-    
+
     return None
 
 
@@ -47,7 +47,7 @@ def update_last_ingested_message_id(channel_id: str, message_id: str) -> None:
     """Update or create the last ingested message ID in Qdrant Cloud."""
     client = get_qdrant_client()
     point_id = _get_cursor_id(channel_id)
-    
+
     # We store cursors as special points with no vectors (or zero vectors)
     # and a 'source=ingestion_cursor' tag to easily filter them out if needed.
     client.upsert(
@@ -55,9 +55,9 @@ def update_last_ingested_message_id(channel_id: str, message_id: str) -> None:
         points=[
             qdrant_models.PointStruct(
                 id=point_id,
-                vector={},  # Empty dict for collections with named vectors? 
-                           # For our standard COSINE collection, we might need a dummy vector
-                           # or just use payload.
+                vector={},  # Empty dict for collections with named vectors?
+                # For our standard COSINE collection, we might need a dummy vector
+                # or just use payload.
                 payload={
                     "metadata": {
                         "channel_id": channel_id,

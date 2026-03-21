@@ -11,10 +11,11 @@ services:
     env_file:
       - .env
     volumes:
-      - ./src:/app/src # bind-mount source for hot reload
+      - ./src:/app/src 
+      - ./tests:/app/tests  
       - ./pyproject.toml:/app/pyproject.toml
       - ./uv.lock:/app/uv.lock
-      - /app/.venv # keep venv persistent inside container
+      - /app/.venv
     ports:
       - "8000:8000"
     command: >

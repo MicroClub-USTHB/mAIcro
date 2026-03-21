@@ -10,7 +10,9 @@ from main import app
 def request(method: str, path: str, **kwargs):
     async def _send():
         transport = httpx.ASGITransport(app=app)
-        async with httpx.AsyncClient(transport=transport, base_url="http://testserver") as client:
+        async with httpx.AsyncClient(
+            transport=transport, base_url="http://testserver"
+        ) as client:
             return await client.request(method, path, **kwargs)
 
     return asyncio.run(_send())

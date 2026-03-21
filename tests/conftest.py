@@ -1,6 +1,7 @@
 import pytest
 from core.config import settings
 
+
 @pytest.fixture(autouse=True)
 def mock_env_vars(monkeypatch):
     """Provide dummy environment variables for all tests to bypass strict Cloud-only checks."""

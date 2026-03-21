@@ -18,14 +18,14 @@ _indexes_ensured = False
 
 def _ensure_collection_with_indexes() -> None:
     """Ensure the Qdrant collection exists with proper indexes for filtering.
-    
+
     This runs only once to avoid repeated API calls.
     If collection doesn't exist, creates it with proper vector config from embeddings.
     """
     global _indexes_ensured
     if _indexes_ensured:
         return
-    
+
     client = get_qdrant_client()
     collection_name = settings.COLLECTION_NAME
 
@@ -43,7 +43,7 @@ def _ensure_collection_with_indexes() -> None:
             # Get the actual vector size from the embedding model
             test_vector = embedding.embed_query("test")
             vector_size = len(test_vector)
-            
+
             client.create_collection(
                 collection_name=collection_name,
                 vectors_config=qdrant_models.VectorParams(
@@ -51,7 +51,9 @@ def _ensure_collection_with_indexes() -> None:
                     distance=qdrant_models.Distance.COSINE,
                 ),
             )
-            logger.info(f"Created collection {collection_name} with vector size {vector_size}")
+            logger.info(
+                f"Created collection {collection_name} with vector size {vector_size}"
+            )
         except Exception as e:
             logger.warning(f"Could not create collection: {e}")
             # Let LangChain's QdrantVectorStore handle it
@@ -69,7 +71,7 @@ def _ensure_collection_with_indexes() -> None:
             )
         except Exception as e:
             logger.debug(f"Index creation for {field_name}: {e}")
-    
+
     # Enable Full-Text Index on page_content for keyword/BM25 search (hybrid search)
     try:
         logger.info("Creating full-text index on page_content")
@@ -86,7 +88,7 @@ def _ensure_collection_with_indexes() -> None:
         )
     except Exception as e:
         logger.warning(f"Full-text index creation for page_content: {e}")
-    
+
     _indexes_ensured = True
 
 
@@ -109,11 +111,13 @@ def get_vector_store() -> QdrantVectorStore:
     """Return a vector store backed by the singleton Qdrant client."""
     client = get_qdrant_client()
     collection_name = settings.COLLECTION_NAME
-    
+
     # Debug: Get collection info to understand the vector config
     try:
         collection_info = client.get_collection(collection_name)
-        logger.info(f"Collection {collection_name} vectors: {collection_info.vectors_config}")
+        logger.info(
+            f"Collection {collection_name} vectors: {collection_info.vectors_config}"
+        )
     except Exception as e:
         logger.warning(f"Could not get collection info: {e}")
 
@@ -139,10 +143,9 @@ def _close_qdrant_client_on_exit() -> None:
 
 
 # Import hybrid search functions from separate module
-from core.hybrid_search import (
+from core.hybrid_search import (  # noqa: E402
     hybrid_search,
     get_hybrid_retriever,
-    _reciprocal_rank_fusion,
 )
 
 __all__ = ["hybrid_search", "get_hybrid_retriever"]

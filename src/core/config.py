@@ -29,10 +29,9 @@ class Settings(BaseSettings):
     QDRANT_URL: Optional[str] = None
     QDRANT_API_KEY: Optional[str] = None
     COLLECTION_NAME: str = "microclub_knowledge"
-    
-    
-    HYBRID_SEARCH_ALPHA: float = 0.7  
-    HYBRID_SEARCH_RRF_K: int = 60   
+
+    HYBRID_SEARCH_ALPHA: float = 0.7
+    HYBRID_SEARCH_RRF_K: int = 60
 
     model_config = SettingsConfigDict(
         case_sensitive=True,
@@ -52,4 +51,3 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
-
