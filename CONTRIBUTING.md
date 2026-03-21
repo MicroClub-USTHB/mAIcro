@@ -17,14 +17,6 @@ mAIcro is designed as a focused, high-performance RAG (Retrieval-Augmented Gener
 *   **Documentation**: Improve clarity in READMEs, docstrings, or deployment guides.
 *   **Pull Requests**: Submit code changes for verified bugs or approved features.
 
-## What NOT to Contribute
-
-To maintain a clean scope and architectural integrity, we will not accept contributions that introduce:
-
-*   **Built-in Authentication**: Authentication must be handled at the deployment, proxy, or client level (e.g., Discord bot permissions). We explicitly reject custom user databases, password systems, or OAuth integrations within the core service.
-*   **Public API Assumptions**: Features that assume the service is directly exposed to the open internet (e.g., browser-based session management without an intermediate application layer).
-*   **Implicit State**: Global caches, local file-system dependencies, or in-memory state that cannot be replaced by external providers.
-
 ## Local Development
 
 mAIcro uses a single **Docker Compose** configuration for local development. We provide a **Makefile** to simplify common commands.
@@ -33,7 +25,6 @@ mAIcro uses a single **Docker Compose** configuration for local development. We 
 
 *   [Docker](https://www.docker.com/) and [Docker Compose](https://docs.docker.com/compose/)
 *   **Google Gemini API Key**: Required for LLM generation.
-*   **Qdrant URL & API Key**: Required for vector search.
 
 ### Setup
 
