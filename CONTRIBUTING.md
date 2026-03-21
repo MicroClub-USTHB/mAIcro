@@ -44,6 +44,11 @@ mAIcro uses a single **Docker Compose** configuration for local development. We 
 
 2.  Set required variables in `.env`:
     *   `GEMINI_API_KEY`: Your Google AI Studio API key.
+    *   `QDRANT_API_KEY`: Your Qdrant API key.
+    *   `QDRANT_URL`: Your Qdrant URL.
+    *   `DISCORD_BOT_TOKEN`: Your Discord bot token.
+    *   `DISCORD_CHANNEL_ID`: Your Discord client ID.
+    
 
 3.  Launch the development stack:
     ```bash
