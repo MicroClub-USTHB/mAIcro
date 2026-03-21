@@ -1,14 +1,5 @@
 # Security Policy
 
-## Supported Versions
-
-The following versions of **mAIcro** are currently supported with security updates:
-
-| Version | Supported          |
-| ------- | ------------------ |
-| v0.1.x  | :white_check_mark: |
-| < v0.1  | :x:                |
-
 ## Reporting a Vulnerability
 
 We take the security of mAIcro seriously. If you believe you have found a security vulnerability, please report it to us as soon as possible.
