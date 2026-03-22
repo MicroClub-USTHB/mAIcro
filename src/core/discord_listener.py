@@ -8,13 +8,15 @@ from __future__ import annotations
 import asyncio
 import logging
 
+from core.config import settings
+from core.discord_fetcher import fetch_channel_messages
 from core.ingestion import (
     _docs_from_discord_messages,
     delete_message_from_store,
     ingest_documents,
     update_message_in_store,
 )
-from core.state import update_last_ingested_message_id
+from core.state import get_last_ingested_message_id, update_last_ingested_message_id
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +34,17 @@ async def handle_message_create(message: dict, channel_ids: set[str]) -> None:
     if not docs:
         return
 
-    count = await asyncio.to_thread(ingest_documents, docs)
+    try:
+        count = await asyncio.to_thread(ingest_documents, docs)
+    except Exception as e:
+        logger.error(
+            "[listener] failed to ingest message_id=%s channel=%s: %s",
+            message["id"],
+            channel_id,
+            e,
+        )
+        return
+
     if count:
         update_last_ingested_message_id(channel_id, message["id"])
         logger.info("[listener] ingested %d doc(s) from channel %s", count, channel_id)
@@ -44,6 +56,8 @@ async def handle_message_delete(payload: dict, channel_ids: set[str]) -> None:
 
     Expected keys: channel_id, id (message_id).
     Deletes the corresponding Qdrant point(s) if the channel is watched.
+    If the deleted message was the ingestion cursor, advances the cursor to the
+    most recent remaining message to prevent data loss on restart.
     Exposed at module level so unit tests can call it without a real Discord client.
     """
     channel_id = payload.get("channel_id", "")
@@ -61,6 +75,35 @@ async def handle_message_delete(payload: dict, channel_ids: set[str]) -> None:
         message_id,
         channel_id,
     )
+
+    # Check if the deleted message was the ingestion cursor and update if needed
+    # to prevent data loss when messages are deleted and bot restarts
+    current_cursor = get_last_ingested_message_id(channel_id)
+    if current_cursor and str(current_cursor) == str(message_id):
+        logger.info(
+            "[listener] deleted message was cursor, finding new cursor for channel=%s",
+            channel_id,
+        )
+        if settings.DISCORD_BOT_TOKEN:
+            recent = await fetch_channel_messages(
+                bot_token=settings.DISCORD_BOT_TOKEN,
+                channel_id=channel_id,
+                limit=1,
+            )
+            if recent:
+                new_cursor = recent[0]["id"]
+                update_last_ingested_message_id(channel_id, new_cursor)
+                logger.info(
+                    "[listener] advanced cursor from %s to %s for channel=%s",
+                    message_id,
+                    new_cursor,
+                    channel_id,
+                )
+            else:
+                logger.warning(
+                    "[listener] deleted cursor message but no remaining messages in channel=%s",
+                    channel_id,
+                )
 
 
 async def handle_message_update(payload: dict, channel_ids: set[str]) -> None:
