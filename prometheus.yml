@@ -1,0 +1,13 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'maicro'
+    static_configs:
+      - targets: ['maicro:8000']
+    metrics_path: '/metrics'
+
+  - job_name: 'qdrant'
+    static_configs:
+      - targets: ['qdrant:6333']

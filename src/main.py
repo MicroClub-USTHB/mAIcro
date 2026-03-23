@@ -4,6 +4,7 @@ import asyncio
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from core.log import get_logger
 
 from api.error_handlers import register_exception_handlers
 from api.routes import router
@@ -12,13 +13,7 @@ from core.discord_listener import run_discord_listener
 from core.ingestion import ingest_from_discord, run_startup_audit
 import logging
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
-)
-
-logger = logging.getLogger(__name__)
-
+logger = get_logger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
