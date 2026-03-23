@@ -26,6 +26,8 @@ services:
       --reload-dir /app/src
     depends_on:
       - qdrant
+    networks:
+      - maicro-network
     healthcheck:
       test:
         ["CMD-SHELL", "curl -f http://localhost:8000/api/v1/health || exit 1"]
@@ -44,8 +46,49 @@ services:
       - "6334:6334"
     volumes:
       - qdrant_data:/qdrant/storage
+    networks:
+      - maicro-network
     healthcheck:
       disable: true
 
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus_dev
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    networks:
+      - maicro-network
+    depends_on:
+      - maicro
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana_dev
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    networks:
+      - maicro-network
+    depends_on:
+      - prometheus
+
 volumes:
   qdrant_data:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  maicro-network:
+    driver: bridge
