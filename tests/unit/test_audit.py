@@ -16,9 +16,10 @@ def _message(message_id: str, content: str) -> dict:
 
 
 def _point(message_id: str, channel_id: str, content: str):
+    timestamp = f"2026-03-10T08:0{message_id[-1]}:00+00:00"
     return SimpleNamespace(
         payload={
-            "page_content": f"[alice] {content}",
+            "page_content": f"[{timestamp}] [alice] {content}",
             "metadata": {
                 "channel_id": channel_id,
                 "message_id": message_id,

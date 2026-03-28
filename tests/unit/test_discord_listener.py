@@ -70,7 +70,7 @@ def test_handle_message_create_ingests_and_updates_state(monkeypatch):
     asyncio.run(discord_listener.handle_message_create(VALID_MESSAGE, WATCHED))
 
     assert len(ingested) == 1
-    assert ingested[0].page_content == "[alice] New sprint kick-off tomorrow at 10am"
+    assert ingested[0].page_content == "[2026-03-15T09:00:00+00:00] [alice] New sprint kick-off tomorrow at 10am"
     assert state_updates == [("111111111111111111", "999")]
 
 
