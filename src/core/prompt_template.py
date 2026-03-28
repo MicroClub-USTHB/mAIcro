@@ -55,7 +55,7 @@ def build_system_prompt() -> str:
     current_time = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
 
     return _BASE_TEMPLATE.format(
-        org_name=settings.PROJECT_NAME,  # Using settings.PROJECT_NAME as title
+        org_name=settings.ORG_NAME,
         org_description=settings.ORG_DESCRIPTION or "An organization using mAIcro.",
         core_rules=rules_block,
         current_time=current_time,

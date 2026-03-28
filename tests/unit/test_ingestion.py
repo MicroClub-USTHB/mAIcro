@@ -25,7 +25,8 @@ def test_docs_from_discord_messages_skips_blank_content_and_appends_embeds():
 
     assert len(docs) == 1
     assert (
-        docs[0].page_content == "[alice] Standup in 10 minutes\nAgenda\nSprint review"
+        docs[0].page_content
+        == "[2026-03-10T08:30:00+00:00] [alice] Standup in 10 minutes\nAgenda\nSprint review"
     )
     assert docs[0].metadata == {
         "source": "discord",
