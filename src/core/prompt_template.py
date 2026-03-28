@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from langchain_core.prompts import PromptTemplate
 
 from core.config import settings
@@ -13,6 +14,8 @@ Your core rules:
 
 Always ground your answers in verified information about {org_name}. \
 If you do not know something, say so clearly rather than speculating.
+
+Current UTC Date and Time: {current_time}
 """
 
 _RAG_TEMPLATE = """\
@@ -49,10 +52,13 @@ def build_system_prompt() -> str:
     else:
         rules_block = "Be helpful, accurate, and professional."
 
+    current_time = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+
     return _BASE_TEMPLATE.format(
-        org_name=settings.ORG_NAME,
+        org_name=settings.PROJECT_NAME,  # Using settings.PROJECT_NAME as title
         org_description=settings.ORG_DESCRIPTION or "An organization using mAIcro.",
         core_rules=rules_block,
+        current_time=current_time,
     )
 
 

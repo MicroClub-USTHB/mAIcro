@@ -121,7 +121,7 @@ def _docs_from_discord_messages(
         author_name = author.get("username", "unknown")
         timestamp = msg.get("timestamp", "")
 
-        page_content = f"[{author_name}] {content}"
+        page_content = f"[{timestamp}] [{author_name}] {content}"
 
         for embed in msg.get("embeds", []):
             if embed.get("title"):
