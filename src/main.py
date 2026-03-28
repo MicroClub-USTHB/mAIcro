@@ -11,11 +11,10 @@ from core.config import settings
 from core.discord_listener import run_discord_listener
 from core.ingestion import ingest_from_discord, run_startup_audit
 import logging
+from core.logging_config import setup_logging
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
-)
+setup_logging()
+
 
 logger = logging.getLogger(__name__)
 

@@ -6,6 +6,8 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "mAIcro"
     VERSION: str = "0.1.0"
     API_V1_STR: str = "/api/v1"
+    LOG_LEVEL: str = "INFO"
+    LOG_FORMAT: str = "%(asctime)s | %(levelname)s | %(name)s | %(message)s"
 
     ORG_NAME: str = "MicroClub"
     ORG_DESCRIPTION: Optional[str] = "A generic organization using mAIcro"

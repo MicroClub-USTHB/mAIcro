@@ -14,7 +14,7 @@ class ConfigurationError(ValueError):
     """Raised when model providers are misconfigured."""
 
 
-_LOGGER = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class RateLimitExceeded(Exception):
@@ -103,7 +103,7 @@ def _build_fallback_router(primary_llm, secondary_llm):
         try:
             return _invoke_with_rate_limit_retries(primary_llm, prompt)
         except RateLimitExceeded:
-            _LOGGER.warning(
+            logger.warning(
                 "Primary Gemini model rate-limited after %s attempts; switching to fallback.",
                 settings.LLM_MAX_PRIMARY_ATTEMPTS,
             )
