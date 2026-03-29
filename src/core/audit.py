@@ -40,7 +40,41 @@ async def run_startup_audit(
     if not settings.DISCORD_BOT_TOKEN or not channel_ids:
         return {}
 
+    try:
+        _bootstrap_collection()
+        client = get_qdrant_client()
+        prune_filter = qdrant_models.Filter(
+            must=[
+                qdrant_models.FieldCondition(
+                    key="metadata.source",
+                    match=qdrant_models.MatchAny(any=["discord", "ingestion_cursor"]),
+                )
+            ],
+            must_not=[
+                qdrant_models.FieldCondition(
+                    key="metadata.channel_id",
+                    match=qdrant_models.MatchAny(any=channel_ids),
+                )
+            ],
+        )
+        prune_count = client.count(
+            collection_name=settings.COLLECTION_NAME,
+            count_filter=prune_filter,
+            exact=True,
+        )
+        if prune_count.count > 0:
+            client.delete(
+                collection_name=settings.COLLECTION_NAME,
+                points_selector=qdrant_models.FilterSelector(filter=prune_filter),
+            )
+            logger.info(
+                "[audit] Pruned %d stale points from removed channels.", prune_count.count
+            )
+    except Exception as e:
+        logger.warning(f"[audit] Failed to prune removed channels: {e}")
+
     summary: dict[str, dict] = {}
+
 
     for channel_id in channel_ids:
         ensure_channel_in_state(channel_id)

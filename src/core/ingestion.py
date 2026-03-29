@@ -86,6 +86,15 @@ def _ensure_collection_indexes(client) -> None:
         except Exception:
             pass  # Index already exists or collection just created
 
+    try:
+        client.create_payload_index(
+            collection_name=settings.COLLECTION_NAME,
+            field_name="metadata.timestamp",
+            field_schema=qdrant_models.PayloadSchemaType.DATETIME,
+        )
+    except Exception as e:
+        logger.warning(f"Error creating metadata.timestamp index: {e}")
+
     # Enable Full-Text Index on page_content for keyword/BM25 search (hybrid search)
     try:
         client.create_payload_index(
@@ -167,6 +176,15 @@ def _ensure_collection_exists(vector_size: int) -> None:
             )
         except Exception:
             pass  # Index already exists or collection just created
+
+    try:
+        client.create_payload_index(
+            collection_name=settings.COLLECTION_NAME,
+            field_name="metadata.timestamp",
+            field_schema=qdrant_models.PayloadSchemaType.DATETIME,
+        )
+    except Exception as e:
+        logger.warning(f"Error creating metadata.timestamp index: {e}")
 
     # Enable Full-Text Index on page_content for keyword/BM25 search (hybrid search)
     try:
@@ -360,6 +378,41 @@ def update_message_in_store(message: dict, channel_id: str) -> int:
     return ingest_documents(docs)
 
 
+def prune_stale_channels(active_channel_ids: list[str]) -> None:
+    """Deletes all Discord messages and state cursors belonging to channels no longer configured."""
+    client = get_qdrant_client()
+    try:
+        prune_filter = qdrant_models.Filter(
+            must=[
+                qdrant_models.FieldCondition(
+                    key="metadata.source",
+                    match=qdrant_models.MatchAny(any=["discord", "ingestion_cursor"]),
+                )
+            ],
+            must_not=[
+                qdrant_models.FieldCondition(
+                    key="metadata.channel_id",
+                    match=qdrant_models.MatchAny(any=active_channel_ids),
+                )
+            ],
+        )
+        prune_count = client.count(
+            collection_name=settings.COLLECTION_NAME,
+            count_filter=prune_filter,
+            exact=True,
+        )
+        if prune_count.count > 0:
+            client.delete(
+                collection_name=settings.COLLECTION_NAME,
+                points_selector=qdrant_models.FilterSelector(filter=prune_filter),
+            )
+            logger.info(
+                "[ingestion] Pruned %d stale points from removed channels.", prune_count.count
+            )
+    except Exception as e:
+        logger.warning(f"[ingestion] Failed to prune removed channels: {e}")
+
+
 async def ingest_from_discord(limit_per_channel: int = 200) -> dict:
     """
     Fetch messages from all configured Discord channels and ingest them.
@@ -369,6 +422,9 @@ async def ingest_from_discord(limit_per_channel: int = 200) -> dict:
         raise ValueError("DISCORD_BOT_TOKEN not set in environment.")
     if not settings.discord_channel_id_list:
         raise ValueError("DISCORD_CHANNEL_IDS not set in environment.")
+
+    # Prune any stale messages from old channel configurations before ingesting
+    prune_stale_channels(settings.discord_channel_id_list)
 
     summary: dict[str, int] = {}
     errors: dict[str, str] = {}
