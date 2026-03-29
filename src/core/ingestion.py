@@ -396,19 +396,11 @@ def prune_stale_channels(active_channel_ids: list[str]) -> None:
                 )
             ],
         )
-        prune_count = client.count(
+        client.delete(
             collection_name=settings.COLLECTION_NAME,
-            count_filter=prune_filter,
-            exact=True,
+            points_selector=qdrant_models.FilterSelector(filter=prune_filter),
         )
-        if prune_count.count > 0:
-            client.delete(
-                collection_name=settings.COLLECTION_NAME,
-                points_selector=qdrant_models.FilterSelector(filter=prune_filter),
-            )
-            logger.info(
-                "[ingestion] Pruned %d stale points from removed channels.", prune_count.count
-            )
+        logger.info("[ingestion] Issued prune for stale points from removed channels.")
     except Exception as e:
         logger.warning(f"[ingestion] Failed to prune removed channels: {e}")
 
